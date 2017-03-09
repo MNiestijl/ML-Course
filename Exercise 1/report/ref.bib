@@ -1,0 +1,174 @@
+
+----------------------------------------------------------------
+Make sure to run the following commands from the command line:
+
+pdflatex latex_source_code.tex
+bibtex latex_source_code.aux
+pdflatex latex_source_code.tex
+pdflatex latex_source_code.tex
+
+
+
+Make sure to include:
+
+TBSS:
+S.M. Smith, M. Jenkinson, H. Johansen-Berg, D. Rueckert, T.E. Nichols, C.E. Mackay, K.E. Watkins, O. Ciccarelli, M.Z. Cader, P.M. Matthews, and T.E.J. Behrens. Tract-based spatial statistics: Voxelwise analysis of multi-subject diffusion data. NeuroImage, 31:1487-1505, 2006.
+
+BET: 
+S.M. Smith. Fast robust automated brain extraction. Human Brain Mapping, 17(3):143-155, November 2002.
+
+FLIRT:
+M. Jenkinson and S.M. Smith. A global optimisation method for robust affine registration of brain images. Medical Image Analysis, 5(2):143-156, 2001.
+M. Jenkinson, P.R. Bannister, J.M. Brady, and S.M. Smith. Improved optimisation for the robust and accurate linear registration and motion correction of brain images. NeuroImage, 17(2):825-841, 2002.
+
+DW-MRI
+Melhem, Elias R., et al. "Diffusion tensor MR imaging of the brain and white matter tractography." American Journal of Roentgenology 178.1 (2002): 3-16.
+Tournier, Jacques‐Donald, Susumu Mori, and Alexander Leemans. "Diffusion tensor imaging and beyond." Magnetic Resonance in Medicine 65.6 (2011): 1532-1556
+
+BRAIN DEVELOPMENT
+de Groot, Marius, et al. "White Matter Degeneration with Aging: Longitudinal Diffusion MR Imaging Analysis." Radiology (2015): 150103.
+
+M. de Groot, B.F.J. Verhaaren, R. de Boer, S. Klein, A. Hofman, A. van der Lugt, M. A. Ikram, W.J. Niessen and M. W. Vernooij, Changes in normal-appearing white matter precede development of white matter lesions, Stroke, 2013
+
+Age-Related Total Gray Matter and White Matter Changes in Normal Adult Brain. Part I: Volumetric MR Imaging Analysis
+
+Effects of age on volumes of cortex, white matter and subcortical structures
+
+
+OTHER
+Leemans, A. and Jones, D. K. (2009), The B-matrix must be rotated when correcting for subject motion in DTI data. Magn Reson Med, 61: 1336–1349. doi: 10.1002/mrm.21890
+
+Automated Image Registration: II. Intersubject Validation of Linear and Nonlinear Models [Image Processing] Woods, Roger P.; Grafton, Scott T.; Watson, John D. G.; Sicotte, Nancy L.; Mazziotta, John C.
+
+Hofman, A., et al., The Rotterdam Study: 2016 objectives and design update. European journal of epidemiology, 2015. 30(8): p. 661-708.
+
+
+
+----------------------------------------------------------------
+
+@article{GM_correlation,
+	author = "Y. Taki and S. Kinomura and K. Sato and R. Goto and K. Wu and R. Kawashima and H. Fukida",
+	title = "Correlation between gray/white matter volume and cognition in healthy elderly people.",
+	journal = "Brain and cognition 75: 170-176",
+	year = "2011",
+}
+	
+@article{MS,
+	author = "A. Compston and A. Coles",
+	title = "Multiple sclerosis",
+	journal = "Lancet 372: 1502-17",
+	year = "2008",
+}
+
+@article{Joor,
+    author    = "G.A.M. Arkesteijn and D.H.J. Poot and M. de Groot and M.A. Ikram and, M.W. Vernooij and W.J. Niessen and  
+				 L.J. van Vliet and F.M. Vos",
+    title     = " Consistent model selection and orientation prior increase sensitivity of crossing fiber statistics in TBSS.",
+    journal   = "Under review",
+    year      = "2016",
+}
+
+@article{fitMRI,
+    author    = "D.H. Poot. and S. Klein",
+    title     = "Detecting statistically significant differences in quantitative MRI experiments, applied to diffusion tensor imaging. ",
+    journal   = "IEEE Transactions on Medical Imaging; Vol 34: 1164 - 1176",
+    year      = "2014",
+}
+
+@article{Registration,
+    author    = "R.P. Woods and S.T. Grafton and J.D. Watson and N.L. Sicotte and J.C. Mazziotta",
+    title     = "Automated Image Registration: II. Intersubject Validation of Linear and Nonlinear Models ",
+    journal   = "Journal of Computer Assisted Tomography; Vol 22: 153-165",
+    year      = "1998",
+}
+
+@article{DiffAnisotropy_02,
+    author    = "M.E. Moseley and Y.Cohen and J. Kucharczyk J, et al.",
+    title     = "Diffusion-weighted MR imaging of anisotropic water diffusion in cat central nervous system.",
+    journal   = "Radiology; 176:439-445",
+    year      = "1990",
+}
+
+@article{DiffAnisotropy_01,
+    author    = "T.L. Chenevert and J.L. Brunberg and J.G. Pipe",
+    title     = "Anisotropic diffusion in human white matter: demonstration with MR techniques in vivo.",
+    journal   = "Radiology; 179:439-445",
+    year      = "1990",
+}
+
+@article{BallSticks,
+    author    = "T.E.J. Behrens and H. Johansen-Berg and S. Jbabdi and M.F.S. Rushworth and M.W. Woolrich",
+    title     = "Probabilistic diffusion tractography with multiple fibre orientations: What can we gain?",
+    journal   = "NeuroImage 34: 133-155",
+    year      = "2007",
+}
+
+@article{RotStudy,
+    author    = "A. Hofman, et al",
+    title     = "The Rotterdam Study: 2016 objectives and design update.",
+    journal   = "European journal of epidemiology. 30(8): p. 661-708.",
+    year      = "2015",
+}
+
+@article{rot_bvecs,
+    author    = "A. Leemand and D.K.Jones",
+    title     = "The B-matrix must be rotated when correcting for subject motion in DTI data.",
+    journal   = "Magn Reson Med, 61: 1336–1349. doi: 10.1002/mrm.21890",
+    year      = "2009",
+}
+
+@article{Marius_02,
+    author    = "M. de Groot and B.F.J. Verhaaren and R. de Boer and S. Klein and A. Hofman and A. van der Lugt and M. A. Ikram and W.J. Niessen and M. W. Vernooij",
+    title     = "Changes in normal-appearing white matter precede development of white matter lesions",
+    journal   = "Stroke",
+    year      = "2013",
+}
+
+@article{Marius_01,
+    author    = "M. de Groot, et al",
+    title     = "White Matter Degeneration with Aging: Longitudinal Diffusion MR Imaging Analysis.",
+    journal   = "Radiology: 150103",
+    year      = "2015",
+}
+
+@article{BET,
+      author="S.M. Smith",
+      title="Fast robust automated brain extraction.",
+      journal=" Hum. Brain Mapp., 17: 143–155. ",
+      year="2002",
+}
+
+@article{TBSS,
+      author="S.M. Smith and M. Jenkinson and H. Johansen-Berg and D. Rueckert and T.E. Nichols and C.E. Mackay and K.E. Watkins and O. Ciccarelli and M.Z. Cader and P.M. Matthews and and T.E.J. Behrens",
+      title="Tract-based spatial statistics: Voxelwise analysis of multi-subject diffusion data",
+      journal="  NeuroImage, 31:1487-1505,",
+      year="2006",
+}
+
+@article{FLIRT_01,
+	author = "M. Jenkinson and S.M. Smith",
+	title = "A global optimisation method for robust affine registration of brain images.",
+	journal = "Medical Image Analysis, 5(2):143-156",
+	year = "2001",
+}
+
+@article{FLIRT_02,
+	author = "M. Jenkinson and P.R. Bannister and J.M. Brady and S.M. Smith",
+	title = "Improved optimisation for the robust and accurate linear registration and motion correction of brain images.",
+	journal = "NeuroImage, 17(2):825-841",
+	year = "2002",
+}
+
+@article{DTI_01,
+    author    = "Melhem and Elias R. and et al",
+    title     = "Diffusion tensor MR imaging of the brain and white matter tractography.",
+    journal   = "American Journal of Roentgenology 178.1: 3-16.",
+    year      = "2002",
+}
+
+@article{DTI_02,
+    author    = "Tournier and Jacques Donald and Susumu Mori and Alexander Leemans",
+    title     = "Diffusion tensor imaging and beyond.",
+    journal   = "Magnetic Resonance in Medicine 65.6: 1532-1556",
+    year      = "2011",
+}
