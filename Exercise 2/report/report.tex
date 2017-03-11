@@ -35,16 +35,16 @@
 	\section*{a.}
 	Let $x\geq0$. then $e^{-x} \geq (1-x)$.\\
 	\subsection*{Proof:}
-	Note that $e^{-x} \geq 0$ and $e^{0} = 1$, so that the result is trivial for $x\geq 1$ and $x=0$. We assume $x \in (0,1)$. Then we have, using the series representation of $e^{-x}$:
+	Note that $e^{-x} \geq 0$ and $e^{0} = 1$, so that the result is trivial for $x\geq 1$ and $x=0$. We assume $x \in (0,1)$. Then we have, using the Taylor series representation of $e^{-x}$:
 	\begin{equation*}
 		\begin{split}
 			e^{-x} - (1-x) &=\sum_{n=0}^{\infty}\frac{(-x)^{n}}{n!} - (1-x)\\
 			&= \sum_{n=2}^{\infty}\frac{(-x)^{n}}{n!}\\
-			&= \sum_{n=1}^{\infty}\frac{x^{2n}}{(2n)!} - \frac{(x)^{2n+1}}{(2n+1)!}\\
+			&= \sum_{n=1}^{\infty}\frac{x^{2n}}{(2n)!} - \frac{x^{(2n+1)}}{(2n+1)!}\\
 			&= \sum_{n=1}^{\infty}\frac{x^{2n}}{(2n)!}\left( 1 - \frac{x}{2n + 1} \right)\\
 			&\geq 0\\
 		\end{split}
 	\end{equation*}
-	Where in the last step it was used that each term of the sum is positive.
+	Where in the last step it was used that each term of the sum is positive for $x \in (0,1)$.
 
 \end{document}
