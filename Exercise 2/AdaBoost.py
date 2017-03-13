@@ -109,7 +109,6 @@ def plotDecisionStumpWithWeights(X,y, weights):
 
 def plotDecisionBoundary(classifier,X,y):
     classifier.fit(X,y)
-    print(classifier.score(X,y))
     pos1, pos2 = np.where(y==-1), np.where(y==1)
     rangex1, rangex2 = (X[:,0].min()-0.5,X[:,0].max()+0.5), (X[:,1].min()-0.5,X[:,1].max()+0.5)
     plt.scatter(X[pos1,0],X[pos1,1],marker='o', color='green',s=30, label='class 1')
@@ -120,9 +119,9 @@ def plotDecisionBoundary(classifier,X,y):
     plt.ylabel('$x_{2}$', fontsize=18)
     x1 = np.linspace(rangex1[0],rangex1[1], 100)
     x2 = np.linspace(rangex2[0],rangex2[1], 100)
-    Z = np.array([[classifier.predict(np.array([[a,b]])) for a in x1] for b in x2])[:,:,0]
+    Z = np.array([[classifier.predict(np.array([[a,b]])) for b in x2] for a in x1])[:,:,0].T
     #Z = np.array([[classifier.expectedLabels(np.array([[a,b]]))/len(classifier.learners) for a in x1] for b in x2])[:,:,0]
-    im = plt.imshow(Z, cmap=plt.cm.RdBu, extent=rangex1+rangex2, vmin=-1, vmax=1)  
+    im = plt.imshow(np.flipud(Z), cmap=plt.cm.RdBu, extent=rangex1+rangex2, vmin=-1, vmax=1)  
     plt.colorbar(im) 
 
 def cross_validate(classifier,X,y,n_splits,train_size):
@@ -156,7 +155,7 @@ def main():
     #y = np.concatenate((-np.ones(554),np.ones(571)),axis=0)
     filename = 'banana.csv'
     X = pd.read_csv(filename, header=None).as_matrix()
-    y = np.concatenate((np.ones(50),-np.ones(50)),axis=0)
+    y = np.concatenate((-np.ones(50),np.ones(50)),axis=0)
     #N = 25
     #X,y = generateData(N)
     #w,w1,w2 = np.ones(2*N),np.ones(2*N),np.ones(2*N)
@@ -166,7 +165,7 @@ def main():
     #plotDecisionStumpRescaled(X,y)
     #plotDecisionStumpWithWeights(X,y,weights)
     #testDecisionStump(X,y)
-    iterations = [5,20,30,50]
+    iterations = [1,5,10,20]
     plt.figure(2)
     for i,ix in enumerate(iterations):
         plt.subplot(2,2,i+1)
