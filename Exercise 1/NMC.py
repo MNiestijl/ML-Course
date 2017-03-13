@@ -115,8 +115,8 @@ def main():
     #y = np.array([1,1])
     #M0 = nmc.calcM0(X,y)
     #plotLoss1D(X,y,lambdas=[0,2,4,6],m1range=[-1,2])  
-    plotContours(X,y,lambdas=[0,2,4,6],m0range=[-1,3],m1range=[-1,3])
-    #exercise3()
+    #plotContours(X,y,lambdas=[0,2,4,6],m0range=[-1,3],m1range=[-1,3])
+    exercise3()
 
 if __name__ == "__main__":
     main()
