@@ -153,12 +153,18 @@ class AdaBoostClassifier():
 	\end{lstlisting}
 	
 	\section*{g.}
-	in figure \ref{decision_boundary}, the expected value of unseen test data is shown in colour after various number of iterations $N$, whilst the training data is plotted as a scatter plot. Unseen data would be predicted as $-1$ for negative values (red) and as $+1$ for positive values (blue). It can be seen that with increasing number of iterations, the prediction of the classifier agrees more and more with the training data, as expected.
+	in figures \ref{decision_boundary1} and \ref{decision_boundary2}, the decision boundary of the classifier is shown in color after various number of iterations $N$, whilst the training data is plotted as a scatter plot. It can be seen that with increasing number of iterations, the prediction of the classifier agrees more and more with the training data. Furthermore, it can be seen that the more difficult/poorly predicted objects get a higher weight, as expected.
 	
 	\begin{figure}[H]
 		\includegraphics[width = \textwidth]{Images/decision_boundary.png}
-		\caption{Decision boundary after $N$ iterations. The training data is shown as a scatter plot. The data is obtained as in \textbf{c.}}
-		\label{decision_boundary}
+		\caption{Decision boundary after $N$ iterations. The training data is shown as a scatter plot and the yellow circles indicate the five objects with the highest weight at the last performed iteration. }
+		\label{decision_boundary1}
+	\end{figure}
+
+	\begin{figure}[H]
+		\includegraphics[width = \textwidth]{Images/decision_boundary2.png}
+		\caption{Decision boundary after $N$ iterations. The training data is shown as a scatter plot and the yellow circles indicate the five objects with the highest weight at the last performed iteration.}
+		\label{decision_boundary2}
 	\end{figure}
 
 \end{document}

@@ -29,6 +29,7 @@ class DecisionStump():
 class AdaBoostClassifier():
     def __init__(self, iterations, WeakLearner):
         self.WeakLearner, self.learners, self.weights, self.errors, self.N = WeakLearner, [], [], [], iterations
+        self.objectWeights  = []
 
     def expectedLabels(self,X):
         weightedPredictions = [self.weights[l]*learner.predict(X) for l,learner in enumerate(self.learners)]
@@ -54,6 +55,7 @@ class AdaBoostClassifier():
             w = objectWeights()
             if totalError<1e-5:
                 break
+        self.objectWeights = w # Only store object weights of last iteration
 
 def generateData(N):
     X1 = rnd.multivariate_normal(mean=[0,0], cov=np.eye(2), size=N)
@@ -63,19 +65,6 @@ def generateData(N):
     y2 = -np.ones(N)
     y = np.concatenate((y1,y2))
     return X,y
-
-def plotErrors(classifier):
-    nIter = len(classifier.errors)
-    plt.figure(1)
-    iterations = np.arange(nIter)
-    plt.subplot(1,2,1)
-    plt.title('Error')
-    plt.yscale('log')
-    plt.plot(iterations,classifier.errors,'o')
-    plt.subplot(1,2,2)
-    plt.title('Weights')
-    plt.plot(iterations,classifier.learnerWeights,'o')
-    plt.show()
 
 def plotDecisionStump(stump,X,y,figure=1):
     pos1, pos2 = np.where(y==-1), np.where(y==1)
@@ -113,6 +102,10 @@ def plotDecisionBoundary(classifier,X,y):
     rangex1, rangex2 = (X[:,0].min()-0.5,X[:,0].max()+0.5), (X[:,1].min()-0.5,X[:,1].max()+0.5)
     plt.scatter(X[pos1,0],X[pos1,1],marker='o', color='green',s=30, label='class 1')
     plt.scatter(X[pos2,0],X[pos2,1],marker='x',color='red',s=30, label='class 2')
+
+    wpos = classifier.objectWeights.argsort()[-5:]
+    plt.scatter(X[wpos,0],X[wpos,1],facecolors='none', edgecolors='yellow',linewidth=2,s=80)
+
     plt.xlim(rangex1)
     plt.ylim(rangex2)
     plt.xlabel('$x_{1}$', fontsize=18)
@@ -143,20 +136,43 @@ def testDecisionStump(X,y):
     print("Using first 50 of both classes as training data:\nscore: {}\n".format(first))
     print("Decision stump accuracy with random subsets:\nmean: {}, std: {}\n".format(scores.mean(),scores.std()))
 
-def testAdaBoostClassifier(X,y, WeakLearner):
-    maxIter = 100
-    classifier = AdaBoostClassifier(iterations=maxIter,WeakLearner=DecisionStump)
-    classifier.fit(X,y)
-    plotErrors(classifier)
+def plotErrors(classifier):
+    nIter = len(classifier.errors)
+    plt.figure(1)
+    iterations = np.arange(nIter)
+    plt.subplot(1,2,1)
+    plt.title('Error')
+    plt.yscale('log')
+    plt.plot(iterations,classifier.errors,'o')
+    plt.subplot(1,2,2)
+    plt.title('Weights')
+    plt.plot(iterations,classifier.weights,'o')
+    plt.show()
+
+def adaBoostAccuracy(X,y, WeakLearner):
+    mask = np.zeros(len(y), dtype=bool)
+    mask[np.concatenate((np.where(y==-1)[0][0:50],np.where(y==1)[0][0:50]))]=True
+    iterations = np.arange(1,200,5)
+    scores = []
+    for maxIter in iterations:
+        classifier = AdaBoostClassifier(iterations=maxIter,WeakLearner=DecisionStump)
+        classifier.fit(X[mask,:],y[mask])
+        scores.append(classifier.score(X[~mask,:],y[~mask]))
+    plt.plot(iterations, scores,'o')
+    plt.title('Accuracy on test data')
+    plt.xlabel('Iterations')
+    plt.ylabel('Accuracy')
+    #plotErrors(classifier)
+    plt.show()
 
 def main():
-    #filename = 'optdigitsubset.txt'
-    #X = pd.read_csv(filename, delim_whitespace=True, header=None).as_matrix()
-    #y = np.concatenate((-np.ones(554),np.ones(571)),axis=0)
-    filename = 'banana.csv'
-    X = pd.read_csv(filename, header=None).as_matrix()
-    y = np.concatenate((-np.ones(50),np.ones(50)),axis=0)
-    #N = 25
+    filename = 'optdigitsubset.txt'
+    X = pd.read_csv(filename, delim_whitespace=True, header=None).as_matrix()
+    y = np.concatenate((-np.ones(554),np.ones(571)),axis=0)
+    #filename = 'banana.csv'
+    #X = pd.read_csv(filename, header=None).as_matrix()
+    #y = np.concatenate((-np.ones(50),np.ones(50)),axis=0)
+    #N = 30
     #X,y = generateData(N)
     #w,w1,w2 = np.ones(2*N),np.ones(2*N),np.ones(2*N)
     #w1[0:N] = 5*w1[0:N]
@@ -165,14 +181,32 @@ def main():
     #plotDecisionStumpRescaled(X,y)
     #plotDecisionStumpWithWeights(X,y,weights)
     #testDecisionStump(X,y)
-    iterations = [1,5,10,20]
+    """ 
+    iterations = [5,20,50,200]
     plt.figure(2)
     for i,ix in enumerate(iterations):
         plt.subplot(2,2,i+1)
-        plotDecisionBoundary(AdaBoostClassifier(iterations=ix,WeakLearner=DecisionStump),X,y)
-        plt.title('$N={}$'.format(ix))
+        classifier = AdaBoostClassifier(iterations=ix,WeakLearner=DecisionStump)
+        plotDecisionBoundary(classifier,X,y)
     plt.show()
-    #testAdaBoostClassifier(X,y,WeakLearner=DecisionStump)
+    """ 
+    #adaBoostAccuracy(X,y,WeakLearner=DecisionStump)
+    classifier = AdaBoostClassifier(iterations=5,WeakLearner=DecisionStump)
+    mask = np.zeros(len(y), dtype=bool)
+    mask[np.concatenate((np.where(y==-1)[0][0:50],np.where(y==1)[0][0:50]))]=True
+    classifier.fit(X[mask,:],y[mask])
+    wpos = classifier.objectWeights.argsort()[-3:]
+    print(wpos)
+    plt.figure(1)
+    for i in range(1,4):
+        plt.subplot('33' + str(i))
+        plt.imshow(np.reshape(X[i,:],[8,8]), cmap='gray')
+        plt.subplot('33' + str(i+3))
+        plt.imshow(np.reshape(X[-i,:],[8,8]), cmap='gray')
+        plt.subplot('33' + str(i+6))
+        plt.imshow(np.reshape(X[wpos[i-1],:],[8,8]), cmap='gray')
+    plt.show()
+
     
 
 if __name__ == "__main__":
