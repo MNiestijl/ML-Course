@@ -1,0 +1,29 @@
+Notation: f: learner
+
+Possibilities to use unlabeled data:
+
+Self-training:
+	Algorithm:
+ 		- Train f on labeled data
+ 		- use f to predict unlabeled data
+ 		- Add either 
+ 			- (few) most confident (x,f(x)) to labeled data
+	 		- all (x, f(x)) to labeled data, weighted by confidence
+ 			- all (x, f(x)) to labeled data
+		- repeat
+
+	- Sometimes equivalent to EM algorithm
+	- Sometimes closed form solution known
+
+	Advantages:
+		- Simple
+ 		- Wrapper, applies to existing (complex) classifiers)
+
+ 	Disadvantages:
+		- Early mistakes can reinforce themselves (solution: unlabel if confidence below threshhold
+
+Generative Models:
+	- Assuming some distribution of the different classes (each having a weight), what are the maximum likelihood
+ 	parameters?
+	- Unlabeled data is included by using the marginal distributions (of zo iets??)
+	- Mixture of Gaussian Distributions -> the EM algorithm (local minimum) -> (Special form of self training)
