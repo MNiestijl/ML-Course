@@ -27,3 +27,50 @@ Generative Models:
  	parameters?
 	- Unlabeled data is included by using the marginal distributions (of zo iets??)
 	- Mixture of Gaussian Distributions -> the EM algorithm (local minimum) -> (Special form of self training)
+
+	Advantages:
+ 		- Well-understood framework
+ 		- Effective if the model is close to correct
+
+	Disadvantages:
+ 		- Difficult to assess correctness of model
+ 		- Local optima
+ 		- Unlabeled data may hurt if model is wrong
+
+- Cluster unlabeled data 
+
+
+
+
+Accidental succes:
+
+def customData1(Nlab, Nunl, p):
+    gaussian1 = lambda N: rnd.multivariate_normal([0,0], np.array([[1,0],[0,1]]), size=N)
+    gaussian2 = lambda N: rnd.multivariate_normal([10,-5], np.array([[15,0],[0,1]]), size=N)
+    gaussian3 = lambda N: rnd.multivariate_normal([10,5], np.array([[1,0],[0,1]]), size=N)
+    def path(N):
+        x = np.atleast_2d(rnd.uniform(-20, 0, N))
+        y = np.atleast_2d(np.zeros(N))
+        return np.concatenate((x.T,y.T),axis=1)
+
+    def pathc(N):
+        gen = circularGenerator(7.5,0.1,angle_range=(0,-m.pi))
+        return np.array([7.5,0]) + gen(N)
+       
+    def gen1(N):
+        probabilities = [1, 0, 0, 0]
+        inds = rnd.choice(np.arange(1,5), size=N, p=probabilities)
+        Ns = [len(np.where(inds==i)[0]) for i in range(1,5)]
+        data = np.concatenate((gaussian1(Ns[0]), gaussian2(Ns[1]),gaussian3(Ns[2]),path(Ns[3])), axis=0)  
+        rnd.shuffle(data)
+        return data
+    
+    def gen2(N):
+        probabilities = [0, 0.3, 0.3, 0.4]
+        inds = rnd.choice(np.arange(1,5), size=N, p=probabilities)
+        Ns = [len(np.where(inds==i)[0]) for i in range(1,5)]
+        data = np.concatenate((gaussian1(Ns[0]), gaussian2(Ns[1]),gaussian3(Ns[2]),path(Ns[3])), axis=0) 
+        rnd.shuffle(data)
+        return data    
+    #gen2 = lambda N: gaussian3(N)
+    return generateData(gen1, gen2, Nlab, Nunl, p=p)
