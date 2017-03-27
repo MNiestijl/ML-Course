@@ -20,6 +20,9 @@ class SSLDA_Classifier():
     def predict_proba(self, X):
         return self.classifier.predict_proba(X)
 
+    def predict_log_proba(self, X):
+        return self.classifier.predict_log_proba(X)
+
     # B ~ [N_samples * d_features]
     # Unlabeled data should have label -1
     def fit(self, X, y, method='self-training', treshold=0.7):

@@ -90,32 +90,48 @@ def splitData(X,y, N1lab, N2lab, Nunl, p=0.5):
     X_test, y_test = X[~train_mask,:], y[~train_mask]
     return X_train, y_train,y_train_true, X_test, y_test
 
-def getScore(X,y,method,Nunl, N1=75, N2=75,max_iter=100, p=0.5):
+def getError(X,y,method,Nunl, N1=75, N2=75,max_iter=100, p=0.5):
     X_train, y_train, y_train_true, X_test, y_test = splitData(X,y,N1,N2,Nunl=Nunl, p=p)
     sslda = SSLDA_Classifier(max_iter)
     sslda.fit(X_train,y_train, method=method)
     return 1-sslda.score(X_train, y_train_true), 1-sslda.score(X_test, y_test)
 
-def getErrors(X,y,method, Nunl, repeat, max_iter=100,p=0.5):
-    errors = [getScore(X,y,method, Nunl, max_iter=max_iter, p=0.5) for i in range(0,repeat)]
+def getErrors(X,y,method, Nunl, repeat, max_iter=100, p=0.5):
+    errors = [getError(X,y,method, Nunl, max_iter=max_iter, p=0.5) for i in range(0,repeat)]
     train_errors = np.array([error[0] for error in errors])
     test_errors = np.array([error[1] for error in errors])
     return train_errors, test_errors
 
+def getLikelihood(X,y,method, Nunl, N1=75, N2=75, max_iter=100, p=0.5):
+    X_train, y_train, y_train_true, X_test, y_test = splitData(X,y,N1,N2,Nunl=Nunl, p=p)
+    sslda = SSLDA_Classifier(max_iter)
+    sslda.fit(X_train,y_train, method=method)
+    return sslda.predict_log_proba(X)
+
+def getLikelihoods(X,y,method, Nunl, repeat, max_iter=100, p=0.5):
+    likelihoods = [getLikelihood(X,y,method, Nunl, max_iter=max_iter, p=p) for i in range(0,repeat)]
+    return np.array(likelihoods)
+
 def plotErrors(X,y, N_unlabelled, repeat, p=0.5, max_iter=100):
     methods = ['supervised', 'self-training', 'label-propagation']
-    scores = {'supervised' : [], 'self-training' : [], 'label-propagation' : []}
+    errors = {'supervised' : [], 'self-training' : [], 'label-propagation' : []}
+    likelihoods = {'supervised' : [], 'self-training' : [], 'label-propagation' : []}
     for method in methods:
         print(method)
         for Nunl in N_unlabelled:
-            train_errors, test_errors = getErrors(X,y,method, Nunl, repeat, max_iter=max_iter,p=0.5)
+            train_likelihoods = getLikelihoods(X,y,method,Nunl,repeat,max_iter=max_iter, p=p)
+            train_errors, test_errors = getErrors(X,y,method, Nunl, repeat, max_iter=max_iter,p=p)
             train_error = {'mean' : train_errors.mean(), 'std' : train_errors.std()}
             test_error = {'mean' : test_errors.mean(), 'std' : test_errors.std()}
-            scores[method].append({'train': train_error, 'test': test_error})
-        train_means = [obj['train']['mean'] for obj in scores[method]]
-        train_stds = [obj['train']['std'] for obj in scores[method]]
-        test_means = [obj['test']['mean'] for obj in scores[method]]
-        test_stds = [obj['test']['std'] for obj in scores[method]]
+            likelihood = {'mean' : train_likelihoods.mean(), 'std' : train_likelihoods.std()}
+            errors[method].append({'train': train_error, 'test': test_error})
+            likelihoods[method].append(likelihood)
+        train_means = [obj['train']['mean'] for obj in errors[method]]
+        train_stds = [obj['train']['std'] for obj in errors[method]]
+        test_means = [obj['test']['mean'] for obj in errors[method]]
+        test_stds = [obj['test']['std'] for obj in errors[method]]
+        likelihood_means = [obj['mean'] for obj in likelihoods[method]]
+        likelihood_std = [obj['std'] for obj in likelihoods[method]]
         plt.figure(1)
         plt.errorbar(N_unlabelled, train_means, yerr = train_stds, label=method)
         plt.legend()
@@ -128,6 +144,12 @@ def plotErrors(X,y, N_unlabelled, repeat, p=0.5, max_iter=100):
         plt.xlabel('$N_{unl}$', fontsize=18)
         plt.ylabel('Error', fontsize=15)
         plt.title('Error on test data')
+        plt.legend()
+        plt.figure(3)
+        plt.errorbar(N_unlabelled, likelihood_means, yerr=likelihood_std, label=method)
+        plt.xlabel('$N_{unl}$', fontsize=18)
+        plt.ylabel('Log-likelihood', fontsize=15)
+        plt.title('Log-likelihood of training data')
         plt.legend()
 
 def spambase(N_unlabelled=[0, 10, 20, 40, 80, 160, 320, 640, 1280] ):
@@ -196,7 +218,7 @@ def circularGenerator(radius_mean, radius_variance, angle_range=(0,2*m.pi), angl
 def main():
     N_unlabelled = [0,10, 20, 40,60, 80,140,250,320,400,640,900,1280]
     methods = ['supervised', 'self-training','label-propagation']
-    repeat = 50
+    repeat = 2
     N1,N2, Nunl = 75, 75, 1000
     mean1, mean2 = [0,0], [0,0]
     cov1 = np.array([[10,0],[0,1]])
