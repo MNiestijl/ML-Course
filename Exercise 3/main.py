@@ -143,15 +143,16 @@ def getData(X,y, N1lab, N2lab, Nunl):
     train_mask = np.zeros(X.shape[0], dtype=bool)
     train_mask[np.concatenate((inds1, inds2))] = True
     y_train = np.concatenate((np.zeros(N1lab), -np.ones(N1unl),np.ones(N2lab), -np.ones(N2unl)))
+    y_train_true = y[train_mask]
     X_train = X[train_mask,:]
     X_test, y_test = X[~train_mask,:], y[~train_mask]
-    return X_train, y_train, X_test, y_test
+    return X_train, y_train,y_train_true, X_test, y_test
 
 def getScore(X,y,method,Nunl, max_iter=100):
-    X_train, y_train, X_test, y_test = getData(X,y,75,75,Nunl=Nunl)
+    X_train, y_train, y_train_true, X_test, y_test = getData(X,y,75,75,Nunl=Nunl)
     sslda = SSLDA_Classifier(max_iter)
     sslda.fit(X_train,y_train, method=method)
-    return 1-sslda.score(X_train, y_train), 1-sslda.score(X_test, y_test)
+    return 1-sslda.score(X_train, y_train_true), 1-sslda.score(X_test, y_test)
 
 def spambase():
     max_iter=100
