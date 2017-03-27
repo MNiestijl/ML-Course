@@ -1,0 +1,157 @@
+from SSLDA_Classifier import SSLDA_Classifier
+import numpy as np
+import numpy.linalg as la
+import matplotlib.pyplot as plt
+import numpy.random as rnd
+import math as m
+from scipy.stats import multivariate_normal, bernoulli
+
+
+# gen generates N points from the respective distribution
+def generateData(gen1, gen2,Nlab, Nunl, p=0.5):
+    lab = bernoulli.rvs(p=p, size=Nlab)
+    unl = bernoulli.rvs(p=p, size=Nunl)
+    Nlab1 = len(np.where(lab==0)[0])
+    Nlab2 = len(np.where(lab==1)[0])
+    Nunl1 = len(np.where(unl==0)[0])
+    Nunl2 = len(np.where(unl==1)[0])
+    X1 = gen1(Nlab1+Nunl1)
+    X2 = gen2(Nlab2+Nunl2)
+    X = np.concatenate((X1,X2), axis=0)
+    y = np.concatenate((np.zeros(Nlab1), -np.ones(Nunl1),np.ones(Nlab2), -np.ones(Nunl2)))
+    ytrue = np.concatenate((np.zeros(Nlab1+Nunl1), np.ones(Nlab2+Nunl2)))
+    return X,y,ytrue
+
+# Nlab and Nunlab are the number of labels per class
+def gaussianData(Nlab, Nunl, mean1=[0,0], cov1=np.eye(2),mean2=[0,0], cov2=np.eye(2)):
+    gaussian1 = lambda N: rnd.multivariate_normal(mean1, cov1, size=N)
+    gaussian2 = lambda N: rnd.multivariate_normal(mean2, cov2, size=N)
+    return generateData(gaussian1, gaussian2, Nlab, Nunl)
+
+def customData1(Nlab, Nunl, p):
+    gaussian1 = lambda N: rnd.multivariate_normal([0,0], np.array([[1,0],[0,1]]), size=N)
+    gaussian2 = lambda N: rnd.multivariate_normal([10,-10], np.array([[1,0],[0,1]]), size=N)
+    gaussian3 = lambda N: rnd.multivariate_normal([10,10], np.array([[1,0],[0,1]]), size=N)
+    def path(N):
+        x = np.atleast_2d(rnd.uniform(0, 20, N))
+        y = np.atleast_2d(np.zeros(N))
+        return np.concatenate((x.T,y.T),axis=1)
+
+    def pathc(N):
+        gen = circularGenerator(7.5,0.1,angle_range=(0,-m.pi))
+        return np.array([7.5,0]) + gen(N)
+       
+    def gen1(N):
+        probabilities = [0, 0, 0, 1]
+        inds = rnd.choice(np.arange(1,5), size=N, p=probabilities)
+        Ns = [len(np.where(inds==i)[0]) for i in range(1,5)]
+        data = np.concatenate((gaussian1(Ns[0]), gaussian2(Ns[1]),gaussian3(Ns[2]),path(Ns[3])), axis=0)  
+        rnd.shuffle(data)
+        return data
+    
+    def gen2(N):
+        probabilities = [0, 0.5, 0.5, 0]
+        inds = rnd.choice(np.arange(1,5), size=N, p=probabilities)
+        Ns = [len(np.where(inds==i)[0]) for i in range(1,5)]
+        data = np.concatenate((gaussian1(Ns[0]), gaussian2(Ns[1]),gaussian3(Ns[2]),path(Ns[3])), axis=0) 
+        rnd.shuffle(data)
+        return data    
+    #gen2 = lambda N: gaussian3(N)
+    return generateData(gen1, gen2, Nlab, Nunl, p=0.5)
+
+def circularGenerator(radius_mean, radius_variance, angle_range=(0,2*m.pi), angle_mean=None, angle_variance=None):
+    def generator(N):
+        rs = rnd.normal(radius_mean, radius_variance, N)
+        if angle_mean and angle_variance:
+            thetas= rnd.normal(angle_mean, angle_variance,N)
+        else:
+            thetas = rnd.uniform(angle_range[0], angle_range[1], N)
+        x1 = np.atleast_2d(rs * np.fromiter([m.cos(theta) for theta in thetas], thetas.dtype))
+        x2 = np.atleast_2d(rs * np.fromiter([m.sin(theta) for theta in thetas], thetas.dtype))
+        return np.concatenate((x1.T,x2.T),axis=1)
+    return generator
+
+def data_plot(X,y):
+    C1, C2, Cunl = np.where(y==1)[0], np.where(y==0)[0], np.where(y==-1)[0]
+    plt.scatter(X[C1,0],X[C1,1], marker='o', c='blue', s=40)
+    plt.scatter(X[C2,0],X[C2,1], marker='x', c='red', s=40)
+    plt.scatter(X[Cunl,0],X[Cunl,1], marker='.', c='grey')
+
+def contour_plot2(X, classifier, n=100):
+    normal1 = multivariate_normal(mean=classifier.means_[0,:], cov=classifier.covariance_)
+    normal2 = multivariate_normal(mean=classifier.means_[1,:], cov=classifier.covariance_)
+    (X1max, X2max) = np.amax(X,axis=0)
+    (X1min, X2min) = np.amin(X,axis=0)
+    x1, x2 = np.linspace(X1min, X1max, n), np.linspace(X2min, X2max, n)
+    X1,X2 = np.meshgrid(x1,x2)
+    Z1 = np.array([[ normal1.pdf([x,y]) for x in x1 ] for y in x2])
+    Z2 = np.array([[ normal2.pdf([x,y]) for x in x1 ] for y in x2])
+    plt.contour(X1,X2,Z1[:,:])
+    plt.contour(X1,X2,Z2[:,:])
+
+def errors(X,y,y_true,classifier):
+    mask = np.ones(len(y), dtype=bool)
+    mask[np.where(y==-1)[0]]=False
+    train_error = 1 - classifier.score(X[mask,:],y[mask])
+    test_error = 1 - classifier.score(X[~mask,:],y_true[~mask])
+    return train_error, test_error
+
+def plot_methods(X,y,y_true,max_iter=100):
+    methods = ['none','label-propagation','self-training']
+    classifiers = {}
+    labeled = np.where(y!=-1)[0]
+    s = "           | Train error    |   Test error\n"
+    for i,method in enumerate(methods): # note the order here matters for functionality
+        sslda = SSLDA_Classifier(max_iter)
+        sslda.fit(X,y, method=method)
+        plt.subplot('23'+str(i+1))
+        if method=='none':
+            data_plot(X[labeled,:],y[labeled])
+        else:
+            data_plot(X,y)
+        contour_plot(X,sslda)
+        plt.title(str(method))
+        train_error, test_error = errors(X,y,y_true,sslda)
+        s+= "{}:    | {}    |   {}\n".format(method, train_error, test_error)
+        classifiers[method]=sslda
+    plt.subplot('234')
+    data_plot(X, y_true)
+    plt.title('True labels')
+    plt.subplot('235')
+    #data_plot(X,classifiers['label-propagation'].propagated_labels)
+    #plt.title('Propagation of labels')
+    data_plot(X,classifiers['label-propagation'].predict(X))
+    plt.title('Label-prop: Predicted labels')
+    plt.subplot('236')
+    data_plot(X, classifiers['self-training'].predict(X))
+    plt.title('Self-training: Predicted labels')
+    print(s)
+
+def contour_plot(X, classifier, n=200):
+    cov = classifier.covariance_
+    m1,m2 = classifier.means_
+    thetas = np.linspace(0,2*m.pi, n)
+    x1 = np.atleast_2d(np.ones(n) * np.fromiter([m.cos(theta) for theta in thetas], thetas.dtype))
+    x2 = np.atleast_2d(np.ones(n) * np.fromiter([m.sin(theta) for theta in thetas], thetas.dtype))
+    S = np.concatenate((x1.T,x2.T),axis=1)
+    L = np.dot(S, cov)
+    plt.plot(L[:,0]+m1[0], L[:,1]+m1[1], c='red', linewidth=3)
+    plt.plot(L[:,0]+m2[0], L[:,1]+m2[1], c='blue', linewidth=3)
+
+def main():
+    Nlab, Nunl = 150,1000
+    mean1, mean2 = [0,0], [0,0]
+    cov1 = np.array([[10,0],[0,1]])
+    cov2 = np.array([[1,0],[0,10]])
+    #X,y, y_true = gaussianData(Nlab, Nunl, mean1=mean1, cov1=cov1, mean2=mean2, cov2=cov2 )
+    gaussGen = lambda N: rnd.multivariate_normal([0,-0.5], np.array([[1,0],[0,1]]), N)
+    circGen = circularGenerator(radius_mean=5, radius_variance=0.5, angle_mean=m.pi/2, angle_variance=m.pi/3)
+    #circGen = circularGenerator(radius_mean=5, radius_variance=0.5, angle_range=(-1/4*m.pi, 5/4*m.pi))
+    #X,y, y_true = generateData(gaussGen, circGen, Nlab, Nunl, p=0.8)
+    X,y,y_true = customData1(Nlab, Nunl, p=0.5)
+    plt.figure(1)
+    plot_methods(X,y,y_true, max_iter=100)
+    plt.show()
+
+if __name__ == "__main__":
+    main()
