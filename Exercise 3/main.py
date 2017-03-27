@@ -151,16 +151,17 @@ def getScore(X,y,method,Nunl, max_iter=100):
     X_train, y_train, X_test, y_test = getData(X,y,75,75,Nunl=Nunl)
     sslda = SSLDA_Classifier(max_iter)
     sslda.fit(X_train,y_train, method=method)
-    return sslda.score(X_test, y_test)
+    return 1-sslda.score(X_train, y_train), 1-sslda.score(X_test, y_test)
 
 def spambase():
     max_iter=100
-    repeat = 40
+    repeat = 50
     filename = 'spambase.data'
     data = pd.read_csv(filename, sep=',',header=None).as_matrix()
     X = data[:,:-1]
     scale(X, axis=1, with_mean=False,copy=False)
     y = data[:,-1]
+    test = SSLDA_Classifier(max_iter=100)
     #N_unlabelled = [0,10, 20,40,60, 80]
     N_unlabelled = [0,10, 20, 40,60, 80,140,250,320,400,640,900,1280]
     methods = ['supervised', 'self-training', 'label-propagation']
@@ -169,13 +170,29 @@ def spambase():
     for method in methods:
         print(method)
         for Nunl in N_unlabelled:
-            results = np.array([getScore(X,y,method, Nunl, max_iter) for i in range(0,repeat)])
-            result = {'mean' : results.mean(), 'std' : results.std()}
-            scores[method].append(result)
-        plt.plot(N_unlabelled, [obj['mean'] for obj in scores[method]], label=method)
-    plt.legend()
-    plt.ylabel('Accuracy')
-    plt.xlabel('N_unl')
+            errors = [getScore(X,y,method, Nunl, max_iter) for i in range(0,repeat)]
+            train_errors = np.array([error[0] for error in errors])
+            test_errors = np.array([error[1] for error in errors])
+            train_error = {'mean' : train_errors.mean(), 'std' : train_errors.std()}
+            test_error = {'mean' : test_errors.mean(), 'std' : test_errors.std()}
+            scores[method].append({'train': train_error, 'test': test_error})
+        train_means = [obj['train']['mean'] for obj in scores[method]]
+        train_stds = [obj['train']['std'] for obj in scores[method]]
+        test_means = [obj['test']['mean'] for obj in scores[method]]
+        test_stds = [obj['test']['std'] for obj in scores[method]]
+        plt.figure(1)
+        plt.errorbar(N_unlabelled, train_means, yerr = train_stds, label=method)
+        plt.legend()
+        plt.xlabel('$N_{unl}$', fontsize=18)
+        plt.ylabel('Error', fontsize=15)
+        plt.title('Error on training data')
+        plt.legend()
+        plt.figure(2)
+        plt.errorbar(N_unlabelled, test_means, yerr = test_stds, label=method)
+        plt.xlabel('$N_{unl}$', fontsize=18)
+        plt.ylabel('Error', fontsize=15)
+        plt.title('Error on test data')
+        plt.legend()
     plt.show()
     
 
