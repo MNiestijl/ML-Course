@@ -10,27 +10,21 @@ from scipy.stats import multivariate_normal, bernoulli
 
 
 # gen generates N points from the respective distribution
-def generateData(gen1, gen2,Nlab, Nunl, p=0.5):
-    lab = bernoulli.rvs(p=p, size=Nlab)
-    unl = bernoulli.rvs(p=p, size=Nunl)
-    N1lab = len(np.where(lab==0)[0])
-    N2lab = len(np.where(lab==1)[0])
-    N1unl = len(np.where(unl==0)[0])
-    N2unl = len(np.where(unl==1)[0])
-    X1 = gen1(N1lab+N1unl)
-    X2 = gen2(N2lab+N2unl)
-    X = np.concatenate((X1,X2), axis=0)
-    y = np.concatenate((np.zeros(N1lab), -np.ones(N1unl),np.ones(N2lab), -np.ones(N2unl)))
-    ytrue = np.concatenate((np.zeros(N1lab+N1unl), np.ones(N2lab+N2unl)))
-    return X,y,ytrue
+def generateData(gen1, gen2,N, p=0.5):
+    classes = bernoulli.rvs(p=p, size=N)
+    N1 = len(np.where(classes==0)[0])
+    N2 = len(np.where(classes==1)[0])
+    X = np.concatenate((gen1(N1),gen2(N2)), axis=0)
+    y = np.concatenate((np.zeros(N1), np.ones(N2)))
+    return X,y
 
 # Nlab and Nunlab are the number of labels per class
-def gaussianData(Nlab, Nunl, mean1=[0,0], cov1=np.eye(2),mean2=[0,0], cov2=np.eye(2)):
+def gaussianData(N, mean1=[0,0], cov1=np.eye(2),mean2=[0,0], cov2=np.eye(2)):
     gaussian1 = lambda N: rnd.multivariate_normal(mean1, cov1, size=N)
     gaussian2 = lambda N: rnd.multivariate_normal(mean2, cov2, size=N)
-    return generateData(gaussian1, gaussian2, Nlab, Nunl)
+    return generateData(gaussian1, gaussian2, N)
 
-def customData1(Nlab, Nunl, p):
+def customData1(N, p):
     gaussian1 = lambda N: rnd.multivariate_normal([3,5], np.array([[1,0],[0,1]]), size=N)
     gaussian2 = lambda N: rnd.multivariate_normal([0,-5], np.array([[1,0],[0,1]]), size=N)
     gaussian3 = lambda N: rnd.multivariate_normal([7,10], np.array([[1,0],[0,1]]), size=N)
@@ -53,7 +47,7 @@ def customData1(Nlab, Nunl, p):
 
     gen1 = lambda N: getGen(N,[0.7, 0.3, 0  , 0  , 0])        
     gen2 = lambda N: getGen(N,[0  , 0  , 0.2, 0.2, 0.6  ])
-    return generateData(gen1, gen2, Nlab, Nunl, p=0.3)
+    return generateData(gen1, gen2, N, p=p)
 
 def circularGenerator(radius_mean, radius_variance, angle_range=(0,2*m.pi), angle_mean=None, angle_variance=None):
     def generator(N):
@@ -134,8 +128,8 @@ def contour_plot(X, classifier, n=200):
     plt.plot(L[:,0]+m1[0], L[:,1]+m1[1], c='red', linewidth=3)
     plt.plot(L[:,0]+m2[0], L[:,1]+m2[1], c='blue', linewidth=3)
 
-def getData(X,y, N1lab, N2lab, Nunl):
-    unl = bernoulli.rvs(p=0.5, size=Nunl)
+def splitData(X,y, N1lab, N2lab, Nunl, p=0.5):
+    unl = bernoulli.rvs(p=p, size=Nunl)
     N1unl = len(np.where(unl==0)[0])
     N2unl = len(np.where(unl==1)[0])
     inds1 = rnd.choice(np.where(y==0)[0],size=N1lab + N1unl, replace=False)
@@ -143,30 +137,20 @@ def getData(X,y, N1lab, N2lab, Nunl):
     train_mask = np.zeros(X.shape[0], dtype=bool)
     train_mask[np.concatenate((inds1, inds2))] = True
     y_train = np.concatenate((np.zeros(N1lab), -np.ones(N1unl),np.ones(N2lab), -np.ones(N2unl)))
+    y_train_true = y[train_mask]
     X_train = X[train_mask,:]
     X_test, y_test = X[~train_mask,:], y[~train_mask]
-    return X_train, y_train, X_test, y_test
+    return X_train, y_train, y_train_true, X_test, y_test
 
-def getScore(X,y,method,Nunl, max_iter=100):
-    X_train, y_train, X_test, y_test = getData(X,y,75,75,Nunl=Nunl)
+def getScore(X,y,method,Nunl, N1=75, N2=75,max_iter=100):
+    X_train, y_train, y_train_true, X_test, y_test = splitData(X,y,N1,N2,Nunl=Nunl)
     sslda = SSLDA_Classifier(max_iter)
     sslda.fit(X_train,y_train, method=method)
-    return 1-sslda.score(X_train, y_train), 1-sslda.score(X_test, y_test)
+    return 1-sslda.score(X_train, y_train_true), 1-sslda.score(X_test, y_test)
 
-def spambase():
-    max_iter=100
-    repeat = 50
-    filename = 'spambase.data'
-    data = pd.read_csv(filename, sep=',',header=None).as_matrix()
-    X = data[:,:-1]
-    scale(X, axis=1, with_mean=False,copy=False)
-    y = data[:,-1]
-    test = SSLDA_Classifier(max_iter=100)
-    #N_unlabelled = [0,10, 20,40,60, 80]
-    N_unlabelled = [0,10, 20, 40,60, 80,140,250,320,400,640,900,1280]
+def plotErrors(X,y, N_unlabelled, repeat, max_iter=100):
     methods = ['supervised', 'self-training', 'label-propagation']
     scores = {'supervised' : [], 'self-training' : [], 'label-propagation' : []}
-    
     for method in methods:
         print(method)
         for Nunl in N_unlabelled:
@@ -194,13 +178,22 @@ def spambase():
         plt.title('Error on test data')
         plt.legend()
     plt.show()
+
+def spambase(N_unlabelled=[0, 10, 20, 40, 80, 160, 320, 640, 1280] ):
+    max_iter=100
+    repeat = 1
+    filename = 'spambase.data'
+    data = pd.read_csv(filename, sep=',',header=None).as_matrix()
+    X = data[:,:-1]
+    scale(X, axis=1, with_mean=False,copy=False)
+    y = data[:,-1]
+    plotErrors(X,y,N_unlabelled, repeat, max_iter)
     
 
-
 def main():
-    spambase()
-    """
-    Nlab, Nunl = 50,1000
+    N_unlabelled = [0,10, 20, 40,60, 80,140,250,320,400,640,900,1280]
+    repeat = 50
+    N1,N2, Nunl = 75, 75, 1000
     mean1, mean2 = [0,0], [0,0]
     cov1 = np.array([[10,0],[0,1]])
     cov2 = np.array([[1,0],[0,10]])
@@ -208,12 +201,18 @@ def main():
     gaussGen = lambda N: rnd.multivariate_normal([0,-0.5], np.array([[1,0],[0,1]]), N)
     circGen = circularGenerator(radius_mean=5, radius_variance=0.5, angle_mean=m.pi/2, angle_variance=m.pi/3)
     #circGen = circularGenerator(radius_mean=5, radius_variance=0.5, angle_range=(-1/4*m.pi, 5/4*m.pi))
-    #X,y, y_true = generateData(gaussGen, circGen, Nlab, Nunl, p=0.8)
-    X,y,y_true = customData1(Nlab, Nunl, p=0.5)
-    plt.figure(1)
-    plot_methods(X,y,y_true, max_iter=100)
+    #X,y = generateData(gaussGen, circGen, N1+N2, p=0.8)
+    p = 0.5
+    X,y = customData1(N1+N2+2000, p=p)
+    X_train, y_train,y_train_true, X_test, y_test = splitData(X,y,N1,N2,Nunl=Nunl, p=p)
+    plt.figure(0)
+    plot_methods(X_train,y_train,y_train_true, max_iter=100)
+    plotErrors(X,y,N_unlabelled, repeat, max_iter=100)
+    
+
+    #spambase(N_unlabelled=N_unlabelled)
+
     plt.show()
-    """
 
 if __name__ == "__main__":
     main()
