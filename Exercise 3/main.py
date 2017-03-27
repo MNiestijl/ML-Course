@@ -157,9 +157,9 @@ def gaussianData(N, mean1=[0,0], cov1=np.eye(2),mean2=[0,0], cov2=np.eye(2)):
 
 def customData1(N, p):
     gaussian1 = lambda N: rnd.multivariate_normal([3,5], np.array([[1,0],[0,1]]), size=N)
-    gaussian2 = lambda N: rnd.multivariate_normal([0,-2], np.array([[1,0],[0,1]]), size=N)
+    gaussian2 = lambda N: rnd.multivariate_normal([-1,-2], np.array([[1,0],[0,1]]), size=N)
     gaussian3 = lambda N: rnd.multivariate_normal([7,10], np.array([[1,0],[0,1]]), size=N)
-    gaussian4 = lambda N: rnd.multivariate_normal([10,-10], np.array([[1,0],[0,1]]), size=N)
+    gaussian4 = lambda N: rnd.multivariate_normal([12,-8], np.array([[1,0],[0,1]]), size=N)
     def path(N):
         x = np.atleast_2d(rnd.uniform(3, 7, N))
         y = np.atleast_2d(0*np.ones(N))
