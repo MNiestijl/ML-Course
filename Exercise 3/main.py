@@ -4,6 +4,8 @@ import numpy.linalg as la
 import matplotlib.pyplot as plt
 import numpy.random as rnd
 import math as m
+import pandas as pd
+from sklearn.preprocessing import scale
 from scipy.stats import multivariate_normal, bernoulli
 
 
@@ -11,15 +13,15 @@ from scipy.stats import multivariate_normal, bernoulli
 def generateData(gen1, gen2,Nlab, Nunl, p=0.5):
     lab = bernoulli.rvs(p=p, size=Nlab)
     unl = bernoulli.rvs(p=p, size=Nunl)
-    Nlab1 = len(np.where(lab==0)[0])
-    Nlab2 = len(np.where(lab==1)[0])
-    Nunl1 = len(np.where(unl==0)[0])
-    Nunl2 = len(np.where(unl==1)[0])
-    X1 = gen1(Nlab1+Nunl1)
-    X2 = gen2(Nlab2+Nunl2)
+    N1lab = len(np.where(lab==0)[0])
+    N2lab = len(np.where(lab==1)[0])
+    N1unl = len(np.where(unl==0)[0])
+    N2unl = len(np.where(unl==1)[0])
+    X1 = gen1(N1lab+N1unl)
+    X2 = gen2(N2lab+N2unl)
     X = np.concatenate((X1,X2), axis=0)
-    y = np.concatenate((np.zeros(Nlab1), -np.ones(Nunl1),np.ones(Nlab2), -np.ones(Nunl2)))
-    ytrue = np.concatenate((np.zeros(Nlab1+Nunl1), np.ones(Nlab2+Nunl2)))
+    y = np.concatenate((np.zeros(N1lab), -np.ones(N1unl),np.ones(N2lab), -np.ones(N2unl)))
+    ytrue = np.concatenate((np.zeros(N1lab+N1unl), np.ones(N2lab+N2unl)))
     return X,y,ytrue
 
 # Nlab and Nunlab are the number of labels per class
@@ -29,35 +31,29 @@ def gaussianData(Nlab, Nunl, mean1=[0,0], cov1=np.eye(2),mean2=[0,0], cov2=np.ey
     return generateData(gaussian1, gaussian2, Nlab, Nunl)
 
 def customData1(Nlab, Nunl, p):
-    gaussian1 = lambda N: rnd.multivariate_normal([0,0], np.array([[1,0],[0,1]]), size=N)
-    gaussian2 = lambda N: rnd.multivariate_normal([10,-10], np.array([[1,0],[0,1]]), size=N)
-    gaussian3 = lambda N: rnd.multivariate_normal([10,10], np.array([[1,0],[0,1]]), size=N)
+    gaussian1 = lambda N: rnd.multivariate_normal([3,5], np.array([[1,0],[0,1]]), size=N)
+    gaussian2 = lambda N: rnd.multivariate_normal([0,-5], np.array([[1,0],[0,1]]), size=N)
+    gaussian3 = lambda N: rnd.multivariate_normal([7,10], np.array([[1,0],[0,1]]), size=N)
+    gaussian4 = lambda N: rnd.multivariate_normal([10,-10], np.array([[1,0],[0,1]]), size=N)
     def path(N):
-        x = np.atleast_2d(rnd.uniform(0, 20, N))
-        y = np.atleast_2d(np.zeros(N))
+        x = np.atleast_2d(rnd.uniform(3, 7, N))
+        y = np.atleast_2d(0*np.ones(N))
         return np.concatenate((x.T,y.T),axis=1)
 
     def pathc(N):
         gen = circularGenerator(7.5,0.1,angle_range=(0,-m.pi))
         return np.array([7.5,0]) + gen(N)
-       
-    def gen1(N):
-        probabilities = [0, 0, 0, 1]
-        inds = rnd.choice(np.arange(1,5), size=N, p=probabilities)
-        Ns = [len(np.where(inds==i)[0]) for i in range(1,5)]
-        data = np.concatenate((gaussian1(Ns[0]), gaussian2(Ns[1]),gaussian3(Ns[2]),path(Ns[3])), axis=0)  
+
+    def getGen(N,probabilities):
+        inds = rnd.choice(np.arange(0,len(probabilities)), size=N, p=probabilities)
+        Ns = [len(np.where(inds==i)[0]) for i in range(0,len(probabilities))]
+        data = np.concatenate((gaussian1(Ns[0]), gaussian2(Ns[1]),gaussian3(Ns[2]),gaussian4(Ns[3]),path(Ns[4])), axis=0)  
         rnd.shuffle(data)
-        return data
-    
-    def gen2(N):
-        probabilities = [0, 0.5, 0.5, 0]
-        inds = rnd.choice(np.arange(1,5), size=N, p=probabilities)
-        Ns = [len(np.where(inds==i)[0]) for i in range(1,5)]
-        data = np.concatenate((gaussian1(Ns[0]), gaussian2(Ns[1]),gaussian3(Ns[2]),path(Ns[3])), axis=0) 
-        rnd.shuffle(data)
-        return data    
-    #gen2 = lambda N: gaussian3(N)
-    return generateData(gen1, gen2, Nlab, Nunl, p=0.5)
+        return data 
+
+    gen1 = lambda N: getGen(N,[0.7, 0.3, 0  , 0  , 0])        
+    gen2 = lambda N: getGen(N,[0  , 0  , 0.2, 0.2, 0.6  ])
+    return generateData(gen1, gen2, Nlab, Nunl, p=0.3)
 
 def circularGenerator(radius_mean, radius_variance, angle_range=(0,2*m.pi), angle_mean=None, angle_variance=None):
     def generator(N):
@@ -97,7 +93,7 @@ def errors(X,y,y_true,classifier):
     return train_error, test_error
 
 def plot_methods(X,y,y_true,max_iter=100):
-    methods = ['none','label-propagation','self-training']
+    methods = ['supervised','label-propagation','self-training']
     classifiers = {}
     labeled = np.where(y!=-1)[0]
     s = "           | Train error    |   Test error\n"
@@ -105,7 +101,7 @@ def plot_methods(X,y,y_true,max_iter=100):
         sslda = SSLDA_Classifier(max_iter)
         sslda.fit(X,y, method=method)
         plt.subplot('23'+str(i+1))
-        if method=='none':
+        if method=='supervised':
             data_plot(X[labeled,:],y[labeled])
         else:
             data_plot(X,y)
@@ -138,8 +134,56 @@ def contour_plot(X, classifier, n=200):
     plt.plot(L[:,0]+m1[0], L[:,1]+m1[1], c='red', linewidth=3)
     plt.plot(L[:,0]+m2[0], L[:,1]+m2[1], c='blue', linewidth=3)
 
+def getData(X,y, N1lab, N2lab, Nunl):
+    unl = bernoulli.rvs(p=0.5, size=Nunl)
+    N1unl = len(np.where(unl==0)[0])
+    N2unl = len(np.where(unl==1)[0])
+    inds1 = rnd.choice(np.where(y==0)[0],size=N1lab + N1unl, replace=False)
+    inds2 = rnd.choice(np.where(y==1)[0],size=N2lab + N2unl, replace=False)
+    train_mask = np.zeros(X.shape[0], dtype=bool)
+    train_mask[np.concatenate((inds1, inds2))] = True
+    y_train = np.concatenate((np.zeros(N1lab), -np.ones(N1unl),np.ones(N2lab), -np.ones(N2unl)))
+    X_train = X[train_mask,:]
+    X_test, y_test = X[~train_mask,:], y[~train_mask]
+    return X_train, y_train, X_test, y_test
+
+def getScore(X,y,method,Nunl, max_iter=100):
+    X_train, y_train, X_test, y_test = getData(X,y,75,75,Nunl=Nunl)
+    sslda = SSLDA_Classifier(max_iter)
+    sslda.fit(X_train,y_train, method=method)
+    return sslda.score(X_test, y_test)
+
+def spambase():
+    max_iter=100
+    repeat = 40
+    filename = 'spambase.data'
+    data = pd.read_csv(filename, sep=',',header=None).as_matrix()
+    X = data[:,:-1]
+    scale(X, axis=1, with_mean=False,copy=False)
+    y = data[:,-1]
+    #N_unlabelled = [0,10, 20,40,60, 80]
+    N_unlabelled = [0,10, 20, 40,60, 80,140,250,320,400,640,900,1280]
+    methods = ['supervised', 'self-training', 'label-propagation']
+    scores = {'supervised' : [], 'self-training' : [], 'label-propagation' : []}
+    
+    for method in methods:
+        print(method)
+        for Nunl in N_unlabelled:
+            results = np.array([getScore(X,y,method, Nunl, max_iter) for i in range(0,repeat)])
+            result = {'mean' : results.mean(), 'std' : results.std()}
+            scores[method].append(result)
+        plt.plot(N_unlabelled, [obj['mean'] for obj in scores[method]], label=method)
+    plt.legend()
+    plt.ylabel('Accuracy')
+    plt.xlabel('N_unl')
+    plt.show()
+    
+
+
 def main():
-    Nlab, Nunl = 150,1000
+    spambase()
+    """
+    Nlab, Nunl = 50,1000
     mean1, mean2 = [0,0], [0,0]
     cov1 = np.array([[10,0],[0,1]])
     cov2 = np.array([[1,0],[0,10]])
@@ -152,6 +196,7 @@ def main():
     plt.figure(1)
     plot_methods(X,y,y_true, max_iter=100)
     plt.show()
+    """
 
 if __name__ == "__main__":
     main()

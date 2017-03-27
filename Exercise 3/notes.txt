@@ -41,6 +41,31 @@ Generative Models:
 
 
 
+label-prop > self training:
+def customData1(Nlab, Nunl, p):
+    gaussian1 = lambda N: rnd.multivariate_normal([3,5], np.array([[1,0],[0,1]]), size=N)
+    gaussian2 = lambda N: rnd.multivariate_normal([0,-5], np.array([[1,0],[0,1]]), size=N)
+    gaussian3 = lambda N: rnd.multivariate_normal([7,10], np.array([[1,0],[0,1]]), size=N)
+    gaussian4 = lambda N: rnd.multivariate_normal([10,-10], np.array([[1,0],[0,1]]), size=N)
+    def path(N):
+        x = np.atleast_2d(rnd.uniform(3, 7, N))
+        y = np.atleast_2d(0*np.ones(N))
+        return np.concatenate((x.T,y.T),axis=1)
+
+    def pathc(N):
+        gen = circularGenerator(7.5,0.1,angle_range=(0,-m.pi))
+        return np.array([7.5,0]) + gen(N)
+
+    def getGen(N,probabilities):
+        inds = rnd.choice(np.arange(0,len(probabilities)), size=N, p=probabilities)
+        Ns = [len(np.where(inds==i)[0]) for i in range(0,len(probabilities))]
+        data = np.concatenate((gaussian1(Ns[0]), gaussian2(Ns[1]),gaussian3(Ns[2]),gaussian4(Ns[3]),path(Ns[4])), axis=0)  
+        rnd.shuffle(data)
+        return data 
+
+    gen1 = lambda N: getGen(N,[0.7, 0.3, 0  , 0  , 0])        
+    gen2 = lambda N: getGen(N,[0  , 0  , 0.2, 0.2, 0.6  ])
+    return generateData(gen1, gen2, Nlab, Nunl, p=0.3)
 
 Accidental succes:
 

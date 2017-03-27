@@ -22,24 +22,26 @@ class SSLDA_Classifier():
 
     # B ~ [N_samples * d_features]
     # Unlabeled data should have label -1
-    def fit(self, X, y, method='self-training', threshhold=0.7):
-        getLabel = lambda p: np.where(p>threshhold)[0][0] if np.any(p>threshhold) else -1
+    def fit(self, X, y, method='self-training', treshold=0.7):
+        getLabel = lambda p: np.where(p>treshold)[0][0] if np.any(p>treshold) else -1
         yp = copy(y) # copy of original labels
         mask = np.ones(len(y), dtype=bool)
         mask[np.where(yp==-1)[0]]=False
         lda = LinearDiscriminantAnalysis(solver='lsqr',store_covariance=True, n_components=2)
+        
+        # In case there are nu unlabelled data points do supervised learning
+        if (len(np.where(yp==-1)[0])==0):
+            method='supervised'
 
-        if method=='none':
-            print('method is none')
+        if method=='supervised':
             lda.fit(X[mask,:], yp[mask])
 
         elif method=='self-training':
-            print('method is self-training')
             counter = 0
-            while True: # Temporary
+            while True:
+                lda.fit(X[mask,:],yp[mask])
                 if len(yp[~mask])==0 or counter==self.max_iter:
                     break
-                lda.fit(X[mask,:],yp[mask])
                 probs = lda.predict_proba(X[~mask])
                 yp[~mask] = np.fromiter([getLabel(p) for p in probs], probs.dtype)
                 counter+=1
@@ -47,7 +49,6 @@ class SSLDA_Classifier():
                 mask[np.where(yp==-1)[0]]=False
 
         elif method=='label-propagation':
-            print('method is label-propagation')
             label_prop_model = LabelPropagation(kernel='knn', n_neighbors=10, alpha=0.9)
             label_prop_model.fit(X,yp)
             probs = label_prop_model.predict_proba(X[~mask])

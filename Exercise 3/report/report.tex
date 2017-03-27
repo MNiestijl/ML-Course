@@ -17,7 +17,7 @@
 			\textsc{\LARGE IN4320 Machine Learning}\\[1.25cm]
 			
 			\rule{\linewidth}{0.5mm}\\[1.0cm]
-			{\huge \bfseries Exercise Computational Learning Theory: Boosting }\\[0.6cm]
+			{\huge \bfseries Exercises: Semi-Supervised Learning }\\[0.6cm]
 			\rule{\linewidth}{0.5mm}\\[1.5cm]
 			
 			\begin{minipage}{0.4\textwidth}
@@ -33,159 +33,64 @@
 	\end{titlepage}
 	
 	\section*{a.}
-	Let $x\geq0$. then $e^{-x} \geq (1-x)$.\\
-	\subsection*{Proof:}
-	Note that $e^{-x} \geq 0$ and $e^{0} = 1$, so that the result is trivial for $x\geq 1$ and $x=0$. We assume $x \in (0,1)$. Then we have, using the Taylor series representation of $e^{-x}$:
-	\begin{equation*}
-		\begin{split}
-			e^{-x} - (1-x) &=\sum_{n=0}^{\infty}\frac{(-x)^{n}}{n!} - (1-x)\\
-			&= \sum_{n=2}^{\infty}\frac{(-x)^{n}}{n!}\\
-			&= \sum_{n=1}^{\infty}\frac{x^{2n}}{(2n)!} - \frac{x^{(2n+1)}}{(2n+1)!}\\
-			&= \sum_{n=1}^{\infty}\frac{x^{2n}}{(2n)!}\left( 1 - \frac{x}{2n + 1} \right)\\
-			&\geq 0\\
-		\end{split}
-	\end{equation*}
-	Where in the last step it was used that each term of the sum is positive for $x \in (0,1)$.
+	In these exercises, two different methods of doing semi-supervised learning on a two-class LDA classifier are investigated. We now describe both methods on an algorithmic level. Recall that the probability density function in two-class LDA is given by:
+	$$ f(x,y| \pi_{1}, \pi_{2}, \mu_{1},\mu_{2}, \Sigma) = \pi_{1}\mathcal{N}(x|\mu_{1}, \Sigma)\mathbbm{1}_{y=1} + \pi_{2}\mathcal{N}(x|\mu_{2}, \Sigma)\mathbbm{1}_{y=2}$$
+	Where $\pi_{1}, \pi_{2} \in [0,1]: \pi_{1} + \pi_{2} =1$ and $\mathcal{N}(x|\mu, \Sigma)$ corresponds to the probability density function of a normal distribution with mean $\mu$ and covariance $\Sigma$.
+	\subsection*{Supervised LDA}
+	The maximum likelihood solution of the supervised problem can be shown to be given by:
+	\begin{align*}
+		\pi_{i} &= {1 \over N} \sum_{n=1}^{N}x_{n}\mathbbm{1}_{\{y_{n}=i\}}\\
+		\mu_{i} &= \frac{\sum_{n=1}^{N}x_{n}\mathbbm{1}_{\{y_{n}=i\}}}{\sum_{n=1}^{N}\mathbbm{1}_{\{y_{n}=i\}}}\\
+		\Sigma &= {1 \over N} \sum_{n=1}^{N} \left( x_{n} - \mu_{y_{n}} \right)\left( x_{n} - \mu_{y_{n}} \right)^{T}
+	\end{align*}
+	Where $x_{i}$ and $y_{i}$ denote the feature-values and label of the $i^{\text{th}}$ training sample.
+
+	\subsection*{Self-Training}
+	The first method of extending the supervised learner to a semi-supervised setting is called 'Self-Training', which first fits LDA using only the labelled data and then iteratively assigns the predicted label to unlabelled data if the confidence is bigger than a certain threshold (set to 0.7). In pseudo-code:
+	
+	\begin{lstlisting}
+def fit_with_Self_training(X,y, max_iterations=100, treshold=0.7)
+	counter = 0
+	repeat {
+		fit LDA on labelled data
+		if (counter==max_iterations or no unlabelled data){
+			break
+		}
+		predict labels of unlabelled data
+		foreach point in unlabelled data do {
+			if (confidence>treshold):
+				label point as predicted
+		}		
+	}
+	self.covariance, self.means = result (TODO)
+	\end{lstlisting}
+	\subsection*{Label-Propagation}
+	The second method is called 'Label-propagation' \citep{propagation}, which first defines a graph on the data by specifying the weights of all edges. There are multiple ways to do this, but in our case the weight $w_{ij}$ is given by $w_{ij} = \mathbbm{1}_{kNN(x_{j})}(x_{i})$. That is, the weight of the edge connecting point $i$ to point $j$ is $1$ if $i$ is one of the k-nearest neighbours of $j$ and $0$ otherwise. Next, a transition matrix $T$ is defined by 
+	$$T_{ij} = \mathbb{P}(j \to i) = {w_{ij} \over \sum_{k} w_{kj} } $$
+	Furthermore, define a label matrix $Y$, where the $i^{\text{th}}$ row represents the probability distribution over the different classes for the $i^{\text{th}}$ data point. The propagation algorithm is shown below:
+	\begin{lstlisting}[escapeinside={(*}{*)}]
+	repeat untill convergence {
+		1. propagate: (* $Y = TY$ *)
+		2. Row-normalize (*$Y.$*)
+		3. Clamp the labelled data: (* $Y_{ic} = \delta(y_{i}, c) $*)	
+	}
+	\end{lstlisting}
+	So that the corresponding semi-supervised LDA algorithm is given by the following pseudo code:
+	\begin{lstlisting}
+def fit_with_LabelPropagation(X,y, treshold=0.7)
+	newLabels = labelPropagation(X,y)
+	LDA.fit(X,newlabels)
+	self.covariance, self.means = result (TODO)
+	\end{lstlisting}
 	
 	\section*{b.}
-	The implementation of the decision stump is shown below.
 	
-	\begin{lstlisting}[language=python, frame=l, basicstyle=\ttfamily\scriptsize]
-import numpy as np
-import math as m
-
-class DecisionStump():
-	def __init__(self, theta=None, feature=None):
-		self.theta, self.feature, self.rule, self.accuracy = theta, feature, None, None
 	
-	def predict(self, X):
-		return np.array([self.rule(x) for x in X[:,self.feature]])
 	
-	def score(self,X,y):
-		return sum([1 if fxi==y[i] else 0 for i,fxi in enumerate(self.predict(X))])/y.shape[0]
-	
-	def fit(self, X, y, w=None):
-		m,n = X.shape
-		w = np.ones(m) if w is None else w
-		accuracy = lambda x,rule: sum([w[i] if rule(xi)==y[i] else 0 for (i,xi) in enumerate(x)])/sum(w)
-		rule1 = lambda theta: lambda xi: 1 if xi<theta else -1 # Can be partially applied
-		rule2 = lambda theta: lambda xi: -1 if xi<theta else 1
-		rules=[rule1,rule2]
-		results = [(x,rule(x),f,accuracy(X[:,f],rule(x))) for f in range(0,n) for rule in rules for x in X[:,f]]
-		self.theta, self.rule, self.feature, self.accuracy = sorted(results,key=lambda tup:tup[3])[-1]
-	\end{lstlisting}
-	
-	\section*{c.}
-	To test the decision stump, data is generated from two normal distributions with the identity as covariance matrix and mean $[0,0]^{T}, [0,2]^{T}$ respectively. A scatter plot with the corresponding decision boundary is shown in figure \ref{fig:scatter}. Note that rescaling one of the features does not influence the final decision boundary.
-	
-	\begin{figure}[H]
-		\includegraphics[width = \textwidth]{Images/scatter.png}
-		\caption{Decision boundary of decision stump using data from two normal distributions with the identity as covariance matrix and mean $[0,0]^{T}, [0,2]^{T}$ respectively. In the left image, the original data was used whereas in the right image, the second feature was scaled by a factor $3$.}
-		\label{fig:scatter}
-	\end{figure}
-	
-	\section*{d.}
-	The implementation of the decision stump is tested on the dataset \texttt{optdigitsubset}. If the first 50 objects of each class are used as training data, the accuracy on the remaining test data is $0.98$. Next, the decision stump is trained using a random subset of $50$ examples and tested on the remaining data. This procedure was repeated $50$ times, resulting in a mean accuracy of $0.96$ with standard deviation $0.04$. This result indicates that the data of the two classes are (nearly) separable in at least one of the features. Thus, the high accuracy obtained when using the first 50 objects of each class as training data is not unreasonably high. The code used in this section is shown below.
-	\begin{lstlisting}[language=python, frame=l, basicstyle=\ttfamily\scriptsize]
-from sklearn.model_selection import ShuffleSplit	
-
-def cross_validate(classifier,X,y,n_splits,train_size):
-	splits = ShuffleSplit(n_splits=n_splits, train_size=train_size).split(X)
-	scores = []
-	for train_indices, test_indices in splits:
-		estimator = DecisionStump()
-		estimator.fit(X[train_indices,:], y[train_indices])
-		scores.append(estimator.score(X[test_indices,:],y[test_indices]))
-		return np.array(scores)
-
-def testDecisionStump(X,y):
-	mask = np.zeros(len(y), dtype=bool)
-	mask[np.concatenate((np.where(y==-1)[0][0:50],np.where(y==1)[0][0:50]))]=True
-	stump = DecisionStump()
-	stump.fit(X[mask,:],y[mask])
-	first = stump.score(X[~mask,:],y[~mask])
-	scores = cross_validate(DecisionStump,X,y,n_splits=50, train_size=50)
-	print("Using first 50 of both classes as training data:\nscore: {}\n".format(first))
-	print("Decision stump accuracy with random subsets:\nmean: {}, std: {}\n".format(scores.mean(),scores.std()))
-	\end{lstlisting}
-	
-	\section*{e.}
-	To whether or not the decision stump accepts and handles weights properly, data corresponding to one of the classes are weighted four times heavier. The data was generated as in \textbf{c.} The resulting decision boundaries are shown in figure \ref{weights}. It can be seen that the decision boundary favours the more heavily weighted class, as expected.
-	
-	\begin{figure}[H]
-		\includegraphics[width = \textwidth]{Images/weights.png}
-		\caption{Decision boundary of decision stump using differently weighted data. The data is obtained as in \textbf{c.}}
-		\label{weights}
-	\end{figure}
-	\newpage
-	\section*{f.}
-	The implementation of the AdaBoost algorithm is shown below.
-	
-	\begin{lstlisting}[language=python, frame=l, basicstyle=\ttfamily\scriptsize]		
-class AdaBoostClassifier():
-	def __init__(self, iterations, WeakLearner):
-		self.WeakLearner, self.learners, self.weights, self.errors, self.N = WeakLearner, [], [], [], iterations
-		self.objectWeights = []
-	
-	def expectedLabels(self,X):
-		weightedPredictions = [self.weights[l]*learner.predict(X) for l,learner in enumerate(self.learners)]
-		return np.array(weightedPredictions).sum(axis=0)
-	
-	def predict(self,X):
-		return [1 if e>0 else -1 for e in self.expectedLabels(X)]
-	
-	def score(self, X, y):
-		return sum([1 if fxi==y[i] else 0 for i,fxi in enumerate(self.predict(X))])/y.shape[0] 
-	
-	def fit(self, X, y):
-		objectWeights = lambda: np.exp(-y*self.expectedLabels(X))
-		self.learners, self.weights, self.errors, w = ([],[],[], np.ones(X.shape[0]))
-		for i in range(0,self.N):
-			newLearner = self.WeakLearner()
-			newLearner.fit(X,y,w=w)
-			error = (1-newLearner.accuracy)
-			self.weights.append(0.5*m.log(1/(error+1e-10)-1))
-			self.learners.append(newLearner)
-			totalError = 1 - self.score(X,y)
-			self.errors.append(totalError)
-			w = objectWeights()
-			if totalError<1e-5:
-				break
-		self.objectWeights = w 
-	\end{lstlisting}
-	
-	\section*{g.}
-	in figures \ref{decision_boundary1} and \ref{decision_boundary2}, the decision boundary of the classifier is shown in color after various number of iterations $N$ and the training data is plotted as a scatter plot. It can be seen that with increasing number of iterations, the prediction of the classifier agrees more and more with the training data, as expected. Furthermore, it can be seen that the more difficult/poorly predicted objects get a higher weight.
-	
-	\begin{figure}[H]
-		\includegraphics[width = \textwidth]{Images/decision_boundary.png}
-		\caption{Decision boundary after $N$ iterations. The training data is shown as a scatter plot and the yellow circles indicate the five objects with the highest weight at the last performed iteration. }
-		\label{decision_boundary1}
-	\end{figure}
-
-	\begin{figure}[H]
-		\includegraphics[width = \textwidth]{Images/decision_boundary2.png}
-		\caption{Decision boundary after $N$ iterations. The training data is shown as a scatter plot and the yellow circles indicate the five objects with the highest weight at the last performed iteration.}
-		\label{decision_boundary2}
-	\end{figure}
-	
-	\section*{h}
-	The implementation is tested on the dataset \texttt{optdigitsubset}, using the first 50 object of each class as training data and the rest as test data. The resulting accuracy is plotted for various number of maximum iterations in figure \ref{accuracy}. It can be seen that after just a few iterations, the accuracy remains approximately constant at 0.9864. Comparing this with \textbf{d.}, this result was to be expected, as it was indicated that the data is (nearly) separable.
-	
-	\begin{figure}[H]
-		\begin{center}
-			\includegraphics[scale=0.5]{Images/accuracy.png}
-			\caption{Accuracy of the AdaBoost classifier on the \texttt{optdigitsubset} dataset for various number of iterations.}
-			\label{accuracy}
-		\end{center}
-	\end{figure}
-	\newpage \noindent
-	In figure \ref{high_weight}, images that got a high weight during the fitting process are compared to three random images of the two classes. It is clear that the highly weighted images are the more difficult to classify objects, which also explains why they got a higher weight.
-	
-	\begin{figure}[H]
-		\includegraphics[width = \textwidth]{Images/images1.png}
-		\caption{The three images that got the highest weight in the fitting process compared to three images of the two classes.}
-		\label{high_weight}
-	\end{figure}
+	 
+	\bibliographystyle{authordate1}
+	\begin{bibliography}{ref}
+		
+	\end{bibliography}
 
 \end{document}
