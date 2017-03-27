@@ -153,11 +153,11 @@ def main():
     #filename = 'optdigitsubset.txt'
     #X = pd.read_csv(filename, delim_whitespace=True, header=None).as_matrix()
     #y = np.concatenate((-np.ones(554),np.ones(571)),axis=0)
-    filename = 'banana.csv'
-    X = pd.read_csv(filename, header=None).as_matrix()
-    y = np.concatenate((-np.ones(50),np.ones(50)),axis=0)
-    #N = 25
-    #X,y = generateData(N)
+    #filename = 'banana.csv'
+    #X = pd.read_csv(filename, header=None).as_matrix()
+    #y = np.concatenate((-np.ones(50),np.ones(50)),axis=0)
+    N = 30
+    X,y = generateData(N)
     #w,w1,w2 = np.ones(2*N),np.ones(2*N),np.ones(2*N)
     #w1[0:N] = 5*w1[0:N]
     #w2[0:N] = 0.25*w2[0:N]
@@ -165,7 +165,7 @@ def main():
     #plotDecisionStumpRescaled(X,y)
     #plotDecisionStumpWithWeights(X,y,weights)
     #testDecisionStump(X,y)
-    iterations = [1,5,10,20]
+    iterations = [10,20,50,500]
     plt.figure(2)
     for i,ix in enumerate(iterations):
         plt.subplot(2,2,i+1)
