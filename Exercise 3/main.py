@@ -7,6 +7,7 @@ import math as m
 import pandas as pd
 from sklearn.preprocessing import scale
 from scipy.stats import multivariate_normal, bernoulli
+from copy import copy
 
 def data_plot(X,y):
     C1, C2, Cunl = np.where(y==1)[0], np.where(y==0)[0], np.where(y==-1)[0]
@@ -83,9 +84,13 @@ def splitData(X,y, N1lab, N2lab, Nunl, p=0.5):
     inds1 = rnd.choice(np.where(y==0)[0],size=N1lab + N1unl, replace=False)
     inds2 = rnd.choice(np.where(y==1)[0],size=N2lab + N2unl, replace=False)
     train_mask = np.zeros(X.shape[0], dtype=bool)
+    train_mask_unl = np.concatenate((inds1[N1lab:], inds2[N2lab:]))
     train_mask[np.concatenate((inds1, inds2))] = True
-    y_train = np.concatenate((np.zeros(N1lab), -np.ones(N1unl),np.ones(N2lab), -np.ones(N2unl)))
     y_train_true = y[train_mask]
+    y_train = copy(y)
+    y_train[train_mask_unl] = -1
+    y_train = y_train[train_mask]
+    #y_train = np.concatenate((np.zeros(N1lab), -np.ones(N1unl),np.ones(N2lab), -np.ones(N2unl)))
     X_train = X[train_mask,:]
     X_test, y_test = X[~train_mask,:], y[~train_mask]
     return X_train, y_train,y_train_true, X_test, y_test
@@ -152,15 +157,13 @@ def plotErrors(X,y, N_unlabelled, repeat, p=0.5, max_iter=100):
         plt.title('Log-likelihood of training data')
         plt.legend()
 
-def spambase(N_unlabelled=[0, 10, 20, 40, 80, 160, 320, 640, 1280] ):
-    max_iter=100
-    repeat = 1
+def spambase(repeat, max_iter=100, N_unlabelled=[0, 10, 20, 40, 80, 160, 320, 640, 1280] ):
     filename = 'spambase.data'
     data = pd.read_csv(filename, sep=',',header=None).as_matrix()
     X = data[:,:-1]
-    scale(X, axis=1, with_mean=False,copy=False)
+    scale(X, axis=0, with_mean=False,copy=False)
     y = data[:,-1]
-    plotErrors(X,y,N_unlabelled, repeat, max_iter)
+    plotErrors(X,y,N_unlabelled, repeat, max_iter=max_iter)
 
 # gen generates N points from the respective distribution
 def generateData(gen1, gen2,N, p=0.5):
@@ -217,8 +220,11 @@ def circularGenerator(radius_mean, radius_variance, angle_range=(0,2*m.pi), angl
 
 def main():
     N_unlabelled = [0,10, 20, 40,60, 80,140,250,320,400,640,900,1280]
+    #N_unlabelled = [0,100,500]
     methods = ['supervised', 'self-training','label-propagation']
-    repeat = 2
+    repeat = 100
+    #spambase(repeat, N_unlabelled=N_unlabelled)
+    
     N1,N2, Nunl = 75, 75, 1000
     mean1, mean2 = [0,0], [0,0]
     cov1 = np.array([[10,0],[0,1]])
@@ -232,14 +238,14 @@ def main():
     X,y = customData1(N1+N2+5000, p=p)
     X_train, y_train,y_train_true, X_test, y_test = splitData(X,y,N1,N2,Nunl=Nunl, p=p)
     #plt.figure(0)
+ 
     plot_methods(X_train,y_train,y_train_true, max_iter=100)
     plotErrors(X,y,N_unlabelled, repeat, p=p,max_iter=100)
     print('Train error:')
     for method in methods:
         train_errors, test_errors = getErrors(X,y,method, Nunl, repeat,p=p)
         print('{}: {:0.3f} +- {:0.4f}'.format(method,train_errors.mean(), train_errors.std()))
-
-    #spambase(N_unlabelled=N_unlabelled)
+     
 
     plt.show()
 
