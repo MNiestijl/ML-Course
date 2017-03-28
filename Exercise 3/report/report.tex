@@ -67,7 +67,7 @@ def fit_with_Self_training(X,y, max_iterations=100, treshold=0.7)
 	\subsection*{Label-Propagation}
 	The second method is called 'Label-propagation' \citep{propagation}, which first defines a graph on the data by specifying the weights of all edges. There are multiple ways to do this, but in our case the weight $w_{ij}$ is given by $w_{ij} = \mathbbm{1}_{kNN(x_{j})}(x_{i})$. That is, the weight of the edge connecting point $i$ to point $j$ is $1$ if $i$ is one of the k-nearest neighbours of $j$ and $0$ otherwise. Next, a transition matrix $T$ is defined by 
 	$$T_{ij} = \mathbb{P}(j \to i) = {w_{ij} \over \sum_{k} w_{kj} } $$
-	Furthermore, define a label matrix $Y$, where the $i^{\text{th}}$ row represents the probability distribution over the different classes for the $i^{\text{th}}$ data point. The propagation algorithm is shown below:
+	We define a label matrix $Y$, where the $i^{\text{th}}$ row represents the probability distribution over the different classes for the $i^{\text{th}}$ data point. The propagation algorithm is shown below:
 	\begin{lstlisting}[escapeinside={(*}{*)}]
 	repeat untill convergence {
 		1. propagate: (* $Y = TY$ *)
