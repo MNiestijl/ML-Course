@@ -98,9 +98,10 @@ def splitData(X,y, N1lab, N2lab, Nunl, p=0.5):
 
 def getError(X,y,method,Nunl, N1=75, N2=75,max_iter=100, p=0.5):
     X_train, y_train, y_train_true, X_test, y_test = splitData(X,y,N1,N2,Nunl=Nunl, p=p)
+    labelled = np.where(y_train!=-1)[0]
     sslda = SSLDA_Classifier(max_iter)
     sslda.fit(X_train,y_train, method=method)
-    return 1-sslda.score(X_train, y_train_true), 1-sslda.score(X_test, y_test)
+    return 1-sslda.score(X_train[labelled,:], y_train_true[labelled]), 1-sslda.score(X_test, y_test)
 
 def getErrors(X,y,method, Nunl, repeat, max_iter=100, p=0.5):
     errors = [getError(X,y,method, Nunl, max_iter=max_iter, p=0.5) for i in range(0,repeat)]
@@ -186,13 +187,13 @@ def gaussianData(N, mean1=[0,0], cov1=np.eye(2),mean2=[0,0], cov2=np.eye(2)):
     return generateData(gaussian1, gaussian2, N)
 
 def customData1(N, p):
-    gaussian1 = lambda N: rnd.multivariate_normal([5,-10], np.array([[1,0],[0,1]]), size=N)
-    gaussian2 = lambda N: rnd.multivariate_normal([-4,0], np.array([[1,0],[0,1]]), size=N)
-    gaussian3 = lambda N: rnd.multivariate_normal([7.5,0], np.array([[1,0],[0,1]]), size=N)
-    gaussian4 = lambda N: rnd.multivariate_normal([20,0], np.array([[1,0],[0,1]]), size=N)
+    gaussian1 = lambda N: rnd.multivariate_normal([3,5], np.array([[1,0],[0,1]]), size=N)
+    gaussian2 = lambda N: rnd.multivariate_normal([-1,-2], np.array([[1,0],[0,1]]), size=N)
+    gaussian3 = lambda N: rnd.multivariate_normal([5,2], np.array([[0.2,0],[0,0.2]]), size=N)
+    gaussian4 = lambda N: rnd.multivariate_normal([12,-8], np.array([[1,0],[0,1]]), size=N)
 
     def path(N):
-        x = np.atleast_2d(rnd.uniform(0, 10, N))
+        x = np.atleast_2d(rnd.uniform(3, 7, N))
         y = np.atleast_2d(0*np.ones(N))
         return np.concatenate((x.T,y.T),axis=1)
 
@@ -204,12 +205,12 @@ def customData1(N, p):
     def getGen(N,probabilities):
         inds = rnd.choice(np.arange(0,len(probabilities)), size=N, p=probabilities)
         Ns = [len(np.where(inds==i)[0]) for i in range(0,len(probabilities))]
-        data = np.concatenate((gaussian1(Ns[0]), gaussian2(Ns[1]),gaussian3(Ns[2]),gaussian4(Ns[3]),pathc(Ns[4])), axis=0)  
+        data = np.concatenate((gaussian1(Ns[0]), gaussian2(Ns[1]),gaussian3(Ns[2]),gaussian4(Ns[3]),path(Ns[4])), axis=0)  
         rnd.shuffle(data)
         return data 
 
-    gen1 = lambda N: getGen(N,[0., 0, 1, 0, 0])        
-    gen2 = lambda N: getGen(N,[0  ,0 , 0, 0. , 1  ])
+    gen1 = lambda N: getGen(N,[0.7, 0.3, 0, 0, 0])        
+    gen2 = lambda N: getGen(N,[0  ,0 , 0.8, 0.2 , 0  ])
     return generateData(gen1, gen2, N, p=p)
 
 def circularGenerator(radius_mean, radius_variance, angle_range=(0,2*m.pi), angle_mean=None, angle_variance=None):
@@ -226,11 +227,12 @@ def circularGenerator(radius_mean, radius_variance, angle_range=(0,2*m.pi), angl
     
 
 def main():
-    #N_unlabelled = [0,10, 20, 40,60, 80,140,250,320,400,640,900,1280]
-    N_unlabelled = [0,50,100,200,300]
+    N_unlabelled = [0,10, 20, 40,60, 80,140,250,320,400,500,640,750,900,1280,1500]
+    #N_unlabelled = [0,50,100,200,300]
     methods = ['supervised', 'self-training','label-propagation']
-    repeat = 10
+    repeat = 50
     #spambase(repeat, N_unlabelled=N_unlabelled)
+ 
     N1,N2, Nunl = 75, 75, 1000
     mean1, mean2 = [0,0], [0,0]
     cov1 = np.array([[10,0],[0,1]])
@@ -240,19 +242,20 @@ def main():
     circGen = circularGenerator(radius_mean=5, radius_variance=0.5, angle_mean=m.pi/2, angle_variance=m.pi/3)
     #circGen = circularGenerator(radius_mean=5, radius_variance=0.5, angle_range=(-1/4*m.pi, 5/4*m.pi))
     #X,y = generateData(gaussGen, circGen, N1+N2, p=0.8)
-    p = 0.8
+    p = 0.5
     X,y = customData1(N1+N2+10000, p=p)
     X_train, y_train,y_train_true, X_test, y_test = splitData(X,y,N1,N2,Nunl=Nunl, p=p)
     #plt.figure(0)
  
     plot_methods(X_train,y_train,y_train_true, max_iter=100)
-    #plotErrors(X,y,N_unlabelled, repeat, p=p,max_iter=100)
+    plotErrors(X,y,N_unlabelled, repeat, p=p,max_iter=100)
     print('Train error:')
     for method in methods:
         train_errors, test_errors = getErrors(X,y,method, Nunl, repeat,p=p)
         print('{}: {:0.3f} +- {:0.4f}'.format(method,train_errors.mean(), train_errors.std()))
 
     plt.show()
+    
 
 if __name__ == "__main__":
     main()

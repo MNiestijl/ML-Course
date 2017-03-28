@@ -39,7 +39,7 @@
 	\subsection*{Supervised LDA}
 	The maximum likelihood solution of the supervised problem can be shown to be given by:
 	\begin{align*}
-		\pi_{i} &= {1 \over N} \sum_{n=1}^{N}x_{n}\mathbbm{1}_{\{y_{n}=i\}}\\
+		\pi_{i} &= {1 \over N} \sum_{n=1}^{N}x_{n}\mathbbm{1}_{\{y_{n}=i\}}\\ 
 		\mu_{i} &= \frac{\sum_{n=1}^{N}x_{n}\mathbbm{1}_{\{y_{n}=i\}}}{\sum_{n=1}^{N}\mathbbm{1}_{\{y_{n}=i\}}}\\
 		\Sigma &= {1 \over N} \sum_{n=1}^{N} \left( x_{n} - \mu_{y_{n}} \right)\left( x_{n} - \mu_{y_{n}} \right)^{T}
 	\end{align*}
@@ -62,7 +62,7 @@ def fit_with_Self_training(X,y, max_iterations=100, treshold=0.7)
 				label point as predicted
 		}		
 	}
-	self.covariance, self.means = result (TODO)
+	
 	\end{lstlisting}
 	\subsection*{Label-Propagation}
 	The second method is called 'Label-propagation' \citep{propagation}, which first defines a graph on the data by specifying the weights of all edges. There are multiple ways to do this, but in our case the weight $w_{ij}$ is given by $w_{ij} = \mathbbm{1}_{kNN(x_{j})}(x_{i})$. That is, the weight of the edge connecting point $i$ to point $j$ is $1$ if $i$ is one of the k-nearest neighbours of $j$ and $0$ otherwise. Next, a transition matrix $T$ is defined by 
@@ -80,7 +80,6 @@ def fit_with_Self_training(X,y, max_iterations=100, treshold=0.7)
 def fit_with_LabelPropagation(X,y, treshold=0.7)
 	newLabels = labelPropagation(X,y)
 	LDA.fit(X,newlabels)
-	self.covariance, self.means = result (TODO)
 	\end{lstlisting}
 	
 	\section*{b.}
