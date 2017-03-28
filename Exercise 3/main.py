@@ -111,7 +111,9 @@ def getLikelihood(X,y,method, Nunl, N1=75, N2=75, max_iter=100, p=0.5):
     X_train, y_train, y_train_true, X_test, y_test = splitData(X,y,N1,N2,Nunl=Nunl, p=p)
     sslda = SSLDA_Classifier(max_iter)
     sslda.fit(X_train,y_train, method=method)
-    return sslda.predict_log_proba(X)
+    log_proba = sslda.predict_log_proba(X)
+    loglikelihood = sum([log_proba[:,int(label)] for label in y_train_true])
+    return loglikelihood
 
 def getLikelihoods(X,y,method, Nunl, repeat, max_iter=100, p=0.5):
     likelihoods = [getLikelihood(X,y,method, Nunl, max_iter=max_iter, p=p) for i in range(0,repeat)]
@@ -181,12 +183,13 @@ def gaussianData(N, mean1=[0,0], cov1=np.eye(2),mean2=[0,0], cov2=np.eye(2)):
     return generateData(gaussian1, gaussian2, N)
 
 def customData1(N, p):
-    gaussian1 = lambda N: rnd.multivariate_normal([3,5], np.array([[1,0],[0,1]]), size=N)
-    gaussian2 = lambda N: rnd.multivariate_normal([-1,-2], np.array([[1,0],[0,1]]), size=N)
+    gaussian1 = lambda N: rnd.multivariate_normal([3,9], np.array([[1,0],[0,1]]), size=N)
+    gaussian2 = lambda N: rnd.multivariate_normal([0,-2], np.array([[1,0],[0,1]]), size=N)
     gaussian3 = lambda N: rnd.multivariate_normal([7,10], np.array([[1,0],[0,1]]), size=N)
-    gaussian4 = lambda N: rnd.multivariate_normal([12,-8], np.array([[1,0],[0,1]]), size=N)
+    gaussian4 = lambda N: rnd.multivariate_normal([15,-5], np.array([[1,0],[0,1]]), size=N)
+
     def path(N):
-        x = np.atleast_2d(rnd.uniform(3, 7, N))
+        x = np.atleast_2d(rnd.uniform(-3, 20, N))
         y = np.atleast_2d(0*np.ones(N))
         return np.concatenate((x.T,y.T),axis=1)
 
@@ -202,7 +205,7 @@ def customData1(N, p):
         return data 
 
     gen1 = lambda N: getGen(N,[0.75, 0.25, 0  , 0  , 0])        
-    gen2 = lambda N: getGen(N,[0  , 0  , 0, 0.25, 0.75  ])
+    gen2 = lambda N: getGen(N,[0  , 0  , 0, 0.2, 0.8  ])
     return generateData(gen1, gen2, N, p=p)
 
 def circularGenerator(radius_mean, radius_variance, angle_range=(0,2*m.pi), angle_mean=None, angle_variance=None):
@@ -222,9 +225,10 @@ def main():
     N_unlabelled = [0,10, 20, 40,60, 80,140,250,320,400,640,900,1280]
     #N_unlabelled = [0,100,500]
     methods = ['supervised', 'self-training','label-propagation']
-    repeat = 100
-    #spambase(repeat, N_unlabelled=N_unlabelled)
-    
+    repeat = 5
+    spambase(repeat, N_unlabelled=N_unlabelled)
+
+    """
     N1,N2, Nunl = 75, 75, 1000
     mean1, mean2 = [0,0], [0,0]
     cov1 = np.array([[10,0],[0,1]])
@@ -234,7 +238,7 @@ def main():
     circGen = circularGenerator(radius_mean=5, radius_variance=0.5, angle_mean=m.pi/2, angle_variance=m.pi/3)
     #circGen = circularGenerator(radius_mean=5, radius_variance=0.5, angle_range=(-1/4*m.pi, 5/4*m.pi))
     #X,y = generateData(gaussGen, circGen, N1+N2, p=0.8)
-    p = 0.5
+    p = 0.7
     X,y = customData1(N1+N2+5000, p=p)
     X_train, y_train,y_train_true, X_test, y_test = splitData(X,y,N1,N2,Nunl=Nunl, p=p)
     #plt.figure(0)
@@ -245,7 +249,7 @@ def main():
     for method in methods:
         train_errors, test_errors = getErrors(X,y,method, Nunl, repeat,p=p)
         print('{}: {:0.3f} +- {:0.4f}'.format(method,train_errors.mean(), train_errors.std()))
-     
+     """
 
     plt.show()
 
