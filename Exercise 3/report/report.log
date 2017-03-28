@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2016.5.29)  28 MAR 2017 20:46
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2016.5.29)  28 MAR 2017 21:38
 entering extended mode
 **report.tex
 (report.tex
@@ -825,49 +825,47 @@ File: omlpcr.fd
 LaTeX Font Info:    Font shape `OML/pcr/m/n' in size <8> not available
 (Font)              Font shape `OML/cmm/m/it' tried instead on input line 61.
  [1]
-<Images/spambase_train_error.png, id=27, 1233.6489pt x 605.6226pt>
-File: Images/spambase_train_error.png Graphic file (type png)
+<Images/spambase_train_error_both.png, id=27, 898.85812pt x 287.57437pt>
+File: Images/spambase_train_error_both.png Graphic file (type png)
 
-<use Images/spambase_train_error.png>
-Package pdftex.def Info: Images/spambase_train_error.png used on input line 95.
+<use Images/spambase_train_error_both.png>
+Package pdftex.def Info: Images/spambase_train_error_both.png used on input lin
+e 90.
+(pdftex.def)             Requested size: 494.37349pt x 158.16638pt.
 
-(pdftex.def)             Requested size: 370.09753pt x 181.68817pt.
-
-Underfull \hbox (badness 10000) in paragraph at lines 90--99
-
+Overfull \hbox (22.05754pt too wide) in paragraph at lines 90--91
+ [] 
  []
 
 <Images/spambase_likelihood.png, id=29, 1233.6489pt x 605.6226pt>
 File: Images/spambase_likelihood.png Graphic file (type png)
 
 <use Images/spambase_likelihood.png>
-Package pdftex.def Info: Images/spambase_likelihood.png used on input line 103.
-
-(pdftex.def)             Requested size: 370.09753pt x 181.68817pt.
- [2 <./Images/spambase_train_error.png>]
+Package pdftex.def Info: Images/spambase_likelihood.png used on input line 98.
+(pdftex.def)             Requested size: 394.77571pt x 193.80319pt.
+ [2 <./Images/spambase_train_error_both.png> <./Images/spambase_likelihood.png>
+]
 <Images/custom1.png, id=37, 1233.6489pt x 605.6226pt>
 File: Images/custom1.png Graphic file (type png)
  <use Images/custom1.png>
-Package pdftex.def Info: Images/custom1.png used on input line 116.
+Package pdftex.def Info: Images/custom1.png used on input line 111.
 (pdftex.def)             Requested size: 370.09753pt x 181.68817pt.
 
 <Images/custom1_train_error.png, id=38, 1233.6489pt x 605.6226pt>
 File: Images/custom1_train_error.png Graphic file (type png)
 
 <use Images/custom1_train_error.png>
-Package pdftex.def Info: Images/custom1_train_error.png used on input line 124.
+Package pdftex.def Info: Images/custom1_train_error.png used on input line 119.
 
 (pdftex.def)             Requested size: 370.09753pt x 181.68817pt.
- [3 <./Images/spambase_likelihood.png> <./Images/custom1.png>] (report.bbl [4 <
-./Images/custom1_train_error.png>])
-[5
+ (report.bbl [3 <./Images/custom1.png> <./Images/custom1_train_error.png>]) [4
 
 ] (report.aux) ) 
 Here is how much of TeX's memory you used:
- 18059 strings out of 493698
- 346517 string characters out of 3144412
+ 18055 strings out of 493698
+ 346487 string characters out of 3144412
  489510 words of memory out of 3000000
- 21206 multiletter control sequences out of 15000+200000
+ 21202 multiletter control sequences out of 15000+200000
  15894 words of font info for 64 fonts, out of 3000000 for 9000
  1025 hyphenation exceptions out of 8191
  44i,10n,42p,10388b,1512s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -893,9 +891,9 @@ cm/cmsy8.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmti10
 /Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmtt10.pfb><C:/Program
  Files/MiKTeX 2.9/fonts/type1/public/amsfonts/symbols/msbm10.pfb><C:/Program Fi
 les/MiKTeX 2.9/fonts/type1/urw/courier/ucrr8a.pfb>
-Output written on report.pdf (6 pages, 533785 bytes).
+Output written on report.pdf (5 pages, 525158 bytes).
 PDF statistics:
- 124 PDF objects out of 1000 (max. 8388607)
+ 121 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  21 words of extra memory for PDF output out of 10000 (max. 10000000)
 

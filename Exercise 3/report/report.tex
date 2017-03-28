@@ -62,7 +62,6 @@ def fit_with_Self_training(X,y, max_iterations=100, treshold=0.7)
 				label point as predicted
 		}		
 	}
-	self.covariance, self.means = result (TODO)
 	\end{lstlisting}
 	\subsection*{Label-Propagation}
 	The second method is called 'Label-propagation' \citep{propagation}, which first defines a graph on the data by specifying the weights of all edges. There are multiple ways to do this, but in our case the weight $w_{ij}$ is given by $w_{ij} = \mathbbm{1}_{kNN(x_{j})}(x_{i})$. That is, the weight of the edge connecting point $i$ to point $j$ is $1$ if $i$ is one of the k-nearest neighbours of $j$ and $0$ otherwise. Next, a transition matrix $T$ is defined by 
@@ -80,27 +79,23 @@ def fit_with_Self_training(X,y, max_iterations=100, treshold=0.7)
 def fit_with_LabelPropagation(X,y, treshold=0.7)
 	newLabels = labelPropagation(X,y)
 	LDA.fit(X,newlabels)
-	self.covariance, self.means = result (TODO)
 	\end{lstlisting}
 	
 	\section*{b. and c.}
 	The algorithm is tested on set \texttt{Spambase Data Set} from the UCI repository\footnote{See http://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.data}.
 	First the features are standardized, i.e., they are rescaled to have unit variance. As training data, a subset of the dataset is used, containing 75 random samples from each class and a varying number of unlabelled data points. We test the various implementations on the training data. Repeating the experiment a total of 50 times, the mean of the training error and the log-likelihood of the labelled data is plotted against the number of unlabelled samples in the training data. The corresponding standard deviations are shown as error bars. The result can be seen in figures \ref{spambase_error} and \ref{spambase_likelihood}. We see that the error on the training data increases for increasing number of unlabelled samples. This is not necessarily unexpected, as this may happen if the assumptions of the model are not valid. That is, the data may not be well modelled by two Gaussian distributions (with equal covariance).
 
-	\textbf{FOR SUPERVISED CLASSIFICATION, THE TRAINING ERROR IS NOT CONSTANT AS IT PREDICTS ON UNLABELLED SAMPLES TOO}\\
-	\textbf{SHOULD ONLY PREDICT LABELLED SAMPLES RIGHT?}
-	\\
 	\begin{figure}[H]
 		\begin{center}
-			\includegraphics[scale=0.3]{Images/spambase_train_error.png}
-			\caption{Error on the training data versus number of unlabelled samples, for various implementations of semi-supervised LDA.}
+			\includegraphics[scale=0.55]{Images/spambase_train_error_both.png}
+			\caption{Error on the training data versus number of unlabelled samples, for various implementations of semi-supervised LDA. The left image shows the error on only the labelled data whereas the right image shows the error on the entire training set}
 			\label{spambase_error}
 		\end{center}
 	\end{figure}
 
 	\begin{figure}[H]
 		\begin{center}
-			\includegraphics[scale=0.3]{Images/spambase_likelihood.png}
+			\includegraphics[scale=0.32]{Images/spambase_likelihood.png}
 			\caption{Log-likelihood of the labelled samples in the training data versus number of unlabelled data points, for various implementations of semi-supervised LDA.}
 			\label{spambase_likelihood}
 		\end{center}
