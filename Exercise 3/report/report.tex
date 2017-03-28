@@ -83,9 +83,49 @@ def fit_with_LabelPropagation(X,y, treshold=0.7)
 	self.covariance, self.means = result (TODO)
 	\end{lstlisting}
 	
-	\section*{b.}
+	\section*{b. and c.}
+	The algorithm is tested on set \texttt{Spambase Data Set} from the UCI repository\footnote{See http://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.data}.
+	First the features are standardized, i.e., they are rescaled to have unit variance. As training data, a subset of the dataset is used, containing 75 random samples from each class and a varying number of unlabelled data points. We test the various implementations on the training data. Repeating the experiment a total of 50 times, the mean of the training error and the log-likelihood of the labelled data is plotted against the number of unlabelled samples in the training data. The corresponding standard deviations are shown as error bars. The result can be seen in figures \ref{spambase_error} and \ref{spambase_likelihood}. We see that the error on the training data increases for increasing number of unlabelled samples. This is not necessarily unexpected, as this may happen if the assumptions of the model are not valid. That is, the data may not be well modelled by two Gaussian distributions (with equal covariance).
+
+	\textbf{FOR SUPERVISED CLASSIFICATION, THE TRAINING ERROR IS NOT CONSTANT AS IT PREDICTS ON UNLABELLED SAMPLES TOO}\\
+	\textbf{SHOULD ONLY PREDICT LABELLED SAMPLES RIGHT?}
+	\\
+	\begin{figure}[H]
+		\begin{center}
+			\includegraphics[scale=0.3]{Images/spambase_train_error.png}
+			\caption{Error on the training data versus number of unlabelled samples, for various implementations of semi-supervised LDA.}
+			\label{spambase_error}
+		\end{center}
+	\end{figure}
+
+	\begin{figure}[H]
+		\begin{center}
+			\includegraphics[scale=0.3]{Images/spambase_likelihood.png}
+			\caption{Log-likelihood of the labelled samples in the training data versus number of unlabelled data points, for various implementations of semi-supervised LDA.}
+			\label{spambase_likelihood}
+		\end{center}
+	\end{figure}
 	
+	\textbf{d.}
+	We construct two datasets, such that the performance of one of the two methods for semi-supervised learning is worse than the supervised learner.\\
+	\textbf{TODO: explanation of the distributions}\\
+	A dataset drawn from the first custom distribution, along with the predictions of the various methods is shown in figure \ref{custom_1_dist}. It can be seen that the error on the training data get significantly worse for the self-training algorithm, whereas the label-propagation method performs similar to the supervised method. This is made even more clear in figure \ref{custom_1}, where the training error is plotted versus the number of unlabelled data.
 	
+	\begin{figure}[H]
+		\begin{center}
+			\includegraphics[scale=0.3]{Images/custom1.png}
+			\caption{Distributions and predicted labels for various methods of semi-supervised LDA. The ellipses represent the covariance matrices of the normal distributions, centered around the corresponding mean.}
+			\label{custom_1_dist}
+		\end{center}
+	\end{figure}	
+	
+	\begin{figure}[H]
+		\begin{center}
+			\includegraphics[scale=0.3]{Images/custom1_train_error.png}
+			\caption{Training error on the first custom distribution versus number of unlabelled samples, for various implementations of semi-supervised LDA.}
+			\label{custom_1}
+		\end{center}
+	\end{figure}
 	
 	 
 	\bibliographystyle{authordate1}
