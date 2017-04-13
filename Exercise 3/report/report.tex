@@ -66,7 +66,8 @@ def fit_with_Self_training(X,y, max_iterations=100, treshold=0.7)
 	\subsection*{Label-Propagation}
 	The second method is called 'Label-propagation' \citep{propagation}, which first defines a graph on the data by specifying the weights of all edges. There are multiple ways to do this, but in our case the weight $w_{ij}$ is given by $w_{ij} = \mathbbm{1}_{kNN(x_{j})}(x_{i})$. That is, the weight of the edge connecting point $i$ to point $j$ is $1$ if $i$ is one of the k-nearest neighbours of $j$ and $0$ otherwise. Next, a transition matrix $T$ is defined by 
 	$$T_{ij} = \mathbb{P}(j \to i) = {w_{ij} \over \sum_{k} w_{kj} } $$
-	We define a label matrix $Y$, where the $i^{\text{th}}$ row represents the probability distribution over the different classes for the $i^{\text{th}}$ data point. The propagation algorithm is shown below:
+	We define a label matrix $Y$, where the $i^{\text{th}}$ row represents the probability distribution over the different classes for the $i^{\text{th}}$ data point. The algorithm iteratively calculates the label matrix after letting the labels propagate according to the transition matrix, while fixing the distribution over the different classes for the labelled samples throughout the process. The propagation algorithm is shown below:
+	\newpage
 	\begin{lstlisting}[escapeinside={(*}{*)}]
 	repeat untill convergence {
 		1. propagate: (* $Y = TY$ *)
@@ -95,21 +96,26 @@ def fit_with_LabelPropagation(X,y, treshold=0.7)
 
 	\begin{figure}[H]
 		\begin{center}
-			\includegraphics[scale=0.32]{Images/spambase_likelihood.png}
+			\includegraphics[scale=0.3]{Images/spambase_likelihood.png}
 			\caption{Log-likelihood of the labelled samples in the training data versus number of unlabelled data points, for various implementations of semi-supervised LDA.}
 			\label{spambase_likelihood}
 		\end{center}
 	\end{figure}
 	
 	\textbf{d.}
-	We construct two datasets, such that the performance of one of the two methods for semi-supervised learning is worse than the supervised learner.\\
-	\textbf{TODO: explanation of the distributions}\\
-	A dataset drawn from the first custom distribution, along with the predictions of the various methods is shown in figure \ref{custom_1_dist}. It can be seen that the error on the training data get significantly worse for the self-training algorithm, whereas the label-propagation method performs similar to the supervised method. This is made even more clear in figure \ref{custom_1}, where the training error is plotted versus the number of unlabelled data.
+	We construct two datasets, such that the performance of one of the two methods for semi-supervised learning is worse than the supervised learner.\\\\
+	Let $C \sim Ber({1 \over 2})$, $Z_{1} \sim Ber(0.3)$ and $Z_{2} \sim~ Ber(0.2)$. Let $X$ be a random variable distributed as:
+	\begin{align*}
+		X &\sim \left[ \mathcal{N}([3,5],I_{2})\mathbbm{1}_{\{Z_{1}=0\}} + \mathcal{N}([-1,2],I_{2})\mathbbm{1}_{\{Z_{1}=1\}}\right]\mathbbm{1}_{\{ C=0 \}}\\
+		&+ \left[ \mathcal{N}([5,2],I_{2})\mathbbm{1}_{\{Z_{2}=0\}} + \mathcal{N}([12,-8],I_{2})\mathbbm{1}_{\{Z_{2}=1\}}\right]\mathbbm{1}_{\{ C=1 \}}
+	\end{align*}
+	A dataset drawn from the first custom distribution, along with the predictions of the various methods is shown in figure \ref{custom_1_dist}. It can be seen that the error on the training data gets significantly worse for the self-training algorithm, whereas the label-propagation method performs similar to the supervised method. This is made even more clear in figure \ref{custom_1}, where the training error is plotted versus the number of unlabelled data. \\
+	\indent The self-training algorithm iteratively labels unlabelled samples red in the two red clusters. The same can't be done for the blue labels that are near the red cluster as the confidence is not high enough. Eventually, the red labels start to dominate causing the entire blue cluster to be predicted as red labels. The label-propagation algorithm on the other hand, also labels the unlabelled samples in the upper blue cluster blue before finally fitting the LDA, as the labels are propagated to the k nearest neighbours for each point. This explains the difference in performance.
 	
 	\begin{figure}[H]
 		\begin{center}
 			\includegraphics[scale=0.3]{Images/custom1.png}
-			\caption{Distributions and predicted labels for various methods of semi-supervised LDA. The ellipses represent the covariance matrices of the normal distributions, centered around the corresponding mean.}
+			\caption{Scatter plot of dataset or predicted labels for various methods of semi-supervised LDA. The ellipses represent the covariance matrices of the normal distributions, centered around the corresponding mean.}
 			\label{custom_1_dist}
 		\end{center}
 	\end{figure}	
@@ -122,6 +128,23 @@ def fit_with_LabelPropagation(X,y, treshold=0.7)
 		\end{center}
 	\end{figure}
 	
+	A dataset drawn from the second distribution is plotted in figure \ref{custom_2_dist}. It can be seen that the self-training algorithm performs significantly better than the other two. This is further verified in figure \ref{custom_2}. This is explained by the fact that the problem is not linearly separable. The label-propagation algorithm labels all the samples correctly in the propagation step, but then tries to fit two-class LDA, which inherently results in poor performance due to the nature of the dataset. On the other hand, the self-training algorithm iteratively labels the unlabelled samples red but does not label as many data points in the right-most cluster blue due to a lack of confidence. Therefore, eventually the blue cluster on the right is also predicted red, which results in all red samples being predicted correctly.
+	
+	\begin{figure}[H]
+		\begin{center}
+			\includegraphics[scale=0.3]{Images/custom2.png}
+			\caption{Scatter plot of dataset or predicted labels for various methods of semi-supervised LDA. The ellipses represent the covariance matrices of the normal distributions, centered around the corresponding mean.}
+			\label{custom_2_dist}
+		\end{center}
+	\end{figure}	
+	
+	\begin{figure}[H]
+		\begin{center}
+			\includegraphics[scale=0.3]{Images/custom_2_train_error.png}
+			\caption{Training error on the second custom distribution versus number of unlabelled samples, for various implementations of semi-supervised LDA.}
+			\label{custom_2}
+		\end{center}
+	\end{figure}
 	 
 	\bibliographystyle{authordate1}
 	\begin{bibliography}{ref}
