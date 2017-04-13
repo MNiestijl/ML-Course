@@ -57,10 +57,10 @@ def plot_methods(X,y,y_true,max_iter=100):
     data_plot(X, y_true)
     plt.title('True labels')
     plt.subplot('235')
-    #data_plot(X,classifiers['label-propagation'].propagated_labels)
-    #plt.title('Propagation of labels')
-    data_plot(X,classifiers['label-propagation'].predict(X))
-    plt.title('Label-prop: Predicted labels')
+    data_plot(X,classifiers['label-propagation'].propagated_labels)
+    plt.title('Propagation of labels')
+    #data_plot(X,classifiers['label-propagation'].predict(X))
+    #plt.title('Label-prop: Predicted labels')
     plt.subplot('236')
     data_plot(X, classifiers['self-training'].predict(X))
     plt.title('Self-training: Predicted labels')
@@ -188,29 +188,29 @@ def gaussianData(N, mean1=[0,0], cov1=np.eye(2),mean2=[0,0], cov2=np.eye(2)):
 
 def customData1(N, p):
     gaussian1 = lambda N: rnd.multivariate_normal([3,5], np.array([[1,0],[0,1]]), size=N)
-    gaussian2 = lambda N: rnd.multivariate_normal([-1,-2], np.array([[1,0],[0,1]]), size=N)
-    gaussian3 = lambda N: rnd.multivariate_normal([5,2], np.array([[0.2,0],[0,0.2]]), size=N)
+    gaussian2 = lambda N: rnd.multivariate_normal([-1,2], np.array([[1,0],[0,1]]), size=N)
+    gaussian3 = lambda N: rnd.multivariate_normal([5,2], np.array([[1,0],[0,1]]), size=N)
     gaussian4 = lambda N: rnd.multivariate_normal([12,-8], np.array([[1,0],[0,1]]), size=N)
 
     def path(N):
-        x = np.atleast_2d(rnd.uniform(3, 7, N))
+        x = np.atleast_2d(rnd.uniform(1, 7, N))
         y = np.atleast_2d(0*np.ones(N))
         return np.concatenate((x.T,y.T),axis=1)
 
     def pathc(N):
-        gen = circularGenerator(7.5,0.1,angle_range=(0,-m.pi))
-        gen = circularGenerator(7.5,0.1,angle_mean=-m.pi/2, angle_variance=m.pi/4)
-        return np.array([7.5,0]) + gen(N)
+        #gen = circularGenerator(7.5,0.1,angle_range=(0,-m.pi))
+        gen = circularGenerator(radius_mean=7, radius_variance=0.1, angle_mean=5/6*m.pi, angle_variance=m.pi/4)
+        return np.array([-3,4]) + gen(N)
 
     def getGen(N,probabilities):
         inds = rnd.choice(np.arange(0,len(probabilities)), size=N, p=probabilities)
         Ns = [len(np.where(inds==i)[0]) for i in range(0,len(probabilities))]
-        data = np.concatenate((gaussian1(Ns[0]), gaussian2(Ns[1]),gaussian3(Ns[2]),gaussian4(Ns[3]),path(Ns[4])), axis=0)  
+        data = np.concatenate((gaussian1(Ns[0]), gaussian2(Ns[1]),gaussian3(Ns[2]),gaussian4(Ns[3]),pathc(Ns[4])), axis=0)  
         rnd.shuffle(data)
         return data 
 
-    gen1 = lambda N: getGen(N,[0.7, 0.3, 0, 0, 0])        
-    gen2 = lambda N: getGen(N,[0  ,0 , 0.8, 0.2 , 0  ])
+    gen1 = lambda N: getGen(N,[0.7 , 0.3 , 0, 0, 0, 0])        
+    gen2 = lambda N: getGen(N,[0 , 0 , 0.8, 0.2 , 0  ])
     return generateData(gen1, gen2, N, p=p)
 
 def circularGenerator(radius_mean, radius_variance, angle_range=(0,2*m.pi), angle_mean=None, angle_variance=None):
@@ -227,13 +227,13 @@ def circularGenerator(radius_mean, radius_variance, angle_range=(0,2*m.pi), angl
     
 
 def main():
-    N_unlabelled = [0,10, 20, 40,60, 80,140,250,320,400,500,640,750,900,1280,1500]
+    N_unlabelled = [0,10, 20, 40,60, 80,140,250,320,400,500,640,750,900,1280]
     #N_unlabelled = [0,50,100,200,300]
     methods = ['supervised', 'self-training','label-propagation']
-    repeat = 50
+    repeat = 5
     #spambase(repeat, N_unlabelled=N_unlabelled)
  
-    N1,N2, Nunl = 75, 75, 1000
+    N1,N2, Nunl = 75, 75, 1200
     mean1, mean2 = [0,0], [0,0]
     cov1 = np.array([[10,0],[0,1]])
     cov2 = np.array([[1,0],[0,10]])
@@ -242,7 +242,7 @@ def main():
     circGen = circularGenerator(radius_mean=5, radius_variance=0.5, angle_mean=m.pi/2, angle_variance=m.pi/3)
     #circGen = circularGenerator(radius_mean=5, radius_variance=0.5, angle_range=(-1/4*m.pi, 5/4*m.pi))
     #X,y = generateData(gaussGen, circGen, N1+N2, p=0.8)
-    p = 0.5
+    p = 0.2
     X,y = customData1(N1+N2+10000, p=p)
     X_train, y_train,y_train_true, X_test, y_test = splitData(X,y,N1,N2,Nunl=Nunl, p=p)
     #plt.figure(0)
