@@ -1,7 +1,7 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2016.5.29)  29 MAR 2017 00:00
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2016.5.29)  27 FEB 2017 14:22
 entering extended mode
-**report.tex
-(report.tex
+**template.tex
+(template.tex
 LaTeX2e <2014/05/01>
 Babel <3.9l> and hyphenation patterns for 68 languages loaded.
 ("C:\Program Files\MiKTeX 2.9\tex\latex\base\report.cls"
@@ -700,7 +700,7 @@ Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
 \Gm@layoutvoffset=\dimen196
 \Gm@dimlist=\toks31
 
-("C:\Program Files\MiKTeX 2.9\tex\latex\geometry\geometry.cfg")) (report.aux)
+("C:\Program Files\MiKTeX 2.9\tex\latex\geometry\geometry.cfg")) (template.aux)
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 12.
 LaTeX Font Info:    ... okay on input line 12.
 LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 12.
@@ -715,7 +715,6 @@ LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 12.
 LaTeX Font Info:    ... okay on input line 12.
 LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 12.
 LaTeX Font Info:    Try loading font information for TS1+cmr on input line 12.
-
 ("C:\Program Files\MiKTeX 2.9\tex\latex\base\ts1cmr.fd"
 File: ts1cmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
@@ -796,125 +795,102 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
  [1
 
 {C:/ProgramData/MiKTeX/2.9/pdftex/config/pdftex.map}]
-LaTeX Font Info:    Try loading font information for U+bbm on input line 37.
+LaTeX Font Info:    Try loading font information for U+bbm on input line 53.
 
 ("C:\Program Files\MiKTeX 2.9\tex\latex\bbm\ubbm.fd"
 File: ubbm.fd 1999/03/15 V 1.2 Font definition for bbm font - TH
 )
+Underfull \hbox (badness 10000) in paragraph at lines 89--92
 
-Package amsmath Warning: Foreign command \over;
-(amsmath)                \frac or \genfrac should be used instead
-(amsmath)                 on input line 45.
+ []
 
-LaTeX Font Info:    Try loading font information for OT1+pcr on input line 51.
+[1
+
+] <Images/loss_function1.png, id=24, 578.16pt x 433.62pt>
+File: Images/loss_function1.png Graphic file (type png)
+
+<use Images/loss_function1.png>
+Package pdftex.def Info: Images/loss_function1.png used on input line 110.
+(pdftex.def)             Requested size: 404.70924pt x 303.53192pt.
+ [2 <./Images/loss_function1.png>]
+<Images/contour_plot.png, id=30, 772.38562pt x 627.84563pt>
+File: Images/contour_plot.png Graphic file (type png)
+
+<use Images/contour_plot.png>
+Package pdftex.def Info: Images/contour_plot.png used on input line 138.
+(pdftex.def)             Requested size: 472.31595pt x 383.92412pt.
+ [3]
+<Images/figure_1.png, id=34, 811.53188pt x 591.71063pt>
+File: Images/figure_1.png Graphic file (type png)
+
+<use Images/figure_1.png>
+Package pdftex.def Info: Images/figure_1.png used on input line 151.
+(pdftex.def)             Requested size: 472.31595pt x 344.3842pt.
+ [4 <./Images/contour_plot.png>]
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 156.
+
+
 ("C:\Program Files\MiKTeX 2.9\tex\latex\psnfss\ot1pcr.fd"
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
-LaTeX Font Info:    Try loading font information for OMS+pcr on input line 54.
+LaTeX Font Info:    Try loading font information for OT1+ptm on input line 161.
 
-("C:\Program Files\MiKTeX 2.9\tex\latex\psnfss\omspcr.fd"
-File: omspcr.fd 
+
+("C:\Program Files\MiKTeX 2.9\tex\latex\psnfss\ot1ptm.fd"
+File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
 )
-LaTeX Font Info:    Font shape `OMS/pcr/m/n' in size <8> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 54.
-LaTeX Font Info:    Try loading font information for OML+pcr on input line 61.
+LaTeX Font Info:    Try loading font information for TS1+ptm on input line 161.
+
+
+("C:\Program Files\MiKTeX 2.9\tex\latex\psnfss\ts1ptm.fd"
+File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
+)
+LaTeX Font Info:    Try loading font information for TS1+pcr on input line 161.
+
+
+("C:\Program Files\MiKTeX 2.9\tex\latex\psnfss\ts1pcr.fd"
+File: ts1pcr.fd 2001/06/04 font definitions for TS1/pcr.
+)
+LaTeX Font Info:    Try loading font information for OML+pcr on input line 174.
+
 
 ("C:\Program Files\MiKTeX 2.9\tex\latex\psnfss\omlpcr.fd"
 File: omlpcr.fd 
 )
 LaTeX Font Info:    Font shape `OML/pcr/m/n' in size <8> not available
-(Font)              Font shape `OML/cmm/m/it' tried instead on input line 61.
- [1]
-<Images/spambase_train_error_both.png, id=25, 898.85812pt x 287.57437pt>
-File: Images/spambase_train_error_both.png Graphic file (type png)
-
-<use Images/spambase_train_error_both.png>
-Package pdftex.def Info: Images/spambase_train_error_both.png used on input lin
-e 91.
-(pdftex.def)             Requested size: 494.37349pt x 158.16638pt.
-
-Overfull \hbox (22.05754pt too wide) in paragraph at lines 91--92
- [] 
- []
-
-<Images/spambase_likelihood.png, id=27, 1233.6489pt x 605.6226pt>
-File: Images/spambase_likelihood.png Graphic file (type png)
-
-<use Images/spambase_likelihood.png>
-Package pdftex.def Info: Images/spambase_likelihood.png used on input line 99.
-(pdftex.def)             Requested size: 370.09753pt x 181.68817pt.
- [2 <./Images/spambase_train_error_both.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 105--108
-
- []
-
-<Images/custom1.png, id=36, 1233.6489pt x 605.6226pt>
-File: Images/custom1.png Graphic file (type png)
- <use Images/custom1.png>
-Package pdftex.def Info: Images/custom1.png used on input line 117.
-(pdftex.def)             Requested size: 370.09753pt x 181.68817pt.
-
-<Images/custom1_train_error.png, id=37, 1233.6489pt x 605.6226pt>
-File: Images/custom1_train_error.png Graphic file (type png)
-
-<use Images/custom1_train_error.png>
-Package pdftex.def Info: Images/custom1_train_error.png used on input line 125.
-
-(pdftex.def)             Requested size: 370.09753pt x 181.68817pt.
- [3 <./Images/spambase_likelihood.png> <./Images/custom1.png>] <Images/custom2.
-png, id=45, 1300.86pt x 724.8681pt>
-File: Images/custom2.png Graphic file (type png)
-
-<use Images/custom2.png>
-Package pdftex.def Info: Images/custom2.png used on input line 135.
-(pdftex.def)             Requested size: 390.26102pt x 217.4621pt.
-
-<Images/custom_2_train_error.png, id=46, 578.16pt x 433.62pt>
-File: Images/custom_2_train_error.png Graphic file (type png)
-
-<use Images/custom_2_train_error.png>
-Package pdftex.def Info: Images/custom_2_train_error.png used on input line 143
-.
-(pdftex.def)             Requested size: 173.44933pt x 130.087pt.
- [4 <./Images/custom1_train_error.png> <./Images/custom2.png>] (report.bbl [5 <
-./Images/custom_2_train_error.png>])
-[6
-
-] (report.aux) ) 
+(Font)              Font shape `OML/cmm/m/it' tried instead on input line 174.
+ [5 <./Images/figure_1.png>] (template.aux) ) 
 Here is how much of TeX's memory you used:
- 18069 strings out of 493698
- 346816 string characters out of 3144412
- 485510 words of memory out of 3000000
- 21214 multiletter control sequences out of 15000+200000
- 15894 words of font info for 64 fonts, out of 3000000 for 9000
+ 18097 strings out of 493698
+ 346880 string characters out of 3144412
+ 493512 words of memory out of 3000000
+ 21246 multiletter control sequences out of 15000+200000
+ 13797 words of font info for 50 fonts, out of 3000000 for 9000
  1025 hyphenation exceptions out of 8191
- 44i,10n,42p,10388b,1237s stack positions out of 5000i,500n,10000p,200000b,50000s
-{C:/Program Files/MiKTeX 2.9/fonts/enc/dvips/fontname/8r.enc} <
-C:\Users\Milan\AppData\Local\MiKTeX\2.9\fonts\pk\ljfour\public\bbm\dpi600\bbm10
-.pk><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/
-Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Program 
-Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmcsc10.pfb><C:/Program Files/M
-iKTeX 2.9/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Program Files/MiKTeX 2.
-9/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Program Files/MiKTeX 2.9/fonts/
-type1/public/amsfonts/cm/cmmi5.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/pub
-lic/amsfonts/cm/cmmi6.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfo
-nts/cm/cmmi7.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cm
-mi8.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><
-C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Progra
-m Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr5.pfb><C:/Program Files/Mi
-KTeX 2.9/fonts/type1/public/amsfonts/cm/cmr6.pfb><C:/Program Files/MiKTeX 2.9/f
-onts/type1/public/amsfonts/cm/cmr7.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1
-/public/amsfonts/cm/cmr8.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/am
-sfonts/cm/cmsy10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/c
-m/cmsy7.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy8.p
-fb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/P
-rogram Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmti12.pfb><C:/Program F
-iles/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmtt10.pfb><C:/Program Files/MiK
-TeX 2.9/fonts/type1/public/amsfonts/symbols/msbm10.pfb><C:/Program Files/MiKTeX
- 2.9/fonts/type1/urw/courier/ucrr8a.pfb>
-Output written on report.pdf (7 pages, 715427 bytes).
+ 44i,22n,42p,10390b,1252s stack positions out of 5000i,500n,10000p,200000b,50000s
+{C:/Program Files/MiKTeX 2.9/fonts
+/enc/dvips/fontname/8r.enc} <C:\Users\Milan\AppData\Local\MiKTeX\2.9\fonts\pk\l
+jfour\public\bbm\dpi600\bbm10.pk><C:/Program Files/MiKTeX 2.9/fonts/type1/publi
+c/amsfonts/cm/cmbx10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfon
+ts/cm/cmbx12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cm
+csc10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmex10.pf
+b><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Pr
+ogram Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi5.pfb><C:/Program Fil
+es/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Program Files/MiKTeX
+ 2.9/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Program Files/MiKTeX 2.9/font
+s/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/p
+ublic/amsfonts/cm/cmr12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/ams
+fonts/cm/cmr5.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/c
+mr7.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
+<C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy5.pfb><C:/Progr
+am Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Program Files/
+MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmti12.pfb><C:/Program Files/MiKTeX 2
+.9/fonts/type1/public/amsfonts/symbols/msbm10.pfb><C:/Program Files/MiKTeX 2.9/
+fonts/type1/urw/courier/ucrr8a.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/urw
+/times/utmr8a.pfb>
+Output written on template.pdf (6 pages, 555861 bytes).
 PDF statistics:
- 137 PDF objects out of 1000 (max. 8388607)
+ 110 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 31 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 16 words of extra memory for PDF output out of 10000 (max. 10000000)
 
