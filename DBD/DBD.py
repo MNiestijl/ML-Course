@@ -36,14 +36,15 @@ class DBD():
         self.h, self.kernel= h,kernel
 
         print("Estimating density")
+
         kde = KernelDensity(kernel=kernel, bandwidth=h, algorithm='kd_tree',rtol=1e-4).fit(X)
         self.pdf = lambda data: np.exp(kde.score_samples(data))
         self.pdfx = self.pdf(X)
-
-        self.alpha = alpha if alpha is not None else self.pdfx.min()
-        self.eps = eps if eps else n**(-1/(2*d))
         a,b = self.pdfx.min(), self.pdfx.max()
+        self.alpha = alpha if alpha is not None else a
+        self.eps = eps if eps else n**(-1/(2*d))
         self.g = g if g else lambda x: 1 if x<self.alpha else m.exp((a-x)/(b-a))
+
         print("eps: {},\nalpha: {}".format(self.eps,self.alpha))
 
         self.graph = self.makeDBDGraph(X)
@@ -70,14 +71,42 @@ class DBD():
     def partitionData(self,X):
         # returns (component of node i, partition as a list of lists)
         n,d = X.shape
-        tup = (np.zeros(n),[])
+        locations = -np.ones(n,dtype=int)
+        components = []
+        tup = (locations, components)
         mask = np.zeros(n, dtype=bool)
+        # pdf(x)>=alpha
         mask[np.where([self.pdfx[i]>=self.alpha for i in range(0,n)])[0]] = True
         inds = np.arange(0,n)
-        X1 = X[mask,:]  # pdf(x)>=alpha
-        X2 = X[~mask,:] # pdf(x)<alpha
-        for i in range(0,X1.shape[0]): 
-            self.updatePartition(tup,X,inds[mask][i])
+        inds1, inds2 = inds[mask], inds[~mask]
+        X1, X2 = X[mask,:], X[~mask,:]
+
+        n_components=0
+        for i in range(0,len(X1)):
+            if locations[i]==-1:
+                components.append([X[i,:]])
+                locations[i]=n_components
+                n_components+=1
+            for j in range(0,len(X1)):
+                if nl.norm(X[i,:]-X[j,:])>=self.eps or i==j or locations[i]==locations[j]:
+                    continue
+                # Add xj to component
+                if locations[j]==-1:
+                    components[locations[i]].append(X[j,:])
+                    locations[j]=locations[i]
+                # Mrge components of xi and xj
+                else:
+                    a = min(locations[i],locations[j])
+                    b = max(locations[i],locations[j])
+                    components[a] += components[b]
+                    del components[b]
+                    locations[np.where(locations==b)[0]] = a
+                    for k in range(b+1,n_components):
+                        locations[np.where(locations==k)[0]] = k-1
+                    n_components-=1
+
+        #for i in range(0,X1.shape[0]): 
+        #    self.updatePartition(tup,X,inds[mask][i])
         for i in range(0,X2.shape[0]):
             self.updatePartition(tup,X,inds[~mask][i])
         return tup

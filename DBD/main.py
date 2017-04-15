@@ -3,6 +3,8 @@ from DBD import *
 from generateData import *
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import scale
+import numpy.random as rnd
+from mnist import MNIST
 
 def plot_data(X,y):
     C1, C2, Cunl = np.where(y==1)[0], np.where(y==0)[0], np.where(y==-1)[0]
@@ -15,10 +17,9 @@ def plot_shortest_path(X,dbd,node1,node2):
     data = X[path,:]
     plt.plot(data[:,0],data[:,1],linewidth=2)
 
-def main():
-
+def custom():
     # Settings
-    N1,N2, Nunl = 10, 10, 1000
+    N1,N2, Nunl = 0, 0, 100
     N = N1+N2+Nunl
     d = 2 # dimension of feature space
     s = 2 # Smoothness assumption
@@ -30,8 +31,8 @@ def main():
     #h=1
 
     # Data generators
-    gen1=circularGenerator(5, 0.5, angle_range=(0,2/3*m.pi))
-    gen2=gen1
+    gen1=circularGenerator(5, 0.1, angle_range=(0,2/3*m.pi))
+    gen2=circularGenerator(5, 0.1, angle_range=(m.pi,5/3*m.pi))
 
     # generate data
     X,y = generateData(gen1,gen2,N=N)
@@ -47,10 +48,20 @@ def main():
     # Plot data
     plt.figure(1)
     plot_data(X,y)
-    plot_shortest_path(X,dbd,1,2)
-    plot_shortest_path(X,dbd,10,15)
-    plot_shortest_path(X,dbd,200,201)
+    for i in range(0,3):
+        plot_shortest_path(X,dbd,rnd.randint(0,N),rnd.randint(0,N))
     plt.show()
 
+def useMNIST(dir_path):
+    mndata = MNIST(dir_path)
+    images, labels = mndata.load_testing()
+    plt.imshow(images[0])
+    plt.show()
+
+
+def main():
+    dir_path = './MNIST' 
+    useMNIST(dir_path)
+    
 if __name__=="__main__":
     main()
