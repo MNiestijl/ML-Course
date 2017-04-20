@@ -4,7 +4,8 @@ from generateData import *
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import scale
 import numpy.random as rnd
-from mnist import MNIST
+import pandas as pd
+from sklearn.neighbors import DistanceMetric, NearestNeighbors
 
 def plot_data(X,y):
     C1, C2, Cunl = np.where(y==1)[0], np.where(y==0)[0], np.where(y==-1)[0]
@@ -53,14 +54,47 @@ def custom():
     plt.show()
 
 def useMNIST(dir_path):
-    mndata = MNIST(dir_path)
-    images, labels = mndata.load_testing()
-    plt.imshow(images[0])
-    plt.show()
+
+    # Settings
+    d = 2 # dimension of feature space
+    s = 2 # Smoothness assumption
+    kernel = 'gaussian'
+    g = None
+    alpha = None
+    eps = N**(-(1/(2*d)))
+    h = 1/(N**(1/(s+d)))
+    #h=1
+
+    # Load Data
+    print("Loading Data")
+    train_file = dir_path + "train.csv"
+    test_file = dir_path + "test.csv"
+    train = pd.read_csv(train_file, sep=',').as_matrix()
+    test = pd.read_csv(test_file, sep=',').as_matrix()
+    X_train = train[:,1:]
+    X_test = test[:,1:]
+    y_train = train[:,0]
+    y_test = test[:,0]
+
+
+    # Pre-process data
+    # NVT
+
+    # Get distance object
+    print("Computing metric")
+    dbd = DBD(X_train,h, g=g,alpha=alpha,eps=eps,kernel=kernel)
+    pdfmax = dbd.pdfx.max()
+    print("Maximum value of pdf(x): {}".format(pdfmax))
+    print("Minimum value of g(x): {}".format(dbd.g(pdfmax)))
+
+    # KNN 
+
+    # Score on test set:
 
 
 def main():
-    dir_path = './MNIST' 
+    dir_path = 'C:/Users/Milan Niestijl/Documents/datasets/ML/MNIST/'
+    #custom()
     useMNIST(dir_path)
     
 if __name__=="__main__":

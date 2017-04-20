@@ -94,7 +94,7 @@ class DBD():
                 if locations[j]==-1:
                     components[locations[i]].append(X[j,:])
                     locations[j]=locations[i]
-                # Mrge components of xi and xj
+                # Merge components of xi and xj
                 else:
                     a = min(locations[i],locations[j])
                     b = max(locations[i],locations[j])
@@ -105,8 +105,6 @@ class DBD():
                         locations[np.where(locations==k)[0]] = k-1
                     n_components-=1
 
-        #for i in range(0,X1.shape[0]): 
-        #    self.updatePartition(tup,X,inds[mask][i])
         for i in range(0,X2.shape[0]):
             self.updatePartition(tup,X,inds[~mask][i])
         return tup
