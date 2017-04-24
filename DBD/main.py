@@ -1,6 +1,7 @@
 import numpy as np 
 from DBD import *
 from generateData import *
+from GraphKNN import *
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import scale
 import numpy.random as rnd
@@ -20,7 +21,7 @@ def plot_shortest_path(X,dbd,node1,node2):
 
 def custom():
     # Settings
-    N1,N2, Nunl = 0, 0, 100
+    N1,N2, Nunl = 0, 0, 200
     N = N1+N2+Nunl
     d = 2 # dimension of feature space
     s = 2 # Smoothness assumption
@@ -45,6 +46,10 @@ def custom():
     pdfmax = dbd.pdfx.max()
     print("Maximum value of pdf(x): {}".format(pdfmax))
     print("Minimum value of g(x): {}".format(dbd.g(pdfmax)))
+
+    knn = GraphKNN(dbd.graph, k_neighbors=10)
+    print(dbd.eps)
+    print(knn.getKNN(3))
 
     # Plot data
     plt.figure(1)
@@ -94,8 +99,8 @@ def useMNIST(dir_path):
 
 def main():
     dir_path = 'C:/Users/Milan Niestijl/Documents/datasets/ML/MNIST/'
-    #custom()
-    useMNIST(dir_path)
+    custom()
+    #useMNIST(dir_path)
     
 if __name__=="__main__":
     main()

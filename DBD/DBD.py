@@ -6,13 +6,14 @@ import numbers
 from scipy.stats import norm, rv_continuous
 from sklearn.neighbors import KernelDensity
 
-def makeGraph(X,weightFunc):
+def makeGraph(X,weightFunc, attributes=None):
     n,d = X.shape
     graph = nx.Graph()
     graph.add_nodes_from([(i,dict(values=X[i,:])) for i in range(0,n)])
     edges = [(i,j,weightFunc(i,j)) for i in range(0,n) for j in range(0,n)]
     edges = [tup for tup in edges if tup[2]!=-1]
     graph.add_weighted_edges_from(edges,weight='weight')
+    graph.add isLabeled tag somehow somehow!
     return graph
 
 class DBD():
@@ -114,14 +115,16 @@ class DBD():
         """
         Return -1 if the weight is infinite.
         """
+        if node1==node2: 
+            return -1
         xi, xj = X[node1,:], X[node2,:]
         L2dist = nl.norm(xi-xj)
         loc1,loc2 = partition[0][node1],partition[0][node2]
-        if (L2dist<self.eps):
+        if loc1==-1 or loc2==-1:
+            raise('Both points must be in the partition')
+        elif (L2dist<self.eps):
             avg = (1/2*(xi+xj)).reshape(1,-1)
             return self.g(self.pdf(avg))*L2dist
-        elif loc1==-1 or loc2==-1:
-            raise('Both points must be in the partition')
         elif loc1!=loc2:
             return L2dist
         else:
