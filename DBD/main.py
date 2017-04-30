@@ -21,8 +21,9 @@ def plot_shortest_path(X,dbd,node1,node2):
 
 def custom():
     # Settings
-    N1,N2, Nunl = 0, 0, 200
-    N = N1+N2+Nunl
+    Nlab, Nunl = 5, 500
+    p = 0.5
+    N = Nlab+Nunl
     d = 2 # dimension of feature space
     s = 2 # Smoothness assumption
     kernel = 'gaussian'
@@ -37,25 +38,27 @@ def custom():
     gen2=circularGenerator(5, 0.1, angle_range=(m.pi,5/3*m.pi))
 
     # generate data
-    X,y = generateData(gen1,gen2,N=N)
-    y = -np.ones(N) # Only care about shape right now!
+    X,y = generatePartialData(gen1,gen2,Nlab,Nunl,p=p)
+    #y = -np.ones(N) # Only care about shape right now!
     scale(X, axis=0, with_mean=False,copy=False)
 
     # get distance object
-    dbd = DBD(X,h, g=g,alpha=alpha,eps=eps,kernel=kernel)
+    dbd = DBD(X,h, y=y,g=g,alpha=alpha,eps=eps,kernel=kernel)
     pdfmax = dbd.pdfx.max()
     print("Maximum value of pdf(x): {}".format(pdfmax))
     print("Minimum value of g(x): {}".format(dbd.g(pdfmax)))
 
-    knn = GraphKNN(dbd.graph, k_neighbors=10)
-    print(dbd.eps)
-    print(knn.getKNN(3))
+    knn = GraphKNN(dbd, k_neighbors=4, algorithm='brute')
+    y_predicted = knn.predict(np.arange(0,len(y)))
 
     # Plot data
     plt.figure(1)
+    plt.subplot(121)
     plot_data(X,y)
     for i in range(0,3):
         plot_shortest_path(X,dbd,rnd.randint(0,N),rnd.randint(0,N))
+    plt.subplot(122)
+    plot_data(X,y_predicted)
     plt.show()
 
 def useMNIST(dir_path):

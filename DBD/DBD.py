@@ -6,21 +6,29 @@ import numbers
 from scipy.stats import norm, rv_continuous
 from sklearn.neighbors import KernelDensity
 
-def makeGraph(X,weightFunc, attributes=None):
+def makeDBDGraph(X,getEdge, labels=None, node_indices=None):
     n,d = X.shape
-    graph = nx.Graph()
-    graph.add_nodes_from([(i,dict(values=X[i,:])) for i in range(0,n)])
-    edges = [(i,j,weightFunc(i,j)) for i in range(0,n) for j in range(0,n)]
+    node_indices = node_indices if node_indices is not None else np.arange(0,n)
+    if labels is None:
+        nodes = [(node_indices[i],dict(values=X[i,:])) for i in range(0,n)]
+    else:    
+        nodes = [(node_indices[i],dict(values=X[i,:],label=int(labels[i]))) for i in range(0,n)]
+    edges = [(node_indices[i],node_indices[j],getEdge(node_indices[i],node_indices[j])) for i in range(0,n) for j in range(0,n)]
     edges = [tup for tup in edges if tup[2]!=-1]
-    graph.add_weighted_edges_from(edges,weight='weight')
-    graph.add isLabeled tag somehow somehow!
+    return makeWeightedGraph(nodes, edges)
+
+def makeWeightedGraph(nodes, edges):
+    graph = nx.Graph()
+    graph.add_nodes_from(nodes)
+    graph.add_weighted_edges_from(edges)
     return graph
 
 class DBD():
 
-    def __init__(self,X,h, g=None,alpha=None,eps=None,kernel='normal'):
+    def __init__(self,X,h,y=None, g=None,alpha=None,eps=None,kernel='normal'):
         """
         X:      data ~ (n_samples × d_features)
+        y:      Label vector. Use -1 for unlabeled samples, 0, 1, ... for labels.
         h:      bandwith parameter.
         g:      Decreasing and positive function, see paper.
         alpha:  Parameter>0
@@ -48,7 +56,9 @@ class DBD():
 
         print("eps: {},\nalpha: {}".format(self.eps,self.alpha))
 
-        self.graph = self.makeDBDGraph(X)
+        self.graph = self.getGraph(X)
+        if y is not None:
+            self.labeledGraph = self.getLabeledGraph(X,y)
         print("Initialized")
 
     def metric(self,node1,node2):
@@ -130,11 +140,18 @@ class DBD():
         else:
             return -1
 
-    def makeDBDGraph(self,X): 
+    def getGraph(self,X,y=None): 
         print("Making partition") 
         partition = self.partitionData(X)
         print("Number of components: {}".format(len(partition[1])))
         weightFunc = lambda node1,node2: self.computeWeight(X,node1,node2,partition)
         print("Making graph")
-        return makeGraph(X,weightFunc)
+        return makeDBDGraph(X,weightFunc)
+
+    def getLabeledGraph(self,X,y):
+        print("Making labeled graph")
+        n,d = X.shape
+        inds = np.where(y!=-1)[0]
+        weightFunc = lambda node1,node2: self.metric(node1,node2)
+        return makeDBDGraph(X[inds],weightFunc,labels=y[inds],node_indices=inds)
     

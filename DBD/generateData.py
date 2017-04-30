@@ -24,6 +24,13 @@ def splitData(X,y, N1lab, N2lab, Nunl, p=0.5):
     X_test, y_test = X[~train_mask,:], y[~train_mask]
     return X_train, y_train,y_train_true, X_test, y_test
 
+def generatePartialData(gen1, gen2, Nlab, Nunl, p=0.5):
+    Ntot = Nlab + Nunl
+    X,y = generateData(gen1, gen2, N=Ntot,p=p)
+    isUnl = rnd.choice(np.arange(0,Ntot),size=Nunl, replace=False)
+    y[isUnl]=-1
+    return X,y
+
 # gen generates N points from the respective distribution
 def generateData(gen1, gen2,N, p=0.5):
     classes = bernoulli.rvs(p=p, size=N)

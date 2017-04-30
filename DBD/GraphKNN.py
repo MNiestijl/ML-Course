@@ -6,19 +6,25 @@ GraphKNN implements the k-nearest neighbors classifier on a given connected weig
 """
 class GraphKNN():
 
-	def __init__(self,graph,k_neighbors=3, weights='uniform'):
-		if not nx.is_connected(graph):
+	def __init__(self,dbd,k_neighbors=3, weights='uniform', algorithm='brute'):
+		if not nx.is_connected(dbd.graph):
 			raise('Graph should be connected.')
-		if nx.number_of_nodes(graph)<k_neighbors:
+		if nx.number_of_nodes(dbd.graph)<k_neighbors:
 			raise("k_neighbors larger than the number of nodes in the graph")
-		self.graph, self.k_neighbors, self.weights = graph, k_neighbors, weights
+		self.dbd, self.k_neighbors, self.weights, self.algorithm = dbd, k_neighbors, weights, algorithm
 
-	def getKNN(self, node):
-		return self.getKNNfun([node], visited={node:0})
+	def getKNN(self,node):
+		if self.algorithm=='brute':	
+			labeledNodes = self.dbd.labeledGraph.nodes(data=True)
+			distances = [(node2[0], self.dbd.metric(node,node2[0])) for node2 in labeledNodes]
+			distances.sort(key=lambda tup: tup[1])
+			return distances[:self.k_neighbors]
+		elif self.algorithm=='expand':
+			return self.getKNNfun([node],visited={node:0})
 
 	def getKNNfun(self, nodes, visited={}):
-		edges = self.graph.edges(nodes, data=['weight','labeled'])
-		edges = [edge for edge in edges if edge[1] not in visited and edge[3] is True]
+		edges = self.dbd.graph.edges(nodes, data='weight')
+		edges = [edge for edge in edges if edge[1] not in visited]
 		newNodes = list(set([edge[1] for edge in edges]))
 		newWeightsLists = [[visited[edge[0]] + edge[2] for edge in edges if edge[1]==n] for n in newNodes]
 		newWeights = [sorted(newWeightsLists[i])[0] for i in range(0,len(newNodes))]
@@ -28,14 +34,32 @@ class GraphKNN():
 		if nNodesVisited>=self.k_neighbors:
 			nodes = list(visited.keys())
 			sortedResult = sorted([(n,visited[n]) for n in nodes], key=lambda tup:tup[1])
-			return sortedResult[1:self.k_neighbors]
+			return sortedResult[:self.k_neighbors]
 		return self.getKNNfun(newNodes, visited)
 
 	def getPrediction(self, neighbors):
-		pass
+		if self.weights=='uniform':
+			neighborLabels = [self.dbd.labeledGraph.node[n[0]]['label'] for n in neighbors]
+			labels = set(neighborLabels)
+			votes = [(label, neighborLabels.count(label)) for label in labels]
+			votes.sort(key=lambda vote: vote[1])
+			return votes[-1][0]
+		else:
+			pass #TODO
 
-	def fit(self, X, y=None):
-		pass
+	def predictNode(self, node):
+		try:
+			if self.dbd.graph[node]['label']!=-1:
+				return self.dbd.graph[node]['label']
+		except:
+			neighbors = self.getKNN(node)
+			return self.getPrediction(neighbors)
+		
 
-	def score(self, X,y):
-		pass
+	def predict(self, nodes):
+		return np.array([self.predictNode(node) for node in nodes])
+
+	def score(self, nodes,labels):
+		n = len(nodes)
+		predictions = self.predict(nodes)
+		return sum([1 if nodes[i]==labels[i] else 0 for i in range(0,n)])/n
