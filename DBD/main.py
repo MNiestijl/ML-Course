@@ -23,15 +23,14 @@ def custom():
     # Settings
     Nlab, Nunl = 5, 500
     p = 0.5
-    N = Nlab+Nunl
     d = 2 # dimension of feature space
     s = 2 # Smoothness assumption
     kernel = 'gaussian'
     g = None
     alpha = None
+    N = Nlab+Nunl
     eps = N**(-(1/(2*d)))
     h = 1/(N**(1/(s+d)))
-    #h=1
 
     # Data generators
     gen1=circularGenerator(5, 0.1, angle_range=(0,2/3*m.pi))
