@@ -67,14 +67,14 @@ def customData1(N, p):
     gen2 = lambda N: getGen(N,[0  ,0 , 0.3, 0.7 , 0  ])
     return generateData(gen1, gen2, N, p=p)
 
-def circularGenerator(radius_mean, radius_variance, angle_range=(0,2*m.pi), angle_mean=None, angle_variance=None):
+def circularGenerator(radius_mean, radius_variance, bias=0, angle_range=(0,2*m.pi), angle_mean=None, angle_variance=None):
     def generator(N):
         rs = rnd.normal(radius_mean, radius_variance, N)
         if angle_mean and angle_variance:
             thetas= rnd.normal(angle_mean, angle_variance,N)
         else:
             thetas = rnd.uniform(angle_range[0], angle_range[1], N)
-        x1 = np.atleast_2d(rs * np.fromiter([m.cos(theta) for theta in thetas], thetas.dtype))
-        x2 = np.atleast_2d(rs * np.fromiter([m.sin(theta) for theta in thetas], thetas.dtype))
+        x1 = np.atleast_2d(rs * np.fromiter([m.cos(theta) for theta in thetas], thetas.dtype)) + bias[0]
+        x2 = np.atleast_2d(rs * np.fromiter([m.sin(theta) for theta in thetas], thetas.dtype)) + bias[1]
         return np.concatenate((x1.T,x2.T),axis=1)
     return generator

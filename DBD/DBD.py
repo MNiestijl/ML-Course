@@ -49,10 +49,9 @@ class DBD():
         kde = KernelDensity(kernel=kernel, bandwidth=h, algorithm='kd_tree',rtol=1e-4).fit(X)
         self.pdf = lambda data: np.exp(kde.score_samples(data))
         self.pdfx = self.pdf(X)
-        a,b = self.pdfx.min(), self.pdfx.max()
-        self.alpha = alpha if alpha is not None else a
+        self.alpha = alpha if alpha is not None else self.pdfx.min()
         self.eps = eps if eps else n**(-1/(2*d))
-        self.g = g if g else lambda x: 1 if x<self.alpha else m.exp((a-x)/(b-a))
+        self.g = g if g else lambda x: 1 if x<self.alpha else m.exp(-(x-self.pdfx.min())/(2*self.pdfx.std()))
 
         print("eps: {},\nalpha: {}".format(self.eps,self.alpha))
 

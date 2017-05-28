@@ -13,12 +13,16 @@ class GraphKNN():
 			raise("k_neighbors larger than the number of nodes in the graph")
 		self.dbd, self.k_neighbors, self.weights, self.algorithm = dbd, k_neighbors, weights, algorithm
 
+	"""
+	Calculate the k nearest neighbors and their distances. Returns k (node, distance) tuples.
+	"""
 	def getKNN(self,node):
 		if self.algorithm=='brute':	
 			labeledNodes = self.dbd.labeledGraph.nodes(data=True)
 			distances = [(node2[0], self.dbd.metric(node,node2[0])) for node2 in labeledNodes]
 			distances.sort(key=lambda tup: tup[1])
 			return distances[:self.k_neighbors]
+
 		elif self.algorithm=='expand':
 			return self.getKNNfun([node],visited={node:0})
 
@@ -48,10 +52,11 @@ class GraphKNN():
 			pass #TODO
 
 	def predictNode(self, node):
+		# Node might not have attribute 'label'
 		try:
 			if self.dbd.graph[node]['label']!=-1:
 				return self.dbd.graph[node]['label']
-		except:
+		except: 
 			neighbors = self.getKNN(node)
 			return self.getPrediction(neighbors)
 		

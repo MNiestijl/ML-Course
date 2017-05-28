@@ -1,0 +1,8 @@
+For recent changes see 
+      http://www.37steps.com/prtools/updates/
+
+For known problems see 
+      http://prtools.org/prtools/prtools_news/known-problems/
+
+For more information on PRTools see
+      http://prtools.org/prtools/

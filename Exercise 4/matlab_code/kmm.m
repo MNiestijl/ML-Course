@@ -27,7 +27,7 @@ options = optimoptions('quadprog', 'Display', 'final', ...
 eps = 0.001; 
 
 % regularization
-lambda = 1;
+lambda = 10;
 
 % RBF kernel
 K = @(x1,x2) exp(-1/2*norm(x1-x2));

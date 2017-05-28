@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import scale
 import numpy.random as rnd
 import pandas as pd
-from sklearn.neighbors import DistanceMetric, NearestNeighbors
+from sklearn.neighbors import DistanceMetric, NearestNeighbors, KNeighborsClassifier
 
 def plot_data(X,y):
     C1, C2, Cunl = np.where(y==1)[0], np.where(y==0)[0], np.where(y==-1)[0]
@@ -21,7 +21,7 @@ def plot_shortest_path(X,dbd,node1,node2):
 
 def custom():
     # Settings
-    Nlab, Nunl = 5, 500
+    Nlab, Nunl = 10, 200
     p = 0.5
     N = Nlab+Nunl
     d = 2 # dimension of feature space
@@ -34,8 +34,8 @@ def custom():
     #h=1
 
     # Data generators
-    gen1=circularGenerator(5, 0.1, angle_range=(0,2/3*m.pi))
-    gen2=circularGenerator(5, 0.1, angle_range=(m.pi,5/3*m.pi))
+    gen1=circularGenerator(5, 0.1, bias=[1,-3], angle_range=(0,2/3*m.pi))
+    gen2=circularGenerator(5, 0.1, bias=[-1,3], angle_range=(m.pi,5/3*m.pi))
 
     # generate data
     X,y = generatePartialData(gen1,gen2,Nlab,Nunl,p=p)
@@ -44,21 +44,20 @@ def custom():
 
     # get distance object
     dbd = DBD(X,h, y=y,g=g,alpha=alpha,eps=eps,kernel=kernel)
-    pdfmax = dbd.pdfx.max()
-    print("Maximum value of pdf(x): {}".format(pdfmax))
-    print("Minimum value of g(x): {}".format(dbd.g(pdfmax)))
-
-    knn = GraphKNN(dbd, k_neighbors=4, algorithm='brute')
-    y_predicted = knn.predict(np.arange(0,len(y)))
+    knn = GraphKNN(dbd, k_neighbors=1, algorithm='brute')
+    print("Predicting data using DBD KNN")
+    y_dbdKNN = knn.predict(np.arange(0,len(y)))
 
     # Plot data
     plt.figure(1)
-    plt.subplot(121)
-    plot_data(X,y)
+    """
     for i in range(0,3):
         plot_shortest_path(X,dbd,rnd.randint(0,N),rnd.randint(0,N))
-    plt.subplot(122)
-    plot_data(X,y_predicted)
+    """
+    plt.subplot(131)
+    plot_data(X,y)
+    plt.subplot(132)
+    plot_data(X,y_dbdKNN)
     plt.show()
 
 def useMNIST(dir_path):

@@ -1,0 +1,48 @@
+\documentclass [a4paper] {report}
+\usepackage{amsmath,amssymb,amsthm, bbm, graphicx,listings,braket,subfig,titlesec,cleveref,lipsum,mcode,xcolor-patch, textcomp,float,booktabs,siunitx, listings}
+\usepackage[authoryear]{natbib}
+\usepackage[section]{placeins}
+\usepackage[margin=2.2cm]{geometry}
+\titleformat{\chapter}{\normalfont\huge}{\thechapter.}{20pt}{\huge \bf}
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\newcommand{\norm}[1]{\left\lVert #1 \right\rVert}
+
+\begin{document}
+	
+	\begin{titlepage}
+		\begin{center}
+			
+			\textsc{\LARGE IN4320 Machine Learning}\\[1.25cm]
+			
+			\rule{\linewidth}{0.5mm}\\[1.0cm]
+			{\huge \bfseries Exercises: Multiple Instance Learning }\\[0.6cm]
+			\rule{\linewidth}{0.5mm}\\[1.5cm]
+			
+			\begin{minipage}{0.4\textwidth}
+				\begin{flushleft} \large	
+					\emph{Author:}\\
+					\textsc{Milan Niestijl, 4311728}
+				\end{flushleft}
+			\end{minipage}
+			
+			\vfill
+			{\large \today}
+		\end{center}
+	\end{titlepage}
+	
+	\section*{1. Naive MIL classifier}
+	We first implement a naive MIL classifier. To reduce computational costs, the images are first downscaled with a scaling factor of 0.2. The images are next segmented using the Mean Shift algorithm using a width parameter of 30. To verify that the apples are correctly separated from the background, the obtained segments are plotted for a couple of images in figure \textbf{TODO}.\\\\
+	- 786 bags, 1 instance per bag and 3 features per instance. Check ff of deze shit klopt!\\
+	A scatterplot of the instances can be seen in figure \textbf{TODO}.\\\\
+	
+	1.g: Use MIL classifier twice: once to see if it is an apple, and once to see if it is a banana. Implement it using a combiner such that one positive classifies the entire bag as positive. (positive being either banana or apple). If the bag is both classified a banana and a apple, THEN use majority voting. (or there might be both a banana and a apple in the bag?).
+	
+	
+	\bibliographystyle{authordate1}
+	\begin{bibliography}{ref}
+		
+	\end{bibliography}
+
+\end{document}
