@@ -110,12 +110,12 @@ plot(x1,y1,'Color', 'k', 'LineWidth', lW)
 plot(x2,y2, '--', 'Color', 'c', 'LineWidth', lW)
 
 % Visualization settings
-title(['Source domain']);
+title('Source domain', 'FontSize', fS);
 lines = findobj(gcf, 'Type', 'FunctionLine');
 legend(lines, {'wls','ls'}, 'Location', 'northwest');
 
-xlabel('x');
-ylabel('y');
+xlabel('x', 'FontSize', fS);
+ylabel('y', 'FontSize', fS);
 
 set(gca, 'YLim', [-1.5 2.5], 'XLim', [rl(1) rl(2)], 'FontSize', fS, 'FontWeight', 'bold');
 axis square
@@ -141,12 +141,12 @@ plot(x2,y2, '--', 'Color', 'c', 'LineWidth', lW)
 %fplot(@(x) x*theta_weighted(1)+theta_weighted(2), '--', 'Color', 'c', 'LineWidth', lW);
 
 % Visualization parameters
-title(['Target domain']);
+title('Target domain', 'FontSize', fS);
 lines = findobj(gcf, 'Type', 'FunctionLine');
 legend(lines, {'wls','ls'}, 'Location', 'northwest');
 
-xlabel('x');
-ylabel('y');
+xlabel('x', 'FontSize', fS);
+ylabel('y', 'FontSize', fS);
 
 set(gca, 'YLim', [-1.5 2.5], 'XLim', [rl(1) rl(2)], 'FontSize', fS, 'FontWeight', 'bold');
 axis square
@@ -163,10 +163,10 @@ figure()
 hist(w)
 
 % Visualization options
-title(['Weight distribution']);
+title(['Weight distribution'], 'FontSize', fS);
 
-xlabel('w');
-ylabel('Frequency');
+xlabel('w', 'FontSize', fS);
+ylabel('Frequency', 'FontSize', fS);
 
 set(gca, 'FontSize', fS, 'FontWeight', 'bold', 'YLim', [0 n]);
 set(gcf, 'Color', 'w')

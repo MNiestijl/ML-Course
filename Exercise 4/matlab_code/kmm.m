@@ -11,7 +11,7 @@ function [w] = kmm(X,Z)
 %
 % Author: Wouter Kouw
 % Last update: 28-03-2017
-
+    
 %% Initialization
 % Sizes
 n = size(X,1);
@@ -24,15 +24,15 @@ options = optimoptions('quadprog', 'Display', 'final', ...
     'maxIter', 1e2);
 
 % |mean(w)-1|<eps
-eps = 0.001; 
+eps = 0.01; 
 
 % regularization
-lambda = 10;
+lambda = 2;
 
 % RBF kernel
-K = @(x1,x2) exp(-1/2*norm(x1-x2));
+K = @(x1,x2) exp(-1/2*norm(x1-x2)^2);
 
-% Create Km matrix and km vector
+% Create kernel matrix Kmat and vector k
 Kmat = zeros(n,n);
 k = zeros(m,1);
 for i=1:n
