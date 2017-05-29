@@ -34,11 +34,22 @@
 	
 	\section*{1. Naive MIL classifier}
 	We first implement a naive MIL classifier. To reduce computational costs, the images are first downscaled with a scaling factor of 0.2. The images are next segmented using the Mean Shift algorithm using a width parameter of 30. To verify that the apples are correctly separated from the background, the obtained segments are plotted for a couple of images in figure \textbf{TODO}.\\\\
-	- 786 bags, 1 instance per bag and 3 features per instance. Check ff of deze shit klopt!\\
+	- 120 bags, 786/120=5.55 instances per bag and 3 features per instance. Check ff of deze shit klopt!\\
 	A scatterplot of the instances can be seen in figure \textbf{TODO}.\\\\
 	
-	1.g: Use MIL classifier twice: once to see if it is an apple, and once to see if it is a banana. Implement it using a combiner such that one positive classifies the entire bag as positive. (positive being either banana or apple). If the bag is both classified a banana and a apple, THEN use majority voting. (or there might be both a banana and a apple in the bag?).
+	1.f:\\
 	
+	Number of apples misclassified as banana: 10\\
+	Number bananas misclassified as apple: 14\\
+	These error estimates are not trustworthy as one could simply classify all bags as an apple, resulting in zero apples being misclassified. Conversely, one could classify all bags as bananas causing zero bananas to be misclassified. A more trustworthy error estimate is the average number of misclassified bags:
+	$$ \text{error} = {\#\text{misclassified bags}\over \#\text{bags}} $$
+	Which, in our case results in an error of 0.2.\\
+	
+	1.g: \\
+	
+	Firstly, instances corresponding to background should not be classified as either a banana or an apple. Instead, it would be better to perform MIL classification twice; once to check whether or not the image contains an apple, and once to check whether or not is has a banana. In this manner, the background can be recognized as neither an apple nor a banana, instead of being forced to be classified as either a banana or an apple. If it is predicted that the image contains both an apple and a banana, you can either leave it at that or use some combining rule to choose either of the two, e.g., using some confidence measure. This would depend on whether or not it is assumed that the bag can contain only one of the two 'concepts'.\\
+	
+	Secondly, in checking whether or not the image contains an apple (or a banana), the combiner should return positive if at least one of the instances in the bag is predicted positive, instead of using majority voting. This makes intuitively more sense since only one of the segments in the image has to be an apple for the image to contain an apple.
 	
 	\bibliographystyle{authordate1}
 	\begin{bibliography}{ref}
