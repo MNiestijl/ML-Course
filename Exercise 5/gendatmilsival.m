@@ -1,10 +1,10 @@
-function MILdataset = gendatmilsival()
+function [MILdataset, labels] = gendatmilsival()
 % creates a MIL dataset using the apples and banana images.
 
 %% Settings
 width = 30;
 scale = 0.2;
-dataset_dir = 'C:\Users\Milan Niestijl\Documents\Git\courses\ML\ML-course\Exercise 5\sival_apple_banana\sival_apple_banana';
+dataset_dir = 'C:\Users\Milan\git\courses\ML\ML-Course\Exercise 5\sival_apple_banana\sival_apple_banana';
 apple_label = 1;
 banana_label = 2;
 
@@ -31,6 +31,5 @@ for i=1:nBananas
 end
 
 MILdataset = bags2dataset(bags, labels);
-
 end
 
