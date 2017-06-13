@@ -31,4 +31,13 @@ function averages = getSegmentAverages(image,segments,targetSegment)
     blue = mean(blueIm(segments==targetSegment));
     
     averages = [red, blue, green];
+    if any(isnan(averages));
+        fprintf('\naverages: %s', averages);
+        fprintf('\ntargetSegment: %i', targetSegment);
+        fprintf('\nsize segments: %i', size(segments));
+        fprintf('\nsize redIm: %d', redIm);
+        fprintf('\nsize greenIm: %d', greenIm);
+        fprintf('\nsize blueIm: %d', blueIm);
+        error('NaN encountered!')
+    end
 end

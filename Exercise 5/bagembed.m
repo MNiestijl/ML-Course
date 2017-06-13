@@ -10,6 +10,7 @@ function features = bagembed(bag, data,varargin)
 % output:
 %   feature vector
 
+% Set optional parameter sigma
 if length(varargin)==1 && varargin{1}>0
     sigma = varargin{1};
 else
@@ -21,7 +22,6 @@ K = @(x,y) exp(-norm(x-y)^2/(sigma^2));
 s = @(Bi,y) max(arrayfun(@(j) K(Bi(j,:),y), 1:size(Bi,1)));
 
 % Calculate feature vector
-N = size(data,1);
-features = arrayfun(@(j) s(bag,data(j,:)),1:N);
+features = arrayfun(@(j) s(bag,data(j,:)),1:size(data,1));
 end
 

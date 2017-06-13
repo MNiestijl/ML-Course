@@ -1,0 +1,47 @@
+\documentclass [a4paper] {report}
+\usepackage{amsmath,amssymb,amsthm, bbm, graphicx,listings,braket,subfig,titlesec,cleveref,lipsum,mcode,xcolor-patch, textcomp,float,booktabs,siunitx, listings}
+\usepackage[authoryear]{natbib}
+\usepackage[section]{placeins}
+\usepackage[margin=2.2cm]{geometry}
+\titleformat{\chapter}{\normalfont\huge}{\thechapter.}{20pt}{\huge \bf}
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\newcommand{\norm}[1]{\left\lVert #1 \right\rVert}
+
+\begin{document}
+	
+	\begin{titlepage}
+		\begin{center}
+			
+			\textsc{\LARGE IN4320 Machine Learning}\\[1.25cm]
+			
+			\rule{\linewidth}{0.5mm}\\[1.0cm]
+			{\huge \bfseries Exercises: Reinforcement Learning }\\[0.6cm]
+			\rule{\linewidth}{0.5mm}\\[1.5cm]
+			
+			\begin{minipage}{0.4\textwidth}
+				\begin{flushleft} \large	
+					\emph{Author:}\\
+					\textsc{Milan Niestijl, 4311728}
+				\end{flushleft}
+			\end{minipage}
+			
+			\vfill
+			{\large \today}
+		\end{center}
+	\end{titlepage}
+	
+	\section*{Exercise 1}
+	\textbf{Claim}\\
+	The return $R_{t} = \sum_{h=0}^{\infty}\gamma^{h}r_{t+h+1}$ is bounded for $0\leq \gamma<1$ and bounded rewards $-10\leq r_{t+h+1}\leq 10$ for all $h\in \mathbb{N}$.\\\\
+	\textbf{Proof}\\
+	Using the geometric series, we find:
+	$$|R_{t}| \leq \sum_{h=0}^{\infty}|\gamma^{h}r_{t+h+1}| \leq \sum_{h=0}^{\infty}10 \gamma^{h} = {10 \over 1-\gamma} < \infty$$
+	
+	\section*{Exercise 2}
+	
+	\section*{Exercise 3}
+	$\gamma=1$ will work here because the reward function has a finite horizon.
+
+\end{document}

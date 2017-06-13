@@ -1,7 +1,6 @@
 function images = openImages( folder, varargin )
 % Open images from given directory. 
 % Optional argument: Downsize scaling parameter
-% parameter to downsize the images
 % Supported formats: .jpg
 
 % Add trailing '/' if necessary
@@ -9,6 +8,7 @@ if (folder(end) ~= '\') && (folder(end) ~= '/')
     folder = strcat(folder, '/');
 end
 
+% Determine scaling parameter
 if length(varargin)==1
     scale = varargin{1};
 else
