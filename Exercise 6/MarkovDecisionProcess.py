@@ -2,11 +2,11 @@ import numpy as np
 import numpy.random as rnd
 import math as m
 
-"""
-Assumes deterministic actions. NOT FOR LONG
-"""
+def isclose(val1, val2, abs_tol=1e-12):
+	return abs(val1-val2)<abs_tol
+
 class MarkovDecisionProcess(): # VERANDER (newState, reward) naar transition (die als output (newState, reward) heeft)
-	def __init__(self, States, Actions, newState, reward,discount, probabilities, AbsorbingStates=set()):
+	def __init__(self, States, Actions, newState, reward,discount, probabilities=None, AbsorbingStates=set()):
 		self.States = States
 		self.Actions = Actions
 		self.newState = newState
@@ -14,8 +14,7 @@ class MarkovDecisionProcess(): # VERANDER (newState, reward) naar transition (di
 		self.reward = reward
 		self.probabilities = probabilities 			# Matrix(States × States × Actions).
 		self.AbsorbingStates = AbsorbingStates
-		self.Q = {}
-		self.initialize_Q()
+		self.Q = { (s,a): 0 for s in States for a in Actions }
 		self.Qfunc = lambda s,a: self.Q[(s,a)] 		
 		self.policy = None;
 
@@ -30,9 +29,6 @@ class MarkovDecisionProcess(): # VERANDER (newState, reward) naar transition (di
 	def transition(self,sold,a):
 		snew = self.newState(sold,a)
 		return snew, self.reward(sold,snew)
-
-	def initialize_Q(self):
-		self.Q = { (s,a): 0 for s in self.States for a in self.Actions }
 
 	def getBest(self, s):
 		Qvalues = [(a,self.Q[(s,a)]) for a in self.Actions]
@@ -57,19 +53,21 @@ class MarkovDecisionProcess(): # VERANDER (newState, reward) naar transition (di
 		return Qmat
 
 	def QisEqual(self,Q1,Q2, tol=1e-6):
-		isequal = { k: m.isclose(Q1[k],Q2[k], abs_tol=tol) for k, v in Q1.items() }
+		isequal = { k: isclose(Q1[k],Q2[k], abs_tol=tol) for k, v in Q1.items() }
 		return all(isequal.values())
 
 	# Calculate expected value of function: S -> R,  w.r.t. random variable s2 (defined by initial state s and action a).
-	def expectedValue(self,s,a,function):
+	def expectedValue(self,function,s,a):
 		return sum([self.probabilities[(s,s2,a)]*function(s,s2,a) for s2 in self.States])
 
 	# Perform 1 iteration of the q_iteration algorithm
 	def q_iterate(self):
 		func = lambda s,s2,a: self.reward(s,s2) + self.discount*self.getBestQVal(s2)
-		return { k: self.expectedValue(*k,func) for k, v in self.Q.items() }
+		return { k: self.expectedValue(func, *k) for k, v in self.Q.items() }
 
 	def q_iteration(self,max_iter=100, tol=1e-6):
+		if self.probabilities is None:
+			raise('Transition probabilities not known.')
 		self.initialize_Q()
 		counter = 0
 		while True:
@@ -95,7 +93,7 @@ class MarkovDecisionProcess(): # VERANDER (newState, reward) naar transition (di
 		qold = self.Q[(s,a)]
 		snew, reward = self.transition(s,a)
 		qnew = qold + alpha*self.getTemporalDifference(s, a, snew, reward)
-		if m.isclose(qold, qnew, abs_tol=tol):
+		if isclose(qold, qnew, abs_tol=tol):
 			converged[(s, a)] = True
 		else:
 			self.Q[(s, a)] = qnew

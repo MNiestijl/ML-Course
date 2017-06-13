@@ -16,10 +16,21 @@ def newState(s,a):
         return s
     return s if s==1 or s==6 else s+a
 
+def newState2(s,a):
+    return s if s<1.5 or s>5.5 else s+a+rnd.normal(0, 0.01,1)
+
 def reward(sold,snew):
     if sold!=6 and snew==6:
         return 5
     elif sold!= 1 and snew==1:
+        return 1
+    else:
+        return 0
+
+def reward2(sold, sneww):
+    if sold<=5.5 and snew>5.5:
+        return 5
+    elif sold>=1.5 and snew<1.5:
         return 1
     else:
         return 0
@@ -40,8 +51,12 @@ def getMDP():
     AbsorbingStates = {1,6}
     Actions = OrderedDict.fromkeys([-1,1]) # Use OrderedDict instead of set so that the order stays the same
     discount = 0.5
+    probabilities = None
+    #probabilities = { (s1,s2,a): transitionProb(s1,s2,a) for s1 in States for s2 in States for a in Actions }
+    #return MarkovDecisionProcess(States, Actions, newState2, reward2, discount, probabilities=probabilities, AbsorbingStates=AbsorbingStates)
     probabilities = { (s1,s2,a): transitionProb(s1,s2,a) for s1 in States for s2 in States for a in Actions }
-    return MarkovDecisionProcess(States, Actions, newState, reward, discount, probabilities, AbsorbingStates=AbsorbingStates)
+    return MarkovDecisionProcess(States, Actions, newState, reward, discount, probabilities=probabilities, AbsorbingStates=AbsorbingStates)
+    
 
 def plotQError():
 
@@ -55,19 +70,20 @@ def plotQError():
     n_plots = len(eps_values) * len(alpha_values)
 
     MDP = getMDP()
-    MDP.q_iteration(max_iter=100, tol=tol)
+    MDP.q_iteration(max_iter=1000, tol=1e-15)
     QTrue = MDP.getQMatrix()
     for i,eps in enumerate(eps_values):
         for j,alpha in enumerate(alpha_values):
-            Qs = MDP.Q_Learning(eps=eps, alpha=alpha, max_iter=1000, tol=tol, return_all=True)
-            error = [ la.norm(QTrue - Qs[i], ord='fro') for i in range(0,len(Qs))]
             fig = plt.figure(1)
             ax = fig.add_subplot(len(eps_values),len(alpha_values),i+1+3*j)
-            ax.plot(np.arange(0,len(Qs)), error)
             ax.set_yscale('log')
             #ax.set_xlabel('Iteration')
             #ax.set_ylabel('Error')
             ax.set_title('eps={}, alpha={}'.format(eps, alpha))
+            for k in range(0,repeats):
+                Qs = MDP.Q_Learning(eps=eps, alpha=alpha, max_iter=1000, tol=tol, return_all=True)
+                error = [ la.norm(QTrue - Qs[i], ord='fro') for i in range(0,len(Qs))]
+                ax.plot(np.arange(0,len(Qs)), error)
     plt.show()
 
 def main():
