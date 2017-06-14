@@ -18,7 +18,7 @@ class ValueFunctionApprox(): # VERANDER (newState, reward) naar transition (die 
 		self.W = self.initialize_W() # List of weights for each action a.
 
 	def initialize_W(self):
-		self.W = { a: np.ones(len(self.actFuncs)) for a in self.Actions }
+		self.W = { a: np.zeros(len(self.actFuncs)) for a in self.Actions }
 		return self.W
 
 	def transition(self,sold,a):

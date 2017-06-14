@@ -8,6 +8,7 @@ from scipy.stats import multivariate_normal, bernoulli
 from MarkovDecisionProcess import MarkovDecisionProcess
 from ValueFunctionApprox import ValueFunctionApprox
 from collections import OrderedDict
+import scipy.integrate as integrate
 
 # SETTINGS
 failureProb = 0
@@ -46,6 +47,10 @@ def reward2(sold, snew):
     else:
         return 0
 
+def transition2(sold,a):
+    snew = newState2(sold,a)
+    return snew, reward2(sold,snew)
+
 def getMDP():
     # Definition of MDP
     States = {1,2,3,4,5,6}
@@ -55,21 +60,55 @@ def getMDP():
     probabilities = { (s1,s2,a): transitionProb(s1,s2,a) for s1 in States for s2 in States for a in Actions }
     return MarkovDecisionProcess(States, Actions, newState, reward, discount, probabilities=probabilities, AbsorbingStates=AbsorbingStates)
     
-def getVFA():
+def getVFA(discount, nActFuncs):
     getRandomState = lambda : rnd.uniform(0, 6, size=1)[0]
     Actions = {1, -1}
-    discount = 0.5
-    nActFuncs = 100
     width = 6/nActFuncs
     rbf = lambda mean: lambda x: m.exp(-(x-mean)**2/(2*width**2))/m.sqrt(2*m.pi)
     actFuncs = [ rbf(mean) for mean in np.linspace(1,6,nActFuncs) ]
     return ValueFunctionApprox(getRandomState, Actions, newState2, reward2, discount, actFuncs)
 
+def playGame(discount, policy):
+    state = rnd.uniform(1.5, 5.5, size=1)[0]
+    gameOver = lambda s: s<1.5 or s>5.5
+    reward = 0
+    count = 0
+    while not gameOver(state):
+        action = policy(state)
+        state, r = transition2(state, action)
+        reward += r*discount**count
+        count += 1
+    return reward
 
-def plotApproxQ():
+
+def plotReward(discount=0.5, nActFuncs=100):
     eps = 0.7
     alpha = 0.3
-    VFA = getVFA()
+    VFA = getVFA(discount=discount, nActFuncs=nActFuncs)
+    nSteps = 100
+    step_size = 100
+    xs = np.linspace(1,6,100)
+    reward = np.zeros(nSteps)
+    for i in range(0,nSteps):
+        for j in range(0,step_size):
+            VFA.Q_Learning_iterate(eps, alpha)
+        # Approximate Expected Return using numerical integration.
+        y = np.array([ 1/5*VFA.getBestQVal(x) for x in xs ])
+        reward[i] = np.trapz(y,xs) 
+    fig = plt.figure(1)
+    ax = fig.add_subplot(1,1,1)
+    iterations = np.cumsum(step_size*np.ones(nSteps))
+    ax.plot(iterations, reward)
+    ax.set_title('Reward for various number of iterations')
+    ax.set_xlabel('Number of iterations')
+    ax.set_ylabel('Reward')
+    plt.show()
+
+
+def plotApproxQ(discount=0.5, nActFuncs=100):
+    eps = 0.7
+    alpha = 0.3
+    VFA = getVFA(discount=discount, nActFuncs=nActFuncs)
     VFA.Q_Learning(eps, alpha, max_iter=10000)
     xs = np.linspace(1,6,1000)
     y1 = [ VFA.evaluate(x,-1) for x in xs ]
@@ -115,7 +154,8 @@ def plotQError():
 
 def main():
     #plotQError()
-    plotApproxQ()
+    #plotApproxQ(discount=0.9, nActFuncs=100)
+    plotReward(discount=0.5, nActFuncs=100)
     """
     MDP = getMDP()
     MDP.q_iteration(max_iter=100, tol=1e-6)
