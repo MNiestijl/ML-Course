@@ -6,6 +6,7 @@ import math as m
 import pandas as pd
 from scipy.stats import multivariate_normal, bernoulli
 from MarkovDecisionProcess import MarkovDecisionProcess
+from ValueFunctionApprox import ValueFunctionApprox
 from collections import OrderedDict
 
 # SETTINGS
@@ -16,21 +17,10 @@ def newState(s,a):
         return s
     return s if s==1 or s==6 else s+a
 
-def newState2(s,a):
-    return s if s<1.5 or s>5.5 else s+a+rnd.normal(0, 0.01,1)
-
 def reward(sold,snew):
     if sold!=6 and snew==6:
         return 5
     elif sold!= 1 and snew==1:
-        return 1
-    else:
-        return 0
-
-def reward2(sold, sneww):
-    if sold<=5.5 and snew>5.5:
-        return 5
-    elif sold>=1.5 and snew<1.5:
         return 1
     else:
         return 0
@@ -45,18 +35,55 @@ def transitionProb(s1,s2,a):
     else:
         return 0
 
+def newState2(s,a):
+    return s if s<1.5 or s>5.5 else s+a+rnd.normal(0, 0.01,1)
+
+def reward2(sold, snew):
+    if sold<=5.5 and snew>5.5:
+        return 5
+    elif sold>=1.5 and snew<1.5:
+        return 1
+    else:
+        return 0
+
 def getMDP():
     # Definition of MDP
     States = {1,2,3,4,5,6}
     AbsorbingStates = {1,6}
     Actions = OrderedDict.fromkeys([-1,1]) # Use OrderedDict instead of set so that the order stays the same
     discount = 0.5
-    probabilities = None
-    #probabilities = { (s1,s2,a): transitionProb(s1,s2,a) for s1 in States for s2 in States for a in Actions }
-    #return MarkovDecisionProcess(States, Actions, newState2, reward2, discount, probabilities=probabilities, AbsorbingStates=AbsorbingStates)
     probabilities = { (s1,s2,a): transitionProb(s1,s2,a) for s1 in States for s2 in States for a in Actions }
     return MarkovDecisionProcess(States, Actions, newState, reward, discount, probabilities=probabilities, AbsorbingStates=AbsorbingStates)
     
+def getVFA():
+    getRandomState = lambda : rnd.uniform(0, 6, size=1)[0]
+    Actions = {1, -1}
+    discount = 0.5
+    nActFuncs = 100
+    width = 6/nActFuncs
+    rbf = lambda mean: lambda x: m.exp(-(x-mean)**2/(2*width**2))/m.sqrt(2*m.pi)
+    actFuncs = [ rbf(mean) for mean in np.linspace(1,6,nActFuncs) ]
+    return ValueFunctionApprox(getRandomState, Actions, newState2, reward2, discount, actFuncs)
+
+
+def plotApproxQ():
+    eps = 0.7
+    alpha = 0.3
+    VFA = getVFA()
+    VFA.Q_Learning(eps, alpha, max_iter=10000)
+    xs = np.linspace(1,6,1000)
+    y1 = [ VFA.evaluate(x,-1) for x in xs ]
+    y2 = [ VFA.evaluate(x,1) for x in xs ]
+    fig = plt.figure(1)
+    ax = fig.add_subplot(1,1,1)
+    ax.plot(xs, y1)
+    ax.plot(xs, y2)
+    ax.set_title('Approximated Q-function for different actions')
+    ax.set_xlabel('x')
+    ax.set_ylabel('Q')
+    ax.legend(['left', 'right'])
+    plt.show()
+
 
 def plotQError():
 
@@ -87,7 +114,8 @@ def plotQError():
     plt.show()
 
 def main():
-    plotQError()
+    #plotQError()
+    plotApproxQ()
     """
     MDP = getMDP()
     MDP.q_iteration(max_iter=100, tol=1e-6)

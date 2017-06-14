@@ -14,7 +14,7 @@ class MarkovDecisionProcess(): # VERANDER (newState, reward) naar transition (di
 		self.reward = reward
 		self.probabilities = probabilities 			# Matrix(States × States × Actions).
 		self.AbsorbingStates = AbsorbingStates
-		self.Q = { (s,a): 0 for s in States for a in Actions }
+		self.Q = self.initialize_Q
 		self.Qfunc = lambda s,a: self.Q[(s,a)] 		
 		self.policy = None;
 
@@ -25,6 +25,10 @@ class MarkovDecisionProcess(): # VERANDER (newState, reward) naar transition (di
 		q-iteration and Q-learning make use of the probabilities and the known values of Q and NOT using the transition function.
 		Function "newState" is in that case no longer necessary.
 		"""
+
+	def initialize_Q(self):
+		self.Q = { (s,a): 0 for s in self.States for a in self.Actions }
+		return self.Q
 
 	def transition(self,sold,a):
 		snew = self.newState(sold,a)
@@ -92,24 +96,23 @@ class MarkovDecisionProcess(): # VERANDER (newState, reward) naar transition (di
 			a = rnd.choice(list(self.Actions), 1)[0]
 		qold = self.Q[(s,a)]
 		snew, reward = self.transition(s,a)
-		qnew = qold + alpha*self.getTemporalDifference(s, a, snew, reward)
-		if isclose(qold, qnew, abs_tol=tol):
+		TD = self.getTemporalDifference(s, a, snew, reward)
+		qnew = qold + alpha*TD
+		if isclose(qold, qnew, abs_tol=tol): # abs(TD)<tol
 			converged[(s, a)] = True
 		else:
 			self.Q[(s, a)] = qnew
 			converged = self.resetConvergece()
 
-	def Q_Learning(self, eps, alpha, max_iter=100, tol=1e-6, return_all = False):
+	def Q_Learning(self, eps, alpha, max_iter=100, tol=1e-6, return_all=False):
 		converged = self.resetConvergece()
 		self.initialize_Q()
-		counter = 0
 		result = []
-		while True:
-			counter += 1
+		for i in range(0,max_iter):
 			if return_all:
 				result.append(self.getQMatrix())
 			self.Q_Learning_iterate(eps, alpha, converged, tol=tol)
-			if counter==max_iter or all(converged.values()):
-				print(counter)
+			if all(converged.values()):
+				print(i)
 				break
 		return result if return_all else self.Q
