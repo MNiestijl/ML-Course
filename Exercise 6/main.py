@@ -51,12 +51,11 @@ def transition2(sold,a):
     snew = newState2(sold,a)
     return snew, reward2(sold,snew)
 
-def getMDP():
+def getMDP(discount=0.5):
     # Definition of MDP
     States = {1,2,3,4,5,6}
     AbsorbingStates = {1,6}
     Actions = OrderedDict.fromkeys([-1,1]) # Use OrderedDict instead of set so that the order stays the same
-    discount = 0.5
     probabilities = { (s1,s2,a): transitionProb(s1,s2,a) for s1 in States for s2 in States for a in Actions }
     return MarkovDecisionProcess(States, Actions, newState, reward, discount, probabilities=probabilities, AbsorbingStates=AbsorbingStates)
     
@@ -127,15 +126,15 @@ def plotApproxQ(discount=0.5, nActFuncs=100):
 def plotQError():
 
     # Settings
-    #eps_values = [0.2,0.4, 0.7]
-    #alpha_values = [0.2, 0.5, 0.7]
-    eps_values = [0.3]
-    alpha_values = [0.4]
+    eps_values = [0.2,0.4, 0.7]
+    alpha_values = [0.2, 0.5, 0.7]
+    #eps_values = [0.3]
+    #alpha_values = [0.4]
     repeats = 10 # NOG IMPLEMENTEREN!! zet TOL onredelijk laag (1e-40) en cap door max_iter, zodat ze allemaal dezelfde lengte hebben.
     tol = 1e-12
     n_plots = len(eps_values) * len(alpha_values)
 
-    MDP = getMDP()
+    MDP = getMDP(discount=0.5)
     MDP.q_iteration(max_iter=1000, tol=1e-15)
     QTrue = MDP.getQMatrix()
     for i,eps in enumerate(eps_values):
@@ -152,24 +151,18 @@ def plotQError():
                 ax.plot(np.arange(0,len(Qs)), error)
     plt.show()
 
-def main():
-    #plotQError()
-    #plotApproxQ(discount=0.9, nActFuncs=100)
-    plotReward(discount=0.5, nActFuncs=100)
-    """
-    MDP = getMDP()
-    MDP.q_iteration(max_iter=100, tol=1e-6)
-    Q1 = MDP.getQMatrix().T
-    MDP.Q_Learning(eps=0.3, alpha=0.5, max_iter=1000, tol=1e-6)
-    Q2 = MDP.getQMatrix().T
+def printQTables(gamma_values):
+    for gamma in gamma_values:
+        MDP = getMDP(discount=gamma)
+        MDP.q_iteration(max_iter=100, tol=1e-6)
+        print(MDP.getQMatrix().T)
 
-    # print results
-    policy = MDP.getOptimalPolicyFromQ()
-    actions = [policy(s) for s in States]
-    print(Q1)
-    print(Q2)
-    print(actions)
-    """
+def main():
+    plotQError()
+    #plotApproxQ(discount=0.9, nActFuncs=100)
+    #plotReward(discount=0.5, nActFuncs=100)
+    #printQTables(gamma_values=[0,0.1, 0.9, 1])
+    
 
 if __name__ == "__main__":
     main()
