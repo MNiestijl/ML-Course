@@ -11,7 +11,7 @@ from collections import OrderedDict
 import scipy.integrate as integrate
 
 # SETTINGS
-failureProb = 0
+failureProb = 0.3
 
 def newState(s,a):
     if rnd.choice([True, False],size=1, p=[failureProb,1-failureProb]):
@@ -129,33 +129,33 @@ def plotQError():
     # Settings
     #eps_values = [0.2,0.4, 0.7]
     #alpha_values = [0.2, 0.5, 0.7]
-    eps_values = [0.3]
-    alpha_values = [0.4]
+    eps_values = [0.5]
+    alpha_values = [0.01]
     repeats = 10 # NOG IMPLEMENTEREN!! zet TOL onredelijk laag (1e-40) en cap door max_iter, zodat ze allemaal dezelfde lengte hebben.
-    tol = 1e-12
+    tol = 1e-16
     n_plots = len(eps_values) * len(alpha_values)
 
     MDP = getMDP()
-    MDP.q_iteration(max_iter=1000, tol=1e-15)
+    MDP.q_iteration(max_iter=10000, tol=1e-15)
     QTrue = MDP.getQMatrix()
     for i,eps in enumerate(eps_values):
         for j,alpha in enumerate(alpha_values):
             fig = plt.figure(1)
             ax = fig.add_subplot(len(eps_values),len(alpha_values),i+1+3*j)
-            ax.set_yscale('log')
+            #ax.set_yscale('log')
             #ax.set_xlabel('Iteration')
             #ax.set_ylabel('Error')
             ax.set_title('eps={}, alpha={}'.format(eps, alpha))
             for k in range(0,repeats):
-                Qs = MDP.Q_Learning(eps=eps, alpha=alpha, max_iter=1000, tol=tol, return_all=True)
+                Qs = MDP.Q_Learning(eps=eps, alpha=alpha, decay_rate=0, max_iter=1000, tol=tol, return_all=True)
                 error = [ la.norm(QTrue - Qs[i], ord='fro') for i in range(0,len(Qs))]
                 ax.plot(np.arange(0,len(Qs)), error)
     plt.show()
 
 def main():
-    #plotQError()
+    plotQError()
     #plotApproxQ(discount=0.9, nActFuncs=100)
-    plotReward(discount=0.5, nActFuncs=100)
+    #plotReward(discount=0.5, nActFuncs=100)
     """
     MDP = getMDP()
     MDP.q_iteration(max_iter=100, tol=1e-6)
