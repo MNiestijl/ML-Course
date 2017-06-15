@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2016.5.29)  8 JUN 2017 18:59
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2016.5.29)  15 JUN 2017 22:48
 entering extended mode
 **report.tex
 (report.tex
@@ -805,30 +805,133 @@ Package amsmath Warning: Foreign command \over;
 (amsmath)                \frac or \genfrac should be used instead
 (amsmath)                 on input line 40.
 
-[1] (report.aux) ) 
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 50.
+("C:\Program Files\MiKTeX 2.9\tex\latex\base\omscmr.fd"
+File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 50.
+ [1]
+<Images/QErrors.png, id=21, 880.79062pt x 542.77782pt>
+File: Images/QErrors.png Graphic file (type png)
+
+<use Images/QErrors.png>
+Package pdftex.def Info: Images/QErrors.png used on input line 102.
+(pdftex.def)             Requested size: 440.39423pt x 271.38824pt.
+
+<Images/QErrors_0_2.png, id=23, 634.62094pt x 551.81157pt>
+File: Images/QErrors_0_2.png Graphic file (type png)
+
+<use Images/QErrors_0_2.png>
+Package pdftex.def Info: Images/QErrors_0_2.png used on input line 113.
+(pdftex.def)             Requested size: 222.12065pt x 193.13693pt.
+
+<Images/QErrors_0_05.png, id=24, 636.12656pt x 541.27219pt>
+File: Images/QErrors_0_05.png Graphic file (type png)
+
+<use Images/QErrors_0_05.png>
+Package pdftex.def Info: Images/QErrors_0_05.png used on input line 116.
+(pdftex.def)             Requested size: 222.64763pt x 189.44809pt.
+
+<Images/QErrors_0_01.png, id=25, 633.11531pt x 536.0025pt>
+File: Images/QErrors_0_01.png Graphic file (type png)
+
+<use Images/QErrors_0_01.png>
+Package pdftex.def Info: Images/QErrors_0_01.png used on input line 119.
+(pdftex.def)             Requested size: 221.59367pt x 187.60368pt.
+ [2 <./Images/QErrors.png>] [3 <./Images/QErrors_0_2.png> <./Images/QErrors_0_0
+5.png> <./Images/QErrors_0_01.png>]
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 129.
+
+
+("C:\Program Files\MiKTeX 2.9\tex\latex\psnfss\ot1pcr.fd"
+File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
+)
+LaTeX Font Info:    Try loading font information for OML+pcr on input line 135.
+
+
+("C:\Program Files\MiKTeX 2.9\tex\latex\psnfss\omlpcr.fd"
+File: omlpcr.fd 
+)
+LaTeX Font Info:    Font shape `OML/pcr/m/n' in size <8> not available
+(Font)              Font shape `OML/cmm/m/it' tried instead on input line 135.
+LaTeX Font Info:    Try loading font information for TS1+pcr on input line 140.
+
+
+("C:\Program Files\MiKTeX 2.9\tex\latex\psnfss\ts1pcr.fd"
+File: ts1pcr.fd 2001/06/04 font definitions for TS1/pcr.
+)
+<Images/q_approx6.png, id=36, 578.16pt x 433.62pt>
+File: Images/q_approx6.png Graphic file (type png)
+ <use Images/q_approx6.png>
+Package pdftex.def Info: Images/q_approx6.png used on input line 158.
+(pdftex.def)             Requested size: 231.2599pt x 173.44492pt.
+
+<Images/q_approx100.png, id=37, 578.16pt x 433.62pt>
+File: Images/q_approx100.png Graphic file (type png)
+
+<use Images/q_approx100.png>
+Package pdftex.def Info: Images/q_approx100.png used on input line 169.
+(pdftex.def)             Requested size: 231.2599pt x 173.44492pt.
+ [4 <./Images/q_approx6.png>]
+<Images/expected_return01.png, id=44, 578.16pt x 433.62pt>
+File: Images/expected_return01.png Graphic file (type png)
+
+<use Images/expected_return01.png>
+Package pdftex.def Info: Images/expected_return01.png used on input line 185.
+(pdftex.def)             Requested size: 231.2599pt x 173.44492pt.
+ [5 <./Images/q_approx100.png> <./Images/expected_return01.png>] <Images/SARSA_
+Q_Approx.png, id=50, 578.16pt x 433.62pt>
+File: Images/SARSA_Q_Approx.png Graphic file (type png)
+
+<use Images/SARSA_Q_Approx.png>
+Package pdftex.def Info: Images/SARSA_Q_Approx.png used on input line 226.
+(pdftex.def)             Requested size: 231.2599pt x 173.44492pt.
+
+<Images/return_SARSA_eps_0_3.png, id=51, 578.16pt x 433.62pt>
+File: Images/return_SARSA_eps_0_3.png Graphic file (type png)
+
+<use Images/return_SARSA_eps_0_3.png>
+Package pdftex.def Info: Images/return_SARSA_eps_0_3.png used on input line 234
+.
+(pdftex.def)             Requested size: 231.2599pt x 173.44492pt.
+
+<Images/return_SARSA_eps_0_8.png, id=52, 578.16pt x 433.62pt>
+File: Images/return_SARSA_eps_0_8.png Graphic file (type png)
+
+<use Images/return_SARSA_eps_0_8.png>
+Package pdftex.def Info: Images/return_SARSA_eps_0_8.png used on input line 239
+.
+(pdftex.def)             Requested size: 231.2599pt x 173.44492pt.
+ [6 <./Images/SARSA_Q_Approx.png>]
+[7 <./Images/return_SARSA_eps_0_3.png> <./Images/return_SARSA_eps_0_8.png>]
+(report.aux) ) 
 Here is how much of TeX's memory you used:
- 17795 strings out of 493698
- 342489 string characters out of 3144412
- 475510 words of memory out of 3000000
- 20979 multiletter control sequences out of 15000+200000
- 9815 words of font info for 38 fonts, out of 3000000 for 9000
+ 18059 strings out of 493698
+ 346554 string characters out of 3144412
+ 491510 words of memory out of 3000000
+ 21214 multiletter control sequences out of 15000+200000
+ 11196 words of font info for 43 fonts, out of 3000000 for 9000
  1025 hyphenation exceptions out of 8191
- 44i,5n,42p,10388b,275s stack positions out of 5000i,500n,10000p,200000b,50000s
-<C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/c
-mbx10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx12.pf
-b><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmcsc10.pfb><C:/P
-rogram Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Program F
-iles/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Program Files/MiK
-TeX 2.9/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Program Files/MiKTeX 2.9/f
-onts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type
-1/public/amsfonts/cm/cmr12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/
-amsfonts/cm/cmr7.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/c
-m/cmsy10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy7.
-pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmti12.pfb><C:/
-Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on report.pdf (2 pages, 123323 bytes).
+ 44i,9n,42p,10388b,1230s stack positions out of 5000i,500n,10000p,200000b,50000s
+{C:/Program Files/MiKTeX 2.9/fonts/enc/dvips/fontname/8r.enc}<C:/
+Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Program 
+Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Program Files/Mi
+KTeX 2.9/fonts/type1/public/amsfonts/cm/cmcsc10.pfb><C:/Program Files/MiKTeX 2.
+9/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Program Files/MiKTeX 2.9/fonts/
+type1/public/amsfonts/cm/cmmi10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/pu
+blic/amsfonts/cm/cmmi7.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsf
+onts/cm/cmmi8.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/c
+mr10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb>
+<C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Progra
+m Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files/
+MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Program Files/MiKTeX 2.
+9/fonts/type1/public/amsfonts/cm/cmti12.pfb><C:/Program Files/MiKTeX 2.9/fonts/
+type1/public/amsfonts/symbols/msbm10.pfb><C:/Program Files/MiKTeX 2.9/fonts/typ
+e1/urw/courier/ucrr8a.pfb>
+Output written on report.pdf (8 pages, 997996 bytes).
 PDF statistics:
- 61 PDF objects out of 1000 (max. 8388607)
+ 111 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 51 words of extra memory for PDF output out of 10000 (max. 10000000)
 

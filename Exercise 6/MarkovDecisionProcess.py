@@ -14,17 +14,9 @@ class MarkovDecisionProcess(): # VERANDER (newState, reward) naar transition (di
 		self.reward = reward
 		self.probabilities = probabilities 			# Matrix(States × States × Actions).
 		self.AbsorbingStates = AbsorbingStates
-		self.Q = self.initialize_Q
+		self.Q = self.initialize_Q()
 		self.Qfunc = lambda s,a: self.Q[(s,a)] 		
 		self.policy = None;
-
-
-		"""
-		Stochastic: 
-		transition probabilities are known, implement function that makes a stochastic transition given a state and an action.
-		q-iteration and Q-learning make use of the probabilities and the known values of Q and NOT using the transition function.
-		Function "newState" is in that case no longer necessary.
-		"""
 
 	def initialize_Q(self):
 		self.Q = { (s,a): 0 for s in self.States for a in self.Actions }
@@ -92,8 +84,8 @@ class MarkovDecisionProcess(): # VERANDER (newState, reward) naar transition (di
 	def getRandomState(self):
 		return rnd.choice(list(self.States-self.AbsorbingStates), 1)[0]
 
-	def Q_Learning_iterate(self, s, eps, alpha, converged, tol=1e-6):
-		s = s if s not in self.AbsorbingStates else self.getRandomState()
+	def Q_Learning_iterate(self, eps, alpha, converged, tol=1e-6):
+		s = self.getRandomState()
 		a = self.getBestAction(s)
 		if rnd.choice([True, False],size=1, p=[eps,1-eps]):
 			a = rnd.choice(list(self.Actions), 1)[0]
@@ -109,7 +101,6 @@ class MarkovDecisionProcess(): # VERANDER (newState, reward) naar transition (di
 		return snew
 
 	def Q_Learning(self, eps, alpha, decay_rate=0,max_iter=100, tol=1e-6, return_all=False):
-		state = self.getRandomState()
 		alphaDecayed =lambda n: alpha*m.exp(-decay_rate*n)
 		converged = self.resetConvergece()
 		self.initialize_Q()
@@ -117,8 +108,7 @@ class MarkovDecisionProcess(): # VERANDER (newState, reward) naar transition (di
 		for i in range(0,max_iter):
 			if return_all:
 				result.append(self.getQMatrix())
-			state = self.Q_Learning_iterate(state, eps, alphaDecayed(i), converged, tol=tol)
+			self.Q_Learning_iterate(eps, alphaDecayed(i), converged, tol=tol)
 			if all(converged.values()):
-				print(i)
 				break
 		return result if return_all else self.Q
