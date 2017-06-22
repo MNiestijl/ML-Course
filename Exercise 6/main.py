@@ -9,9 +9,13 @@ from MarkovDecisionProcess import MarkovDecisionProcess
 from ValueFunctionApprox import ValueFunctionApprox
 from collections import OrderedDict
 import scipy.integrate as integrate
+from scipy.stats import norm
+import numpy.polynomial.chebyshev as cheb
 
 # SETTINGS
-failureProb = 0
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
+failureProb = 0.3
 
 def newState(s,a):
     if rnd.choice([True, False],size=1, p=[failureProb,1-failureProb]):
@@ -58,7 +62,7 @@ def getMDP(discount=0.5):
     Actions = OrderedDict.fromkeys([-1,1]) # Use OrderedDict instead of set so that the order stays the same
     probabilities = { (s1,s2,a): transitionProb(s1,s2,a) for s1 in States for s2 in States for a in Actions }
     return MarkovDecisionProcess(States, Actions, newState, reward, discount, probabilities=probabilities, AbsorbingStates=AbsorbingStates)
-    
+
 def getVFA(discount, nActFuncs):
     getRandomState = lambda : rnd.uniform(0, 6, size=1)[0]
     Actions = {1, -1}
@@ -80,35 +84,34 @@ def playGame(discount, policy):
     return reward
 
 
-def plotReward(discount=0.5, nActFuncs=100):
-    eps = 0.7
-    alpha = 0.3
+def plotReward(eps,alpha, discount=0.5, nActFuncs=100):
     VFA = getVFA(discount=discount, nActFuncs=nActFuncs)
     nSteps = 100
-    step_size = 100
+    step_size = 30
     xs = np.linspace(1,6,100)
     reward = np.zeros(nSteps)
     for i in range(0,nSteps):
         for j in range(0,step_size):
-            VFA.Q_Learning_iterate(eps, alpha)
+            #VFA.Q_Learning_iterate(eps, alpha)
+            VFA.SARSA_iterate(eps, alpha)
         # Approximate Expected Return using numerical integration.
         y = np.array([ 1/5*VFA.getBestQVal(x) for x in xs ])
         reward[i] = np.trapz(y,xs) 
-    fig = plt.figure(1)
+    fig = plt.figure(2)
     ax = fig.add_subplot(1,1,1)
     iterations = np.cumsum(step_size*np.ones(nSteps))
     ax.plot(iterations, reward)
-    ax.set_title('Reward for various number of iterations')
+    #ax.set_title('Reward for various number of iterations')
+    ax.set_title('$\epsilon={}$'.format(eps))
     ax.set_xlabel('Number of iterations')
     ax.set_ylabel('Reward')
     plt.show()
 
 
-def plotApproxQ(discount=0.5, nActFuncs=100):
-    eps = 0.7
-    alpha = 0.3
+def plotApproxQ(eps,alpha, discount=0.5, nActFuncs=100):
     VFA = getVFA(discount=discount, nActFuncs=nActFuncs)
-    VFA.Q_Learning(eps, alpha, max_iter=10000)
+    #VFA.Q_Learning(eps, alpha, max_iter=10000)
+    VFA.SARSA(eps, alpha, max_iter=10000)
     xs = np.linspace(1,6,1000)
     y1 = [ VFA.evaluate(x,-1) for x in xs ]
     y2 = [ VFA.evaluate(x,1) for x in xs ]
@@ -119,6 +122,9 @@ def plotApproxQ(discount=0.5, nActFuncs=100):
     ax.set_title('Approximated Q-function for different actions')
     ax.set_xlabel('x')
     ax.set_ylabel('Q')
+    ax.xaxis.label.set_fontsize(16)
+    ax.yaxis.label.set_fontsize(16)
+    ax.title.set_fontsize(18)
     ax.legend(['left', 'right'])
     plt.show()
 
@@ -126,27 +132,32 @@ def plotApproxQ(discount=0.5, nActFuncs=100):
 def plotQError():
 
     # Settings
-    eps_values = [0.2,0.4, 0.7]
-    alpha_values = [0.2, 0.5, 0.7]
+    eps_values = [0.4]
+    alpha_values = [0.01]
     #eps_values = [0.3]
     #alpha_values = [0.4]
     repeats = 10 # NOG IMPLEMENTEREN!! zet TOL onredelijk laag (1e-40) en cap door max_iter, zodat ze allemaal dezelfde lengte hebben.
-    tol = 1e-12
+    tol = 1e-16
     n_plots = len(eps_values) * len(alpha_values)
 
     MDP = getMDP(discount=0.5)
-    MDP.q_iteration(max_iter=1000, tol=1e-15)
-    QTrue = MDP.getQMatrix()
+    if failureProb==0:
+        QTrue = np.array([[ 0, 1    , 0.5 , 0.625, 1.25, 0 ], 
+                          [ 0, 0.625, 1.25, 2.5  , 5.0 , 0 ]]).T
+    else:
+        MDP.q_iteration(max_iter=10000, tol=1e-16)
+        QTrue = MDP.getQMatrix()
+    
     for i,eps in enumerate(eps_values):
         for j,alpha in enumerate(alpha_values):
             fig = plt.figure(1)
-            ax = fig.add_subplot(len(eps_values),len(alpha_values),i+1+3*j)
-            ax.set_yscale('log')
-            #ax.set_xlabel('Iteration')
-            #ax.set_ylabel('Error')
-            ax.set_title('eps={}, alpha={}'.format(eps, alpha))
+            ax = fig.add_subplot(len(alpha_values),len(eps_values),i+1+len(eps_values*j))
+            #ax.set_yscale('log')
+            ax.set_xlabel('Iterations')
+            ax.set_ylabel('Error')
+            #ax.set_title('eps={}, alpha={}'.format(eps, alpha))
             for k in range(0,repeats):
-                Qs = MDP.Q_Learning(eps=eps, alpha=alpha, max_iter=1000, tol=tol, return_all=True)
+                Qs = MDP.Q_Learning(eps=eps, alpha=alpha, decay_rate=0, max_iter=5000, tol=tol, return_all=True)
                 error = [ la.norm(QTrue - Qs[i], ord='fro') for i in range(0,len(Qs))]
                 ax.plot(np.arange(0,len(Qs)), error)
     plt.show()
@@ -158,11 +169,12 @@ def printQTables(gamma_values):
         print(MDP.getQMatrix().T)
 
 def main():
-    plotQError()
-    #plotApproxQ(discount=0.9, nActFuncs=100)
-    #plotReward(discount=0.5, nActFuncs=100)
+    eps = 0.8
+    alpha = 0.4
+    #plotQError()
+    #plotApproxQ(eps,alpha, discount=0.5, nActFuncs=100)
+    plotReward(eps,alpha, discount=0.5, nActFuncs=100)
     #printQTables(gamma_values=[0,0.1, 0.9, 1])
-    
 
 if __name__ == "__main__":
     main()
