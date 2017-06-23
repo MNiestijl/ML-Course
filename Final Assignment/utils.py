@@ -43,4 +43,4 @@ def makeSubmissionFile(Xtrn, Ytrn, Xtest, Classifier, name="testSubmission", ove
 	with open(path, "w") as outfile:
 		outfile.write("Id,Class\n")
 		for e, lab in enumerate(list(y)):
-			outfile.write("%s,%s\n" % (e,lab)) 
+			outfile.write("%s,%s\n" % (e+1,lab)) 
