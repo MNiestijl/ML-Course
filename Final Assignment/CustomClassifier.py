@@ -28,6 +28,7 @@ class CC1(BaseEstimator, ClassifierMixin):
 		_,_, X1, X2, y1, y2 = u.splitData(X,y,self.labs)
 		self.C2.fit(X1,y1)
 		self.C3.fit(X2,y2)
+		return self
 
 	def predict(self,X):
 		pred1 = self.C1.predict(X)

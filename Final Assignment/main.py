@@ -54,23 +54,19 @@ def main():
 		#KNeighborsClassifier(n_neighbors=5, n_jobs=3),
 		#KNeighborsClassifier(n_neighbors=20, n_jobs=3),
 		#KNeighborsClassifier(weights='distance', n_neighbors=20, n_jobs=3),
-		CC1(CL1(), CL2(), CL2()),
-		CC1(CL1(), CL3(), CL3()),
-		CC1(CL1(), CL4(), CL4()),
-		CC2(CL2(), CL2()),
-		CC2(CL3(), CL3()),
-		CC2(CL4(), CL4()),
+		#CC1(CL1(), CL2(), CL2()),
+		#CC1(CL1(), CL3(), CL3()),
+		#CC1(CL1(), CL4(), CL4()),
+		#CC2(CL2(), CL2()),
+		#CC2(CL3(), CL3()),
+		#CC2(CL4(), CL4()),
 	]
 	for classifier in classifiers:
 		scores = cross_val_score(classifier,Xfull,Ytrn, cv=10)
 		print('\nScore = {} +/- {}'.format(scores.mean(), scores.std()))
 
-	#clfier = CC1(CL1(), CL1(), CL1())
-	#clfier.fit(Xfull,Ytrn)
-	#scores = clfier.score(Xfull,Ytrn)
-	#print('\nScore on Training set: {} +/- {}'.format(scores.mean(), scores.std()))
-
-
+	# Make submission File
+	u.makeSubmissionFile(Xtrn, Ytrn, Xtst, CL3(), name="SVC_C_10_poly_3", override=False)
 
 if __name__ == "__main__":
 	main()
