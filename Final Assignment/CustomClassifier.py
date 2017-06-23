@@ -4,6 +4,13 @@ import math as m
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.linear_model import LinearRegression
 
+""" 
+TODO: 
+- Add outlier detection and fit on the inliers only! (Does this improve performance?)
+- Can be done using trees or SVM with probability estimates (set treshhold)
+""" 
+
+
 # Split problem into two problems based on activity type using classifier1 and predict these two problems using classifier2 and classifier3
 class CC1(BaseEstimator, ClassifierMixin):
 	def __str__(self):
@@ -25,8 +32,8 @@ class CC1(BaseEstimator, ClassifierMixin):
 	def predict(self,X):
 		pred1 = self.C1.predict(X)
 		ix1,ix2,X1,X2,_,_ = u.splitData(X,pred1,[1])
-		y1 = np.array([m.floor(x) for x in self.C2.predict(X1)])
-		y2 = np.array([m.floor(x) for x in self.C3.predict(X2)])
+		y1 = self.C2.predict(X1)
+		y2 = self.C3.predict(X2)
 		y = np.ones(X.shape[0])
 		y[ix1] = y1
 		y[ix2] = y2

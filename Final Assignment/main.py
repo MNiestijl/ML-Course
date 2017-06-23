@@ -14,6 +14,19 @@ from CustomClassifier import CC1, CC2
 # Settings
 #mpl.rcParams['text.usetex'] = True
 
+"""
+TODO:
+- Find optimal classifier for two separate problems.
+- Hyperparameter selection! i.e., grid search. One for each problem! AUTOMATE, run ONCE, do not do manualy!!
+- Use test data to improve performance (somehow..)!
+- Self-training? 
+	Fit on TRAIN 	 
+	predict TEST 	 
+	Fit on all 		
+	predict all (score TRAIN) 
+	Repeat untill predicted labels on TEST converge or max_iter is reached.
+"""
+
 def main():
 	Xtrn, Ytrn, Strn, Xtst, Xall, Yall,Xfull = u.getData()
 
@@ -30,24 +43,32 @@ def main():
 	#plotPrincipalComponents(plt.figure(5),Xtrn2,Ytrn2)
 	#plt.show()
 
-	CL1 = SVC(kernel='rbf')
-	CL2 = SVC(kernel='rbf')
-	CL3 = SVC(kernel='rbf')
+	CL1 = lambda : SVC(C=1, kernel='rbf')
+	CL2 = lambda : SVC(C=10, kernel='poly', degree=2)
+	CL3 = lambda : SVC(C=10, kernel='poly', degree=3)
+	CL4 = lambda : SVC(C=10, kernel='rbf')
 	classifiers = [
-		SGDClassifier(loss='hinge', n_jobs=3),
-		SGDClassifier(loss='log', n_jobs=3),
-		SGDClassifier(loss='squared_hinge', n_jobs=3),
-		GaussianProcessClassifier(n_jobs=3),
-		QuadraticDiscriminantAnalysis(),
-		KNeighborsClassifier(n_neighbors=5, n_jobs=3),
-		KNeighborsClassifier(n_neighbors=20, n_jobs=3),
-		CC1(CL1, CL2, CL3),
-		CC2(CL1, CL2),
+		#SGDClassifier(loss='hinge', n_jobs=3),
+		#SGDClassifier(loss='log', n_jobs=3),
+		#SGDClassifier(loss='squared_hinge', n_jobs=3),
+		#KNeighborsClassifier(n_neighbors=5, n_jobs=3),
+		#KNeighborsClassifier(n_neighbors=20, n_jobs=3),
+		#KNeighborsClassifier(weights='distance', n_neighbors=20, n_jobs=3),
+		CC1(CL1(), CL2(), CL2()),
+		CC1(CL1(), CL3(), CL3()),
+		CC1(CL1(), CL4(), CL4()),
+		CC2(CL2(), CL2()),
+		CC2(CL3(), CL3()),
+		CC2(CL4(), CL4()),
 	]
-
 	for classifier in classifiers:
 		scores = cross_val_score(classifier,Xfull,Ytrn, cv=10)
 		print('\nScore = {} +/- {}'.format(scores.mean(), scores.std()))
+
+	#clfier = CC1(CL1(), CL1(), CL1())
+	#clfier.fit(Xfull,Ytrn)
+	#scores = clfier.score(Xfull,Ytrn)
+	#print('\nScore on Training set: {} +/- {}'.format(scores.mean(), scores.std()))
 
 
 
