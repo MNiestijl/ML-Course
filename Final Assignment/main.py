@@ -27,38 +27,40 @@ TODO:
 	Repeat untill predicted labels on TEST converge or max_iter is reached.
 """
 
-def OptimizeSVCParameters(X, Y, Cs, kernels, degrees=[3] cv=5):
+def OptimizeSVCParameters(X, Y, Cs, kernels, degrees=[3], cv=5):
 	combinations = [(C,kernel) for C in Cs for kernel in kernels]
 	allScores = {}
 	best = {}
 	bestScore = 0
 	for C, kernel in combinations:
+		print(C, kernel)
 		if kernel=='poly':
 			for degree in degrees:
-			classifier = SVC(C=C, kernel=kernel, degree=degree)
-			scores = cross_val_score(classifier, X, Y, cv=cv)
-			allScores[(C,kernel, degree)] = { mean : scores.mean(), std : scores.std() }
-			if scores.mean()>bestScore:
-				best['C'] = C
-				best['kernel'] = kernel
-				best['degree'] = degree
-				bestScore = scores.mean()
+				classifier = SVC(C=C, kernel=kernel, degree=degree)
+				scores = cross_val_score(classifier, X, Y, cv=cv)
+				allScores[(C,kernel, degree)] = { 'mean' : scores.mean(), 'std' : scores.std() }
+				if scores.mean()>bestScore:
+					best['C'] = C
+					best['kernel'] = kernel
+					best['degree'] = degree
+					bestScore = scores.mean()
 		else:
 			classifier = SVC(C=C, kernel=kernel)
 			scores = cross_val_score(classifier, X, Y, cv=cv)
-			allScores[(C,kernel, degree)] = { mean : scores.mean(), std : scores.std() }
+			allScores[(C,kernel)] = { 'mean' : scores.mean(), 'std' : scores.std() }
 			if scores.mean()>bestScore:
 				best['C'] = C
 				best['kernel'] = kernel
+				best['score'] = { 'mean' : scores.mean(), 'std' : scores.std() }
+				best['degree'] = -1
 				bestScore = scores.mean()
 	return best, allScores
 
-
-def test():
+def test(Xtrn, Ytrn):
 	CL1 = lambda : SVC(C=1, kernel='rbf')
-	CL2 = lambda : SVC(C=10, kernel='poly', degree=2)
-	CL3 = lambda : SVC(C=10, kernel='poly', degree=3)
-	CL4 = lambda : SVC(C=10, kernel='rbf')
+	CL2 = lambda : SVC(C=7, kernel='rbf')
+	CL3 = lambda : SVC(C=13, kernel='rbf')
+	CL4 = lambda : SVC(C=10, kernel='poly', degree=3)
 	classifiers = [
 		#SGDClassifier(loss='hinge', n_jobs=3),
 		#SGDClassifier(loss='log', n_jobs=3),
@@ -66,6 +68,9 @@ def test():
 		#KNeighborsClassifier(n_neighbors=5, n_jobs=3),
 		#KNeighborsClassifier(n_neighbors=20, n_jobs=3),
 		#KNeighborsClassifier(weights='distance', n_neighbors=20, n_jobs=3),
+		CL1(),
+		CC1(CL1(),CL2(),CL3()),
+		CC2(CL2(),CL3())
 		#CC1(CL1(), CL2(), CL2()),
 		#CC1(CL1(), CL3(), CL3()),
 		#CC1(CL1(), CL4(), CL4()),
@@ -74,7 +79,7 @@ def test():
 		#CC2(CL4(), CL4()),
 	]
 	for classifier in classifiers:
-		scores = cross_val_score(classifier,Xfull,Ytrn, cv=10)
+		scores = cross_val_score(classifier,Xtrn,Ytrn, cv=20)
 		print('\nScore = {} +/- {}'.format(scores.mean(), scores.std()))
 
 
@@ -94,14 +99,16 @@ def main():
 	#plotPrincipalComponents(plt.figure(5),Xtrn2,Ytrn2)
 	#plt.show()
 
+	test(Xtrn, Ytrn)
+
 	# Find optimal parameters:
 	Cs = [1,3,5,7,10,13,15,17,20,24,27,30]
 	kernels = ['rbf', 'poly']
 	degrees = [1,2,3,4,5]
 
-	#best1, allScores1 = OptimizeSVCParameters(Xtrn1, Ytrn1, Cs, kernels, degrees, cv=10)
-	#best2, allScores2 = OptimizeSVCParameters(Xtrn2, Ytrn2, Cs, kernels, degrees, cv=10)
-
+	#best1, allScores1 = OptimizeSVCParameters(Xtrn1, Ytrn1, Cs, kernels, degrees, cv=50)
+	#best2, allScores2 = OptimizeSVCParameters(Xtrn2, Ytrn2, Cs, kernels, degrees, cv=50)
+	#return best1, allScores1, best2, allScores2
 
 
 	

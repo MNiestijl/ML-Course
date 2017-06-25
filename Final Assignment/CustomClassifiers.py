@@ -3,6 +3,7 @@ import utils as u
 import math as m
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.linear_model import LinearRegression
+from sklearn.svm import SVC
 
 """ 
 TODO: 
@@ -50,7 +51,7 @@ class CC2(BaseEstimator, ClassifierMixin):
 	def __str__(self):
 		return "CC2"
 
-	def __init__(self,preCL=LinearRegression(),mainCL=LinearRegression(),labs=[1,2,3]):
+	def __init__(self,preCL=SVC(),mainCL=SVC(),labs=[1,2,3]):
 		self.preCL = preCL
 		self.mainCL = mainCL
 		self.labs = labs
