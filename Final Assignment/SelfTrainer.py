@@ -2,8 +2,9 @@ import numpy as np
 from copy import copy
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.svm import SVC
+from ClassifierWrapper import ClassifierWrapper
 
-class SelfTrainer(BaseEstimator, ClassifierMixin):
+class SelfTrainer(ClassifierWrapper):
 
 	# Base estimator must support estimation of probabilities.
 	def __init__(self, classifier=SVC(probability=True), treshold=0.7, max_iter=100):
@@ -17,10 +18,11 @@ class SelfTrainer(BaseEstimator, ClassifierMixin):
 		unlabIx = np.where(y==-1)[0]
 		return labIx, unlabIx
 
+	# Given the predicted probability of each class, return the predicted label.
 	def _getLabel(self, probabilities):
 		if np.all(probabilities<self.treshold):
 			return -1
-		return self.classifier.classes_[np.where(probabilities>self.treshold)]
+		return self.classifier.classes_[np.where(probabilities=max(probabilities))]
 
 	def fit(self,X,y):
 		y_current = copy(y)
@@ -29,24 +31,13 @@ class SelfTrainer(BaseEstimator, ClassifierMixin):
 			labIx, unlabIxNew = self._getInds(X,y_current)
 			if np.all(unlabIxNew==unlabIx): # Break if nothing has changed in last iteration.
 				break
-			unlabIx = unlabIxNew
+			unlabIx = copy(unlabIxNew)
 			print('number of unlabelled points: {}'.format(len(unlabIx)))
 			self.classifier.fit(X[labIx,:],y_current[labIx])
+			print(self.classifier.classes_)
 			if len(unlabIx)==0:
 				break
 			print('Predicting unlabelled data')
 			P = self.classifier.predict_proba(X[unlabIx,:])
-			y_current[unlabIx] = np.fromiter([self._getLabel(P[i,:]) for i in range(0,P.shape[1])], P.dtype)
+			y_current[unlabIx] = np.fromiter([self._getLabel(P[i,:]) for i in range(0,P.shape[1])], int)
 		return self
-
-	def predict(self, X):
-		return self.classifier.predict(X)
-
-	def score(self, X, y):
-		return self.classifier.score(X,y)
-
-	def predict_proba(self, X):
-		return self.classifier.predict_proba(X)
-
-	def predict_log_proba(self, X):
-		return self.classifier.predict_log_proba(X)

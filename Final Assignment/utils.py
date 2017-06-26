@@ -8,12 +8,12 @@ import numpy.linalg as la
 
 def getData():
 	Xtrn = loadmat('Xtrn.mat')['Xtrn']
-	Ytrn = loadmat('Ytrn.mat')['Ytrn'].ravel()
+	Ytrn = np.array(loadmat('Ytrn.mat')['Ytrn'].ravel(), dtype=int)
 	Strn = loadmat('Strn.mat')['Strn']
 	Xtst = loadmat('Xtst.mat')['Xtst']
 	# Add unlabelled data:
 	Xall = np.concatenate((Xtrn,Xtst),axis=0)
-	Yall = np.concatenate((Ytrn,-np.ones(Xtst.shape[0])))
+	Yall = np.array(np.concatenate((Ytrn,-np.ones(Xtst.shape[0]))), dtype=int)
 	Xfull = np.concatenate((Xtrn,Strn),axis=1)
 	return Xtrn, Ytrn, Strn, Xtst, Xall, Yall,Xfull
 
@@ -70,7 +70,7 @@ def makeSubmissionFile(Xtrn, Ytrn, Xtest, Classifier, name="testSubmission", ove
 	path = 'submissions/' + name + '.csv'
 	my_file = Path(path)
 	if Path(path).exists() and override==False:
-		raise('The following path is already occupied:\n{}'.format(path))
+		raise Exception('The following path is already occupied:\n{}'.format(path))
 
 	# Get prediction
 	try:
@@ -80,7 +80,7 @@ def makeSubmissionFile(Xtrn, Ytrn, Xtest, Classifier, name="testSubmission", ove
 
 	# Make sure the type is ok.
 	if y.dtype!='int32' and y.dtype!='int64':
-		raise('Classifier should predict labels in type int.')
+		raise Exception('Classifier should predict labels in type int.')
 
 	# Write file
 	with open(path, "w") as outfile:

@@ -12,6 +12,8 @@ import utils as u
 from CustomClassifiers import CC1, CC2
 from sklearn.ensemble import IsolationForest
 from SelfTrainer import SelfTrainer
+from LabelPropagationClassifier import LabelPropagationClassifier
+from sklearn.semi_supervised import LabelPropagation, LabelSpreading
 
 # Settings
 #mpl.rcParams['text.usetex'] = True
@@ -27,6 +29,9 @@ TODO:
 	Fit on all 		
 	predict all (score TRAIN) 
 	Repeat untill predicted labels on TEST converge or max_iter is reached.
+- Label Propagation
+- Other transductive methods??
+- Covariate shift: Calculate the weights in the source distribution (don't initially assume target distribution is the same.) (use regularization)
 """
 
 def OptimizeSVCParameters(X, Y, Cs, kernels, degrees=[3], cv=5):
@@ -111,12 +116,16 @@ def main():
 	test(Xtrn, Ytrn, sample_weight=W)
 	"""
 
-	classifier = SVC(C=10, kernel='poly', degree=3, probability=True)
-	selfTrainer = SelfTrainer(classifier=classifier, treshold=0.85, max_iter=10)
-	selfTrainer.fit(Xall,Yall)
-	predicted1 = selfTrainer.predict(Xtst)
-	predicted2 = selfTrainer.predict(Xall)
-
+	classifier = SVC(C=10, kernel='poly', degree=3, probability=True, decision_function_shape='ovr')
+	#selfTrainer = SelfTrainer(classifier=classifier, treshold=0.85, max_iter=10)
+	#selfTrainer.fit(Xall,Yall)
+	labelProp = LabelPropagationClassifier(
+		classifier = SVC(C=10, kernel='poly', degree=3, probability=True, decision_function_shape='ovr'),
+		Propagator = LabelSpreading(kernel='rbf', alpha=0.8)
+	)
+	#labelProp.fit(Xall, Yall)
+	#predicted1 = labelProp.predict(Xtst)
+	#predicted2 = labelProp.predict(Xall)
 	
 	# Make plots
 	#plotSingularValues(plt.figure(1),Xfull,N=10,normalize=True)
@@ -126,10 +135,10 @@ def main():
 	#plotPrincipalComponents(plt.figure(5),Xtrn2,Ytrn2)
 	#plotPrincipalComponents(plt.figure(6), Xmn, Ymn)
 	#plotPrincipalComponents(plt.figure(7), Xall, Yislab)
-	plotPrincipalComponents(plt.figure(8), Xtst, predicted1)
-	plotPrincipalComponents(plt.figure(9), Xall, predicted2)
+	#plotPrincipalComponents(plt.figure(8), Xtst, predicted1)
+	#plotPrincipalComponents(plt.figure(9), Xall, predicted2)
 
-	test(Xtrn, Ytrn)
+	#test(Xtrn, Ytrn)
 
 	# Find optimal parameters:
 	Cs = [1,3,5,7,10,13,15,17,20,24,27,30]
@@ -140,7 +149,7 @@ def main():
 	#best2, allScores2 = OptimizeSVCParameters(Xtrn2, Ytrn2, Cs, kernels, degrees, cv=10)	
 
 	#Make submission File
-	u.makeSubmissionFile(Xtrn, Ytrn, Xtst, selfTrainer, name="self_trainer_01", override=False)
+	u.makeSubmissionFile(Xall, Yall, Xtst, labelProp, name="LabelSpreading_rbf", override=False)
 
 	plt.show()
 
