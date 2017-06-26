@@ -27,9 +27,11 @@ class SelfTrainer(BaseEstimator, ClassifierMixin):
 		for i in range(0,self.max_iter):
 			print(i)
 			labIx, unlabIx = self._getInds(X,y_current)
+			print('number of unlabelled points: {}'.format(len(unlabIx)))
 			self.classifier.fit(X[labIx,:],y_current[labIx])
 			if len(unlabIx)==0:
 				break
+			print('Predicting unlabelled data')
 			P = self.classifier.predict_proba(X[unlabIx,:])
 			y_current[unlabIx] = np.fromiter([self._getLabel(P[i,:]) for i in range(0,P.shape[1])], P.dtype)
 		return self

@@ -58,8 +58,6 @@ def OptimizeSVCParameters(X, Y, Cs, kernels, degrees=[3], cv=5):
 				bestScore = scores.mean()
 	return best, allScores
 
-<<<<<<< HEAD
-
 def test(Xtrn, Ytrn, sample_weight=None):
 	CL1 = lambda : SVC(C=1, kernel='rbf')
 	CL2 = lambda : SVC(C=5, kernel='poly', degree=2)
@@ -74,7 +72,7 @@ def test(Xtrn, Ytrn, sample_weight=None):
 		#KNeighborsClassifier(weights='distance', n_neighbors=20, n_jobs=3),
 		CL1(),
 		CC1(CL1(),CL2(),CL3()),
-		CC2(CL2(),CL3())
+		CC2(CL2(),CL3()),
 		#CC1(CL1(), CL2(), CL2()),
 		#CC1(CL1(), CL3(), CL3()),
 		#CC1(CL1(), CL4(), CL4()),
