@@ -112,7 +112,7 @@ def main():
 	"""
 
 	classifier = SVC(C=10, kernel='poly', degree=3, probability=True)
-	selfTrainer = SelfTrainer(classifier=classifier, treshold=0.9, max_iter=10)
+	selfTrainer = SelfTrainer(classifier=classifier, treshold=0.85, max_iter=10)
 	selfTrainer.fit(Xall,Yall)
 	predicted1 = selfTrainer.predict(Xtst)
 	predicted2 = selfTrainer.predict(Xall)
@@ -128,7 +128,6 @@ def main():
 	#plotPrincipalComponents(plt.figure(7), Xall, Yislab)
 	plotPrincipalComponents(plt.figure(8), Xtst, predicted1)
 	plotPrincipalComponents(plt.figure(9), Xall, predicted2)
-	plt.show()
 
 	test(Xtrn, Ytrn)
 
@@ -142,6 +141,8 @@ def main():
 
 	#Make submission File
 	u.makeSubmissionFile(Xtrn, Ytrn, Xtst, selfTrainer, name="self_trainer_01", override=False)
+
+	plt.show()
 
 if __name__ == "__main__":
 	main()

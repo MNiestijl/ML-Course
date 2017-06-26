@@ -24,9 +24,12 @@ class SelfTrainer(BaseEstimator, ClassifierMixin):
 
 	def fit(self,X,y):
 		y_current = copy(y)
+		unlabIx = np.array([])
 		for i in range(0,self.max_iter):
-			print(i)
-			labIx, unlabIx = self._getInds(X,y_current)
+			labIx, unlabIxNew = self._getInds(X,y_current)
+			if np.all(unlabIxNew==unlabIx): # Break if nothing has changed in last iteration.
+				break
+			unlabIx = unlabIxNew
 			print('number of unlabelled points: {}'.format(len(unlabIx)))
 			self.classifier.fit(X[labIx,:],y_current[labIx])
 			if len(unlabIx)==0:
