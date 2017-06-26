@@ -1,1 +1,2 @@
-SVC_C_10_poly_3: 0.94588
+SVC_C_10_poly_3: 	0.94588
+CC1_01: 		0.93029 	CC1(SVC(C=1, kernel='rbf'), SVC(C=7, kernel='rbf'), SVC(C=13, kernel='rbf'))
