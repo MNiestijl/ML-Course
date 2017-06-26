@@ -35,26 +35,30 @@ def OptimizeSVCParameters(X, Y, Cs, kernels, degrees=[3], cv=5):
 	best = {}
 	bestScore = 0
 	for C, kernel in combinations:
+		print(C, kernel)
 		if kernel=='poly':
 			for degree in degrees:
 				classifier = SVC(C=C, kernel=kernel, degree=degree)
 				scores = cross_val_score(classifier, X, Y, cv=cv)
-				allScores[(C,kernel, degree)] = { mean : scores.mean(), std : scores.std() }
-			if scores.mean()>bestScore:
-				best['C'] = C
-				best['kernel'] = kernel
-				best['degree'] = degree
-				bestScore = scores.mean()
+				allScores[(C,kernel, degree)] = { 'mean' : scores.mean(), 'std' : scores.std() }
+				if scores.mean()>bestScore:
+					best['C'] = C
+					best['kernel'] = kernel
+					best['degree'] = degree
+					bestScore = scores.mean()
 		else:
 			classifier = SVC(C=C, kernel=kernel)
 			scores = cross_val_score(classifier, X, Y, cv=cv)
-			allScores[(C,kernel, degree)] = { mean : scores.mean(), std : scores.std() }
+			allScores[(C,kernel)] = { 'mean' : scores.mean(), 'std' : scores.std() }
 			if scores.mean()>bestScore:
 				best['C'] = C
 				best['kernel'] = kernel
+				best['score'] = { 'mean' : scores.mean(), 'std' : scores.std() }
+				best['degree'] = -1
 				bestScore = scores.mean()
 	return best, allScores
 
+<<<<<<< HEAD
 
 def test(Xtrn, Ytrn, sample_weight=None):
 	CL1 = lambda : SVC(C=1, kernel='rbf')
@@ -68,6 +72,9 @@ def test(Xtrn, Ytrn, sample_weight=None):
 		#KNeighborsClassifier(n_neighbors=5, n_jobs=3),
 		#KNeighborsClassifier(n_neighbors=20, n_jobs=3),
 		#KNeighborsClassifier(weights='distance', n_neighbors=20, n_jobs=3),
+		CL1(),
+		CC1(CL1(),CL2(),CL3()),
+		CC2(CL2(),CL3())
 		#CC1(CL1(), CL2(), CL2()),
 		#CC1(CL1(), CL3(), CL3()),
 		#CC1(CL1(), CL4(), CL4()),
@@ -124,6 +131,8 @@ def main():
 	plotPrincipalComponents(plt.figure(8), Xtst, predicted1)
 	plotPrincipalComponents(plt.figure(9), Xall, predicted2)
 	plt.show()
+
+	test(Xtrn, Ytrn)
 
 	# Find optimal parameters:
 	Cs = [1,3,5,7,10,13,15,17,20,24,27,30]
