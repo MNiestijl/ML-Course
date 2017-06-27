@@ -11,7 +11,7 @@ from sklearn.model_selection import cross_val_score
 import utils as u
 from CustomClassifiers import CC1, CC2
 from sklearn.ensemble import IsolationForest
-from SelfTrainer import SelfTrainer
+from SelfTrainer import SelfTrainer, CustomSelfTrainer
 from LabelPropagationClassifier import LabelPropagationClassifier
 from sklearn.semi_supervised import LabelPropagation, LabelSpreading
 
@@ -96,7 +96,8 @@ def main():
 	# Label active and unactive samples
 	labs = [1,2,3]
 	Yact = u.getActLabels(Ytrn,labs)
-	_,_, Xtrn1, Xtrn2, Ytrn1, Ytrn2 = u.splitData(Xtrn,Ytrn,labs)
+	ix1,ix2 = u.getSplit(Xtrn,Ytrn,labs)
+	Xtrn1, Xtrn2, Ytrn1, Ytrn2 = u.getSplitData((ix1,ix2),Xtrn, Ytrn)
 	Yislab = np.concatenate((np.ones(Xtrn.shape[0]),-np.ones(Xtst.shape[0])))
 
 	""" PLOT OUTLIERS
@@ -116,13 +117,13 @@ def main():
 	test(Xtrn, Ytrn, sample_weight=W)
 	"""
 
-	classifier = SVC(C=10, kernel='poly', degree=3, probability=True, decision_function_shape='ovr')
+	#classifier = SVC(C=10, kernel='poly', degree=3, probability=True, decision_function_shape='ovr')
 	#selfTrainer = SelfTrainer(classifier=classifier, treshold=0.85, max_iter=10)
 	#selfTrainer.fit(Xall,Yall)
-	labelProp = LabelPropagationClassifier(
-		classifier = SVC(C=10, kernel='poly', degree=3, probability=True, decision_function_shape='ovr'),
-		Propagator = LabelSpreading(kernel='rbf', alpha=0.8)
-	)
+	#labelProp = LabelPropagationClassifier(
+	#	classifier = SVC(C=10, kernel='poly', degree=3, probability=True, decision_function_shape='ovr'),
+	#	Propagator = LabelSpreading(kernel='rbf', alpha=0.8)
+	#)
 	#labelProp.fit(Xall, Yall)
 	#predicted1 = labelProp.predict(Xtst)
 	#predicted2 = labelProp.predict(Xall)
@@ -135,8 +136,6 @@ def main():
 	#plotPrincipalComponents(plt.figure(5),Xtrn2,Ytrn2)
 	#plotPrincipalComponents(plt.figure(6), Xmn, Ymn)
 	#plotPrincipalComponents(plt.figure(7), Xall, Yislab)
-	#plotPrincipalComponents(plt.figure(8), Xtst, predicted1)
-	#plotPrincipalComponents(plt.figure(9), Xall, predicted2)
 
 	#test(Xtrn, Ytrn)
 
@@ -149,7 +148,16 @@ def main():
 	#best2, allScores2 = OptimizeSVCParameters(Xtrn2, Ytrn2, Cs, kernels, degrees, cv=10)	
 
 	#Make submission File
-	u.makeSubmissionFile(Xall, Yall, Xtst, labelProp, name="LabelSpreading_rbf", override=False)
+	classifier = SVC(C=10, kernel='poly', degree=3, probability=True, decision_function_shape='ovr')
+	customSelfTrainer = CustomSelfTrainer(classifier=classifier, treshold=0.8)
+	name = 'customSelfTrainer_02'
+	u.makeSubmissionFile(Xall, Yall, Xtst, customSelfTrainer, name=name, override=True)
+
+	best = 'SVC_C_10_poly_3'
+	y0 = u.loadSubmission(best)
+	y1 = u.loadSubmission(name)
+	print(sum([ y0[i]!=y1[i] for i in range(0,len(y0)) ]))
+
 
 	plt.show()
 

@@ -26,14 +26,17 @@ class CC1(BaseEstimator, ClassifierMixin):
 	def fit(self,X,y, sample_weight=None):
 		Yact = u.getActLabels(y,self.labs)
 		self.C1.fit(X,Yact,sample_weight=sample_weight)
-		ix1,ix2, X1, X2, y1, y2 = u.splitData(X,y,self.labs)
+		ix1,ix2 = u.getSplit(X,y,self.labs)
+		X1, X2, y1, y2 = u.getSplitData((ix1,ix2),X, y)
 		self.C2.fit(X1,y1,sample_weight=sample_weight[ix1])
 		self.C3.fit(X2,y2,sample_weight=sample_weight[ix2])
 		return self
 
 	def predict(self,X):
 		pred1 = self.C1.predict(X)
-		ix1,ix2,X1,X2,_,_ = u.splitData(X,pred1,[1])
+		ix1,ix2 = u.getSplit(X,pred1,[1])
+		X1, X2 = u.getSplitData((ix1,ix2),X)
+		X1, X2 = X[ix1,:], X[ix2,:]
 		y1 = self.C2.predict(X1)
 		y2 = self.C3.predict(X2)
 		y = np.ones(X.shape[0], dtype=int)

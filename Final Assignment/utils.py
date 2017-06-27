@@ -6,6 +6,10 @@ from pathlib import Path
 import math as m
 import numpy.linalg as la
 
+def loadSubmission(name):
+	path = 'submissions/' + name + '.csv'
+	return pd.read_csv(path, sep=',',header=0).as_matrix()[1,:]
+
 def getData():
 	Xtrn = loadmat('Xtrn.mat')['Xtrn']
 	Ytrn = np.array(loadmat('Ytrn.mat')['Ytrn'].ravel(), dtype=int)
@@ -17,14 +21,21 @@ def getData():
 	Xfull = np.concatenate((Xtrn,Strn),axis=1)
 	return Xtrn, Ytrn, Strn, Xtst, Xall, Yall,Xfull
 
+def getSplitData(split, X,y=None):
+	result = [X[ix,:] for ix in split]
+	if y is not None:
+		result = result + [y[ix] for ix in split]
+	return result
+
+
 def getActLabels(y,labs):
 	return np.array([1 if yi in labs else 0 for yi in y])
 
-# Split data based in labs. Includes unlabelled points in both splits.
-def splitData(X,y,labs):
+# Split data based on labs. 
+def getSplit(X,y,labs):
 	C1 = [ i for i,yi in enumerate(y) if yi in labs ]
 	C2 = [ i for i,yi in enumerate(y) if yi not in labs ]
-	return C1, C2, X[C1,:], X[C2,:], y[C1],y[C2]
+	return C1, C2#, X[C1,:], X[C2,:], y[C1],y[C2]
 
 def getMean(X,y,S,label, person):
 	ixP = set(np.where(S==person)[0])
