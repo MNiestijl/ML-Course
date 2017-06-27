@@ -149,7 +149,7 @@ def main():
 
 	#Make submission File
 	classifier = SVC(C=10, kernel='poly', degree=3, probability=True, decision_function_shape='ovr')
-	customSelfTrainer = CustomSelfTrainer(classifier=classifier, treshold=0.8)
+	customSelfTrainer = CustomSelfTrainer(classifier=classifier, treshold=0.6)
 	name = 'customSelfTrainer_02'
 	u.makeSubmissionFile(Xall, Yall, Xtst, customSelfTrainer, name=name, override=True)
 

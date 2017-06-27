@@ -74,7 +74,10 @@ def makeSubmissionFile(Xtrn, Ytrn, Xtest, Classifier, name="testSubmission", ove
 
 	# Fit classifier.
 	Classifier.fit(Xtrn,Ytrn)
-	scores = Classifier.score(Xtrn,Ytrn)
+
+	# Score classifier on labelled part of training data, for referrence
+	labIx, unlabIx = getSplit(Xtrn,Ytrn, list(set(np.unique(Ytrn))-{-1}))	
+	scores = Classifier.score(Xtrn[labIx,:],Ytrn[labIx])
 	print('\nScore on Training set: {} +/- {}'.format(scores.mean(), scores.std()))
 
 	# CHeck if the path is occupied.
