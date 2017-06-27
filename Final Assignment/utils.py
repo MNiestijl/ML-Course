@@ -8,7 +8,7 @@ import numpy.linalg as la
 
 def loadSubmission(name):
 	path = 'submissions/' + name + '.csv'
-	return pd.read_csv(path, sep=',',header=0).as_matrix()[1,:]
+	return pd.read_csv(path, sep=',',header=0).as_matrix()[:,1]
 
 def getData():
 	Xtrn = loadmat('Xtrn.mat')['Xtrn']

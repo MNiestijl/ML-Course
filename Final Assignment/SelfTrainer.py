@@ -8,7 +8,7 @@ import utils as u
 class SelfTrainer(ClassifierWrapper):
 
 	# Base estimator must support estimation of probabilities.
-	def __init__(self, classifier=SVC(probability=True), treshold=0.7, max_iter=100, discount=0.5):
+	def __init__(self, classifier=SVC(probability=True), treshold=0.7, max_iter=100, discount=1):
 		self.classifier = classifier
 		self.treshold = treshold
 		self.max_iter = max_iter
@@ -28,14 +28,12 @@ class SelfTrainer(ClassifierWrapper):
 		getInds = lambda: u.getSplit(X,y_current, classes)
 		for i in range(0,self.max_iter):
 			labIx, unlabIxNew = getInds()
-			newIx = list(set(unlabIx) - set(unlabIxNew))
-			weights[newIx] *= discount**i
-			if len(newIx)==0: # Break if nothing has changed in last iteration.
+			if len(list(set(unlabIxNew).symmetric_difference(set(unlabIx))))==0: # Break if nothing has changed in last iteration.
 				break
 			unlabIx = copy(unlabIxNew)
+			weights[unlabIxNew] *= self.discount**(i+1)
 			print('number of unlabelled points: {}'.format(len(unlabIx)))
-			self.classifier.fit(X[labIx,:],y_current[labIx])
-			print(self.classifier.classes_)
+			self.classifier.fit(X[labIx,:],y_current[labIx], sample_weight=weights[labIx])
 			if len(unlabIx)==0:
 				break
 			print('Predicting unlabelled data')
@@ -66,10 +64,8 @@ class CustomSelfTrainer(ClassifierWrapper):
 
 	def fit(self, X, y):
 		classes = list(set(np.unique(y)) - {-1})
-		print(classes)
 		# Train on labelled data
 		labIx, unlabIx = u.getSplit(X,y,classes)
-		print(len(labIx), len(unlabIx))
 		Xtrn, Xtst, Ytrn, Ytst = u.getSplitData((labIx, unlabIx), X, y)
 		self.classifier.fit(Xtrn, Ytrn)
 
@@ -79,8 +75,6 @@ class CustomSelfTrainer(ClassifierWrapper):
 
 		# Use predictions made with high enough confidence as training data.
 		labIx2, unlabIx2 = u.getSplit(Xtst,Ytst, classes)
-		print(len(labIx2), len(unlabIx2))
-		print(np.unique(Ytst[labIx2]))
 		self.classifier.fit(Xtst[labIx2,:], Ytst[labIx2])
 
 

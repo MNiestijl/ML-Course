@@ -1,2 +1,14 @@
 SVC_C_10_poly_3: 	0.94588
 CC1_01: 		0.93029 	CC1(SVC(C=1, kernel='rbf'), SVC(C=7, kernel='rbf'), SVC(C=13, kernel='rbf'))
+
+
+SelfTrainers:
+Met SVC(C=10, kernel='poly', degree=3, probability=True, decision_function_shape='ovr'):
+selfTrainer_01: treshold=0.9, discount=1
+
+
+CustomSelfTrainers: Met SVC(C=10, kernel='poly', degree=3, probability=True, decision_function_shape='ovr')
+customSelfTrainer01: treshold=0.6
+customSelfTrainer02: treshold=0.8
+customSelfTrainer03: treshold=0.9
+customSelfTrainer04: treshold=0.95

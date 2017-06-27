@@ -147,22 +147,23 @@ def main():
 	#best1, allScores1 = OptimizeSVCParameters(Xtrn1, Ytrn1, Cs, kernels, degrees, cv=10)
 	#best2, allScores2 = OptimizeSVCParameters(Xtrn2, Ytrn2, Cs, kernels, degrees, cv=10)	
 
-	classifier = SVC(C=10, kernel='poly', degree=3, probability=True, decision_function_shape='ovr')
+	classifier = SVC(C=10, kernel='rbf', degree=3, probability=True, decision_function_shape='ovr')
+	#classifier = KNeighborsClassifier()
 	labelProp = LabelPropagationClassifier(
 		classifier = classifier,
 		Propagator = LabelSpreading(kernel='knn',n_neighbors=3, alpha=0.8)
 	)
-	customSelfTrainer = CustomSelfTrainer(classifier=classifier, treshold=0.6)
-	selfTrainer = SelfTrainer(classifier=classifier, treshold=0.7, max_iter=20, discount=0.5)
-	#Make submission File
+	customSelfTrainer = CustomSelfTrainer(classifier=classifier, treshold=0.95)
+	selfTrainer = SelfTrainer(classifier=classifier, treshold=0.9, max_iter=20, discount=0.9)
 	
-	name = 'label_prop_01'
-	u.makeSubmissionFile(Xall, Yall, Xtst, labelProp, name=name, override=True)
+	#Make submission File
+	name = 'selfTrainer_01'
+	u.makeSubmissionFile(Xall, Yall, Xtst, selfTrainer, name=name, override=False)
 
 	best = 'SVC_C_10_poly_3'
 	y0 = u.loadSubmission(best)
 	y1 = u.loadSubmission(name)
-	print(sum([ y0[i]!=y1[i] for i in range(0,len(y0)) ]))
+	print(sum([ 1 if y0[i]!=y1[i] else 0 for i in range(0,len(y0)) ]))
 
 
 	plt.show()
