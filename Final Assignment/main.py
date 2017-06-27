@@ -147,11 +147,17 @@ def main():
 	#best1, allScores1 = OptimizeSVCParameters(Xtrn1, Ytrn1, Cs, kernels, degrees, cv=10)
 	#best2, allScores2 = OptimizeSVCParameters(Xtrn2, Ytrn2, Cs, kernels, degrees, cv=10)	
 
-	#Make submission File
 	classifier = SVC(C=10, kernel='poly', degree=3, probability=True, decision_function_shape='ovr')
+	labelProp = LabelPropagationClassifier(
+		classifier = classifier,
+		Propagator = LabelSpreading(kernel='knn',n_neighbors=3, alpha=0.8)
+	)
 	customSelfTrainer = CustomSelfTrainer(classifier=classifier, treshold=0.6)
-	name = 'customSelfTrainer_02'
-	u.makeSubmissionFile(Xall, Yall, Xtst, customSelfTrainer, name=name, override=True)
+	selfTrainer = SelfTrainer(classifier=classifier, treshold=0.7, max_iter=20, discount=0.5)
+	#Make submission File
+	
+	name = 'label_prop_01'
+	u.makeSubmissionFile(Xall, Yall, Xtst, labelProp, name=name, override=True)
 
 	best = 'SVC_C_10_poly_3'
 	y0 = u.loadSubmission(best)
