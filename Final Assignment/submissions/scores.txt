@@ -1,14 +1,86 @@
+CL1 = SVC(C=10, kernel='poly', degree=2, class_weight='balanced')
+CL2 = LinearDiscriminantAnalysis(solver='eigen')
+CL3 = SVC(C=10, kernel='poly', degree=3, class_weight='balanced', decision_function_shape='ovr', probability=True)
+CL5 = SVC(C=10, kernel='poly', degree=5, class_weight='balanced', decision_function_shape='ovr', probability=True)
+
+
+
+ON TEST DATA:
+
 SVC_C_10_poly_3: 	0.94588
 CC1_01: 		0.93029 	CC1(SVC(C=1, kernel='rbf'), SVC(C=7, kernel='rbf'), SVC(C=13, kernel='rbf'))
+CC1_02			0.96774		CC1(CL1, CL2, CL3)
 
 
 SelfTrainers:
 Met SVC(C=10, kernel='poly', degree=3, probability=True, decision_function_shape='ovr'):
-selfTrainer_01: treshold=0.9, discount=1
+selfTrainer_01: 	0.94928		treshold=0.9, discount=1
+
+Met CC1(CL1, CL2, CL3):
+selfTrainer_03:		0.97401		treshold=0.95, discount=0.9
+selfTrainer_04:				treshold=0.75, discount=1
+selfTrainer_OTHER:	0.97204		treshold=0.75, discount=0.8 (Accidentaly removed)
+
+With repeating/combining process:
+selfTrainer_16		0.97724		discount=1, tresholds=np.linspace(.99,.60, 200))
+selfTrainer_17		0.97545		discount=0.99, tresholds=np.linspace(.99,.60, 200))
 
 
-CustomSelfTrainers: Met SVC(C=10, kernel='poly', degree=3, probability=True, decision_function_shape='ovr')
+Met CC1(CL1, CL2, CL5):
+selfTrainer_05:		0.97491		treshold=0.95, discount=0.9
+selfTrainer_06:		0.97294		treshold=0.80, discount=0.95
+
+# Voor 11: Heb een bug gevonden waarbij discounts niet goed gebruikt werden (het werd voor unlab elke keer keer discount**i gedaan ipv OF keer discount OF =discount**i
+# Denk echt dat dit de performance wel gaat verbeteren wtf yo, hoop het!
+
+With repeating/combining process:
+selfTrainer_11:		0.97634		treshold=0.99, max_iter=27, discount=0.99, d_tresh=0.04, d_iter=4
+selfTrainer_12:		0.97634		treshold=0.99, max_iter=59, discount=0.99, d_tresh=0.02, d_iter=4
+selfTrainer_13:		0.97724		discount=0.995, tresholds=np.linspace(.99,.60, 200)
+selfTrainer_14:		0.97760		discount=1, tresholds=np.linspace(.99,.60, 200))
+selfTrainer_15:		0.97742		discount=0.99, tresholds=np.linspace(.99,.60, 200)
+
+Met CC1(CL1, CL2, RFC(100)):
+selfTrainer_07		0.96237		treshold=0.8, discount=0.95
+
+Met CC1(CL1, CL2, RFC(500)):
+selfTrainer_08		0.96667		treshold=0.9, discount=0.95	(214 different values from selfTrainer_05)
+selfTrainer_10		0.96308		treshold=0.8, discount=0.8	(216 different values from selfTrainer_05)
+
+
+CustomSelfTrainers: 
+Met SVC(C=10, kernel='poly', degree=3, probability=True, decision_function_shape='ovr')
 customSelfTrainer01: treshold=0.6
 customSelfTrainer02: treshold=0.8
 customSelfTrainer03: treshold=0.9
 customSelfTrainer04: treshold=0.95
+
+Transductive SVM:
+TODO
+
+
+
+
+
+
+ON TRAINING DATA: CV = 10-fold:
+
+CL01 = SVC(C=10, kernel='poly', degree=3, class_weight='balanced')
+CL02 = SVC(C=10, kernel='poly', degree=3)
+CL1 = SVC(C=10, kernel='poly', degree=2, class_weight='balanced')
+CL21 = SVC(C=10, kernel='poly', degree=3, class_weight='balanced', decision_function_shape='ovr', probability=True)
+CL22 = LinearDiscriminantAnalysis()
+CL23 = QuadraticDiscriminantAnalysis()
+CL3 = SVC(C=10, kernel='poly', degree=3, class_weight='balanced', decision_function_shape='ovr', probability=True)
+
+CL01: 0.9555
+CL02: 0.9555 
+CC1(CL1, CL21, CL3): 	0.9561
+CC1(CL1, CL22, CL3): 	0.9620
+CC1(CL1, CL23, CL3): 	0.9076
+CC1(CL1, CL22, CL22):
+CC1(CL1, CL22, RFC(100)):0.9536 (without weights)
+CC1(CL1, CL22, RFC(100)):0.9546 (with weights k=1)
+CC1(CL1, CL22, RFC(100)):0.9511 (with weights k=10)
+CC1(CL1, CL22, RFC(100)):0.9514 (with weights k=.5)
+

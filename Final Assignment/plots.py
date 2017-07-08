@@ -9,6 +9,7 @@ import matplotlib as mpl
 from mpl_toolkits.mplot3d import Axes3D
 import sklearn as sk
 from sklearn.decomposition import PCA
+import utils as u
 
 # mpl.rcParams['text.usetex'] = True
 
@@ -28,9 +29,9 @@ def get_cmap(N):
 		return scalar_map.to_rgba(index)
 	return map_index_to_rgb_color
 
-def plotPrincipalComponents(fig,X,y=None):
+def plotPrincipalComponents(fig,X,y=None, components=[0,1,2]):
 	ax = fig.add_subplot(1,1,1, projection='3d')
-	pca = PCA(n_components=3, whiten=False)
+	pca = PCA(n_components=max(components)+1, whiten=False)
 	Xtrans = pca.fit_transform(X)
 	ylab = y[np.where(y!=-1)[0]]
 	unlab = np.where(y==-1)[0]
@@ -45,12 +46,20 @@ def plotPrincipalComponents(fig,X,y=None):
 		labels = np.unique(ylab)
 		cmap = get_cmap(len(labels))
 		for i,lab in enumerate(labels):
-			x1 = Xtrans[np.where(y==lab),0]
-			x2 = Xtrans[np.where(y==lab),1]
-			x3 = Xtrans[np.where(y==lab),2]
-			ax.scatter(x1,x2,x3,'o',c=cmap(i), alpha=alpha,label=str(lab))
+			xs = [ Xtrans[np.where(y==lab),c] for c in components ]
+			ax.scatter(*xs,'o',c=cmap(i), alpha=alpha,label=str(lab))
 	
 	ax.legend()
-	ax.set_xlabel('1^{st} Principal component')
-	ax.set_ylabel('2^{d} Principal component')
-	ax.set_zlabel('3^{d} Principal component')
+	ax.set_xlabel('Principal component {}'.format(components[0]+1))
+	ax.set_ylabel('Principal component {}'.format(components[1]+1))
+	ax.set_zlabel('Principal component {}'.format(components[2]+1))
+
+def plotPersonData(fig, X,y,S, person, components=[0,1,2]):
+	plotPrincipalComponents(fig, *u.splitByInds([u.getPersonInds(S,person)],X, y), components=components)
+
+def plotRanks(fig, X,y,S):
+	persons, labels = np.unique(S), np.unique(y)
+	ranks = [la.matrix_rank(u.getCovariance(X,y,S,p,l)) for p in persons for l in labels]
+	print(min(ranks))
+	ax = fig.add_subplot(111)
+	ax.hist(ranks)

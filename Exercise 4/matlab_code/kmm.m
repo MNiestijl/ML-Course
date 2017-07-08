@@ -34,9 +34,9 @@ K = @(x1,x2) exp(-1/2*norm(x1-x2)^2);
 
 % Create kernel matrix Kmat and vector k
 Kmat = zeros(n,n);
-k = zeros(m,1);
+k = zeros(n,1);
 for i=1:n
-    for j=1:m
+    for j=1:n
         Kmat(i,j) = 2/(n^2) * K(X(i,:),X(j,:));
     end
     k(i) = -2/(m*n) * sum(arrayfun(@(j) K(X(i,:),Z(j,:)),1:m));
