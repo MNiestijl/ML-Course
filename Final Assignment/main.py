@@ -17,7 +17,7 @@ from sklearn.semi_supervised import LabelPropagation, LabelSpreading
 from TrivialClassifier import TrivialClassifier
 
 # Settings
-#mpl.rcParams['text.usetex'] = True
+mpl.rcParams['text.usetex'] = True
 
 """
 TODO:
@@ -95,11 +95,11 @@ def main():
 
 	# Label active and unactive samples
 	labs = [1,2,3]
-	Yact = u.mapIsIn(Ytrn,labs)
+	Yact = u.mapIsIn(Ytrn,labs, yes=1, no=2)
 	Xtrn1, Xtrn2, Ytrn1, Ytrn2, Strn1, Strn2 = u.splitData(labs, Xtrn, Ytrn, S=Strn)
 	#ix1,ix2 = u.getSplit(Ytrn,labs)
 	#Xtrn1, Xtrn2, Ytrn1, Ytrn2, Strn1, Strn2 = u.splitByInds((ix1,ix2),Xtrn, Ytrn, Strn)
-	Yislab = np.concatenate((np.ones(Xtrn.shape[0]),-np.ones(Xtst.shape[0])))
+	Yislab = np.concatenate((np.ones(Xtrn.shape[0], dtype=int),-np.ones(Xtst.shape[0], dtype=int)))
 	_, X45, _, Y45, _, S45 = u.splitData([6], Xtrn2, Ytrn2, S=Strn2)
 	Y2is6 = u.mapIsIn(Ytrn2,[6])
 
@@ -123,19 +123,20 @@ def main():
 	
 	# Make plots
 
-	plotPersonData1 = lambda fig, person: plotPersonData(plt.figure(fig),Xtrn1,Ytrn1,Strn1,person)
-	plotPersonData2 = lambda fig, person: plotPersonData(plt.figure(fig),Xtrn2,Ytrn2,Strn2,person)
-	plotPersonData6_1 = lambda fig, person: plotPersonData(plt.figure(fig),X45,Y45,S45,person)
-	plotPersonData6_2 = lambda fig, person: plotPersonData(plt.figure(fig),X45,Y45,S45,person, components=[1,2,3])
+	plotPersonData0 = lambda fig, person, title='': plotPersonData(plt.figure(fig),Xtrn,Ytrn,Strn,person, title=title)
+	plotPersonData1 = lambda fig, person, title='': plotPersonData(plt.figure(fig),Xtrn1,Ytrn1,Strn1,person, title=title)
+	plotPersonData2 = lambda fig, person, title='': plotPersonData(plt.figure(fig),Xtrn2,Ytrn2,Strn2,person, title=title)
+	plotPersonData6_1 = lambda fig, person, title='': plotPersonData(plt.figure(fig),X45,Y45,S45,person, title=title)
+	plotPersonData6_2 = lambda fig, person, title='': plotPersonData(plt.figure(fig),X45,Y45,S45,person, components=[1,2,3], title=title)
 
-	#plotSingularValues(plt.figure(1),N=10,normalize=True)
-	#plotPrincipalComponents(plt.figure(2),Xtrn,Ytrn)
-	#plotPrincipalComponents(plt.figure(3),Xtrn,Yact)
-	#plotPrincipalComponents(plt.figure(4),Xtrn1,Ytrn1)
-	#plotPrincipalComponents(plt.figure(5),Xtrn2,Ytrn2)
-	#plotPrincipalComponents(plt.figure(7), Xall, Yislab)
-	#plotPersonData1(8,11)
-	#plotPersonData2(8,9)
+	#plotSingularValues(plt.figure(1), Xtrn, N=10,normalize=True)
+	#plotPrincipalComponents(plt.figure(2),Xtrn,Ytrn, title='Training data')
+	#plotPrincipalComponents(plt.figure(3),Xtrn,Yact, title='Activity type of training data')
+	#plotPrincipalComponents(plt.figure(4),Xtrn1,Ytrn1, title='Activity type 1')
+	#plotPrincipalComponents(plt.figure(5),Xtrn2,Ytrn2, title='Activity type 2')
+	#plotPrincipalComponents(plt.figure(7), Xall, Yislab, title='Training and test data')
+	#plotPersonData1(8,3)
+	#plotPersonData2(9,3)
 	#plotPrincipalComponents(plt.figure(10), X45, Y45)
 	#plotPersonData6_1(11, 1)
 	#plotPersonData6_2(12, 11)
@@ -178,13 +179,12 @@ def main():
 	
 	# Make submission File
 
+	"""
+
 	name = 'selfTrainer_17'
 	u.makeSubmissionFile(Xall, Yall, Xtst, getSelfTrainer, name=name, override=False, sample_weight=Wall, repeats=2)
+	"""
 
-	best = 'selfTrainer_14'
-	y0 = u.loadSubmission(best)
-	y1 = u.loadSubmission(name)
-	print(sum([ 1 if y0[i]!=y1[i] else 0 for i in range(0,len(y0)) ]))
 
 	"""
 	print('\nScores without weights:')
@@ -195,6 +195,20 @@ def main():
 	
 	#plt.hist(W)
 
+	name = 'combined2'
+	classifiers = [
+		('selfTrainer_12', 7),
+		('selfTrainer_13', 4),
+		('selfTrainer_16', 3),
+		('selfTrainer_15', 1),
+		('selfTrainer_14', 2),
+	]
+	y = u.combineSubmissions(*zip(*classifiers))
+	u.savePrediction(y, name=name, override=False)
+	best = 'selfTrainer_15'
+	y0 = u.loadSubmission(best)
+	y1 = u.loadSubmission(name)
+	print(u.getNumberOfDifferences(y0,y1))
 
 	plt.show()
 

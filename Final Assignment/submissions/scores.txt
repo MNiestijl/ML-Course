@@ -59,6 +59,31 @@ Transductive SVM:
 TODO
 
 
+COMBINATIONS:
+1: classifiers = [
+		('selfTrainer_10', 10),
+		('selfTrainer_08', 9),
+		('selfTrainer_11', 8),
+		('selfTrainer_12', 7),
+		('selfTrainer_13', 6),
+		('selfTrainer_13', 5),
+		('selfTrainer_13', 4),
+		('selfTrainer_16', 3),
+		('selfTrainer_14', 2),
+		('selfTrainer_15', 1),
+	]
+score: 0.97760
+
+2: classifiers = [
+		('selfTrainer_12', 7),
+		('selfTrainer_13', 4),
+		('selfTrainer_16', 3),
+		('selfTrainer_15', 1),
+		('selfTrainer_14', 2),
+	]
+
+score: 0.97742
+
 
 
 

@@ -11,14 +11,20 @@ import sklearn as sk
 from sklearn.decomposition import PCA
 import utils as u
 
-# mpl.rcParams['text.usetex'] = True
+mpl.rcParams['text.usetex'] = True
 
 def plotSingularValues(fig,X,N=10,normalize=True):
 	ax = fig.add_subplot(111)
 	s = la.svd(X,compute_uv=False)
 	s = s/sum(s)
 	N = min(N,len(s))
-	ax.plot(range(0,N), s[0:N],'o',)
+	ax.plot(range(1,N+1), s[0:N],'o',)
+	ax.set_xlabel('N-largest',fontsize=15)
+	if normalize:
+		ax.set_ylabel('Percentage of total', fontsize=15)
+	else:
+		ax.set_ylabel('Singular value', fontsize=15)
+	ax.set_title('Principal component')
 
 def get_cmap(N):
 	'''Returns a function that maps each index in 0, 1, ... N-1 to a distinct 
@@ -29,7 +35,7 @@ def get_cmap(N):
 		return scalar_map.to_rgba(index)
 	return map_index_to_rgb_color
 
-def plotPrincipalComponents(fig,X,y=None, components=[0,1,2]):
+def plotPrincipalComponents(fig,X,y=None, components=[0,1,2], title=''):
 	ax = fig.add_subplot(1,1,1, projection='3d')
 	pca = PCA(n_components=max(components)+1, whiten=False)
 	Xtrans = pca.fit_transform(X)
@@ -50,12 +56,13 @@ def plotPrincipalComponents(fig,X,y=None, components=[0,1,2]):
 			ax.scatter(*xs,'o',c=cmap(i), alpha=alpha,label=str(lab))
 	
 	ax.legend()
-	ax.set_xlabel('Principal component {}'.format(components[0]+1))
-	ax.set_ylabel('Principal component {}'.format(components[1]+1))
-	ax.set_zlabel('Principal component {}'.format(components[2]+1))
+	ax.set_xlabel('Principal component {}'.format(components[0]+1), fontsize=15)
+	ax.set_ylabel('Principal component {}'.format(components[1]+1), fontsize=15)
+	ax.set_zlabel('Principal component {}'.format(components[2]+1), fontsize=15)
+	ax.set_title(title, fontsize=17)
 
-def plotPersonData(fig, X,y,S, person, components=[0,1,2]):
-	plotPrincipalComponents(fig, *u.splitByInds([u.getPersonInds(S,person)],X, y), components=components)
+def plotPersonData(fig, X,y,S, person, components=[0,1,2], title=''):
+	plotPrincipalComponents(fig, *u.splitByInds([u.getPersonInds(S,person)],X, y), components=components, title=title)
 
 def plotRanks(fig, X,y,S):
 	persons, labels = np.unique(S), np.unique(y)

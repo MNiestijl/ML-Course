@@ -8,20 +8,54 @@ import numpy.linalg as la
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 import warnings
+from functools import cmp_to_key
+
+def getNumberOfDifferences(y1, y2):
+	if len(y1)!=len(y2):
+		print(len(y1), len(y2))
+		raise('Vectors should be of the same length.')
+	result = sum([ 1 if y1[i]!=y2[i] else 0 for i in range(0,len(y1))])
+	print(result)
+	return result
+
+def getDifferentPredictions(predictions, minDiff=15):
+	result = []
+	for i in range(0, predictions.shape[1]):
+		if any([getNumberOfDifferences(prediction, predictions[:,i])<minDiff for prediction in result]):
+			continue
+		else:
+			result.append(predictions[:,i])
+	return np.array(result).T
+
 
 def loadSubmission(name):
 	path = 'submissions/' + name + '.csv'
 	return pd.read_csv(path, sep=',',header=0).as_matrix()[:,1]
 
-# Combine opinions by majority voting
+def reorder(predictions, ordering):
+	return predictions[:,np.argsort(ordering)]
+
+def getPredictions(names):
+	predictions = []
+	for name in names:
+		predictions.append(loadSubmission(name))
+	return np.array(predictions).T
+
+# Combine opinions by majority voting. 
 def combineOpinions(opinions):
-	occurances = dict(zip(*np.unique(opinions, return_counts=True)))
-	return max(occurances, key=occurances.get)
+	occurances = list(zip(*np.unique(opinions, return_counts=True)))
+	return max(occurances, key=lambda tup: tup[1])[0]
 
 # Combine predictions of all instances using majority voting.
 # prediction of shape (nInstances × nPredictions)
 def combinePredictions(predictions):
 	return np.array([ combineOpinions(predictions[i,:]) for i in range(0,predictions.shape[0]) ])
+
+def combineSubmissions(names, ordering=None, minDiff=15):
+	predictions = getPredictions(names)
+	predictions = reorder(predictions, ordering)
+	predictions = getDifferentPredictions(predictions,minDiff=minDiff)
+	return combinePredictions(predictions)
 
 def getData():
 	Xtrn = loadmat('Xtrn.mat')['Xtrn']
@@ -33,8 +67,8 @@ def getData():
 	Yall = np.array(np.concatenate((Ytrn,-np.ones(Xtst.shape[0]))), dtype=int)
 	return Xtrn, Ytrn, Strn, Xtst, Xall, Yall
 
-def mapIsIn(y,labs):
-	return np.array([1 if yi in labs else 0 for yi in y])
+def mapIsIn(y,labs, yes=1, no=0):
+	return np.array([yes if yi in labs else no for yi in y])
 
 def getInds(y, labs):
 	return np.array([ i for i, yi in enumerate(y) if yi in labs ])
@@ -108,15 +142,30 @@ def getWeights2(X, y, S, getNewClassifierInst, measure='mean'):
 			weights[ixTrn] = min([C.score(X[inds(s),:], y[inds(s)]) for s in identifiers])
 	return weights#/weights.mean()
 
+def savePrediction(y, name, override=False):
+	path = getPath(name)
+	checkPath(path, override)
+	if y.dtype!='int32' and y.dtype!='int64':
+		raise Exception('Classifier should predict labels in type int.')
+
+	# Write file
+	with open(path, "w") as outfile:
+		outfile.write("Id,Class\n")
+		for e, lab in enumerate(list(y)):
+			outfile.write("%s,%s\n" % (e+1,lab)) 
+
+def checkPath(path, override=False):
+	if Path(path).exists() and override==False:
+		raise Exception('The following path is already occupied:\n{}'.format(path))
+
+def getPath(name):
+	return 'submissions/' + name + '.csv'
+
 def makeSubmissionFile(Xtrn, Ytrn, Xtst, getClassifierInst, name="testSubmission", override=False, sample_weight=None, repeats=1):
 	if not isinstance(getClassifierInst(), BaseEstimator):
 		raise("Classifier is not an instance of scikit's BaseEstimator Class.")
 
-	# Check if the path is occupied.
-	path = 'submissions/' + name + '.csv'
-	my_file = Path(path)
-	if Path(path).exists() and override==False:
-		raise Exception('The following path is already occupied:\n{}'.format(path))
+	checkPath(getPath(name), override)
 
 	labIx, unlabIx = getSplit(Ytrn, list(set(np.unique(Ytrn))-{-1}))
 	predictions = np.zeros((Xtst.shape[0], repeats), dtype=int)
@@ -139,13 +188,4 @@ def makeSubmissionFile(Xtrn, Ytrn, Xtst, getClassifierInst, name="testSubmission
 		except NotFittedError as e:
 			print(repr(e))
 	y = combinePredictions(predictions)
-
-	# Make sure the type is ok.
-	if y.dtype!='int32' and y.dtype!='int64':
-		raise Exception('Classifier should predict labels in type int.')
-
-	# Write file
-	with open(path, "w") as outfile:
-		outfile.write("Id,Class\n")
-		for e, lab in enumerate(list(y)):
-			outfile.write("%s,%s\n" % (e+1,lab)) 
+	savePrediction(y, name, override)
