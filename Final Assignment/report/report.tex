@@ -1,0 +1,57 @@
+\documentclass [a4paper] {report}
+\usepackage{amsmath,amssymb,amsthm, bbm, graphicx,listings,braket,subfig,titlesec,cleveref,lipsum,mcode,xcolor-patch, textcomp,float,booktabs,siunitx, listings}
+\usepackage[authoryear]{natbib}
+\usepackage[section]{placeins}
+\usepackage[margin=2.2cm]{geometry}
+\titleformat{\chapter}{\normalfont\huge}{\thechapter.}{20pt}{\huge \bf}
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\newcommand{\norm}[1]{\left\lVert #1 \right\rVert}
+
+\begin{document}
+	
+	\begin{titlepage}
+		\begin{center}
+			
+			\textsc{\LARGE IN4320 Machine Learning}\\[1.25cm]
+			
+			\rule{\linewidth}{0.5mm}\\[1.0cm]
+			{\huge \bfseries Final Assignment }\\[0.6cm]
+			\rule{\linewidth}{0.5mm}\\[1.5cm]
+			
+			\begin{minipage}{0.4\textwidth}
+				\begin{flushleft} \large	
+					\emph{Author:}\\
+					\textsc{Milan Niestijl, 4311728}
+				\end{flushleft}
+			\end{minipage}
+			
+			\vfill
+			{\large \today}
+		\end{center}
+	\end{titlepage}
+	
+	\section*{Introduction}
+	In this report, it is discussed how the classifier that optimally predicts the test set was obtained. Both the reasoning and the considerations that led to the final classifier are discussed. A final score on the test set of \textbf{TODO} was achieved.
+	
+	\section*{Data visualization}
+	Firstly, we try to get some understanding of the data. 
+	
+	%% PLOT of the singular values
+	
+	%% PLOT of the principal components
+
+	We observe firstly that the data corresponding to the active movements seem separable from those of inactive nature. %% OTHER observations?
+	
+	The identifiers are also given, i.e., which subject the training sample stems from. This allows us to view the data obtained from different subject separately, to potentially observe both differences and patterns.
+	
+	%% PLOT van een paar subjects.
+	
+	Lastly, the active and inactive movements are plotted separately for a few subjects.
+	
+	%% PLOT 
+	
+	\section*{First try on the training data}
+	We next try a few simple
+\end{document}
