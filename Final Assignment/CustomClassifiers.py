@@ -14,7 +14,7 @@ TODO:
 
 # Split problem into two problems based on activity type using classifier1 and predict these two problems using classifier2 and classifier3
 # The classifiers must support weighted input.
-class CC1(BaseEstimator, ClassifierMixin):
+class CC1(BaseEstimator, ClassifierMixin): # HERNOEMEN NAAR SplittingClassifier???
 	def __str__(self):
 		return "CC1"
 

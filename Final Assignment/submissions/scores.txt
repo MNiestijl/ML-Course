@@ -40,6 +40,9 @@ selfTrainer_13:		0.97724		discount=0.995, tresholds=np.linspace(.99,.60, 200)
 selfTrainer_14:		0.97760		discount=1, tresholds=np.linspace(.99,.60, 200))
 selfTrainer_15:		0.97742		discount=0.99, tresholds=np.linspace(.99,.60, 200)
 
+Met CC1(LDA, LDA, CL5)
+selfTrainer_18:		0.97814		discount=0.998, tresholds=np.linspace(.99,.60, 200)
+
 Met CC1(CL1, CL2, RFC(100)):
 selfTrainer_07		0.96237		treshold=0.8, discount=0.95
 

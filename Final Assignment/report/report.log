@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2016.5.29)  8 JUL 2017 15:21
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2016.5.29)  9 JUL 2017 18:33
 entering extended mode
 **report.tex
 (report.tex
@@ -796,38 +796,42 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
  [1
 
 {C:/ProgramData/MiKTeX/2.9/pdftex/config/pdftex.map}]
+Underfull \hbox (badness 10000) in paragraph at lines 36--37
+
+ []
+
 <Images/singvals.png, id=9, 578.16pt x 433.62pt>
 File: Images/singvals.png Graphic file (type png)
  <use Images/singvals.png>
-Package pdftex.def Info: Images/singvals.png used on input line 43.
+Package pdftex.def Info: Images/singvals.png used on input line 44.
 (pdftex.def)             Requested size: 202.35902pt x 151.76927pt.
 
 <Images/Xtrn.png, id=11, 1300.86pt x 724.8681pt>
 File: Images/Xtrn.png Graphic file (type png)
  <use Images/Xtrn.png>
-Package pdftex.def Info: Images/Xtrn.png used on input line 51.
+Package pdftex.def Info: Images/Xtrn.png used on input line 52.
 (pdftex.def)             Requested size: 455.30783pt x 253.70763pt.
  [1 <./Images/singvals.png>] <Images/Xactivity.png, id=20, 1300.86pt x 724.8681
 pt>
 File: Images/Xactivity.png Graphic file (type png)
 
 <use Images/Xactivity.png>
-Package pdftex.def Info: Images/Xactivity.png used on input line 62.
+Package pdftex.def Info: Images/Xactivity.png used on input line 63.
 (pdftex.def)             Requested size: 455.30783pt x 253.70763pt.
  <Images/Xtrn1.png, id=21, 1300.86pt x 724.8681pt>
 File: Images/Xtrn1.png Graphic file (type png)
 
 <use Images/Xtrn1.png>
-Package pdftex.def Info: Images/Xtrn1.png used on input line 70.
+Package pdftex.def Info: Images/Xtrn1.png used on input line 71.
 (pdftex.def)             Requested size: 455.30783pt x 253.70763pt.
  [2 <./Images/Xtrn.png> <./Images/Xactivity.png>]
 <Images/Xtrn2.png, id=27, 1300.86pt x 724.8681pt>
 File: Images/Xtrn2.png Graphic file (type png)
  <use Images/Xtrn2.png>
-Package pdftex.def Info: Images/Xtrn2.png used on input line 78.
+Package pdftex.def Info: Images/Xtrn2.png used on input line 79.
 (pdftex.def)             Requested size: 455.30783pt x 253.70763pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 84--86
+Underfull \hbox (badness 10000) in paragraph at lines 85--87
 
  []
 
@@ -835,24 +839,24 @@ Underfull \hbox (badness 10000) in paragraph at lines 84--86
 File: Images/subject1.png Graphic file (type png)
 
 <use Images/subject1.png>
-Package pdftex.def Info: Images/subject1.png used on input line 92.
+Package pdftex.def Info: Images/subject1.png used on input line 93.
 (pdftex.def)             Requested size: 421.87938pt x 194.6788pt.
 
 <Images/subject2.png, id=29, 692.5875pt x 311.66437pt>
 File: Images/subject2.png Graphic file (type png)
 
 <use Images/subject2.png>
-Package pdftex.def Info: Images/subject2.png used on input line 96.
+Package pdftex.def Info: Images/subject2.png used on input line 97.
 (pdftex.def)             Requested size: 415.5557pt x 187.00006pt.
 
 <Images/subject3.png, id=30, 682.80093pt x 318.43968pt>
 File: Images/subject3.png Graphic file (type png)
 
 <use Images/subject3.png>
-Package pdftex.def Info: Images/subject3.png used on input line 100.
+Package pdftex.def Info: Images/subject3.png used on input line 101.
 (pdftex.def)             Requested size: 409.68372pt x 191.06528pt.
  [3 <./Images/Xtrn1.png> <./Images/Xtrn2.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 106--108
+Underfull \hbox (badness 10000) in paragraph at lines 107--109
 
  []
 
@@ -860,28 +864,55 @@ Underfull \hbox (badness 10000) in paragraph at lines 106--108
 <Images/Xall.png, id=42, 698.61pt x 486.31688pt>
 File: Images/Xall.png Graphic file (type png)
  <use Images/Xall.png>
-Package pdftex.def Info: Images/Xall.png used on input line 114.
+Package pdftex.def Info: Images/Xall.png used on input line 115.
 (pdftex.def)             Requested size: 244.51715pt x 170.21346pt.
- [5 <./Images/Xall.png>] (report.aux) ) 
+
+Underfull \hbox (badness 10000) in paragraph at lines 149--151
+
+ []
+
+[5 <./Images/Xall.png>]
+Underfull \hbox (badness 10000) in paragraph at lines 176--180
+
+ []
+
+
+Overfull \hbox (32.05167pt too wide) in paragraph at lines 206--214
+ [][] 
+ []
+
+[6]
+Underfull \hbox (badness 10000) in paragraph at lines 225--227
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 228--230
+
+ []
+
+[7] (report.aux) ) 
 Here is how much of TeX's memory you used:
- 17864 strings out of 493698
- 343650 string characters out of 3144412
- 476510 words of memory out of 3000000
- 21037 multiletter control sequences out of 15000+200000
- 9815 words of font info for 38 fonts, out of 3000000 for 9000
+ 17880 strings out of 493698
+ 343906 string characters out of 3144412
+ 483510 words of memory out of 3000000
+ 21053 multiletter control sequences out of 15000+200000
+ 10122 words of font info for 39 fonts, out of 3000000 for 9000
  1025 hyphenation exceptions out of 8191
- 44i,7n,42p,10388b,588s stack positions out of 5000i,500n,10000p,200000b,50000s
-<C:/Program Files/MiKTeX 2.9/fonts/type1
-/public/amsfonts/cm/cmbx10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/
-amsfonts/cm/cmbx12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts
-/cm/cmcsc10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmm
-i10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi7.pfb><
-C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Progra
-m Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Program Files/M
-iKTeX 2.9/fonts/type1/public/amsfonts/cm/cmti12.pfb>
-Output written on report.pdf (6 pages, 1388122 bytes).
+ 44i,13n,42p,10388b,588s stack positions out of 5000i,500n,10000p,200000b,50000s
+<C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/c
+mbx10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx12.pf
+b><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmcsc10.pfb><C:/P
+rogram Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Program F
+iles/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Program Files/MiKT
+eX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files/MiKTeX 2.9/fo
+nts/type1/public/amsfonts/cm/cmr12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1
+/public/amsfonts/cm/cmr7.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/am
+sfonts/cm/cmsy10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/c
+m/cmti12.pfb>
+Output written on report.pdf (8 pages, 1421415 bytes).
 PDF statistics:
- 72 PDF objects out of 1000 (max. 8388607)
+ 88 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  46 words of extra memory for PDF output out of 10000 (max. 10000000)
 
