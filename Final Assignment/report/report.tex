@@ -176,7 +176,7 @@
 	\noindent
 	It can be seen that classifiers generally perform better on $X_{\text{trn1}}$ than on $X_{\text{trn2}}$, indicating that the latter is less separable. Taking further into consideration figures \ref{Xtrn2} and \ref{subjects}, it seems that especially labels 4 and 5 are problematic. \\
 	It also becomes clear that LDA is extremly well-fit for $X_{\text{trn1}}$. This may be explained by figure \ref{subjects}, in which it becomes apparent that the different clusters resemble Gaussian distributions. The distribution of $X_{\text{trn1}}$ is a weighted sum of the distributions of the data from the various subjects, which seem well approximated by Gaussian distributions. As a weighted sum of Gaussians is once again Gaussian, $X_{\text{trn1}}$ is expected to meet the assumptions of LDA, explaining the good performance of LDA on $X_{\text{trn1}}$. \\
-	However, both LDA and a linear SVM do not perform wel on $X_{\text{trn2}}$, which is readily explained by figure \ref{Xtrn2}, in which it can be seen that $X_{\text{trn2}}$ is not linearly, but rather non-linearly separable. The reason behind the superior performance of the polynomial support vector machines of various degrees is therefore clear.\\
+	However, both LDA and a linear SVM do not perform wel on $X_{\text{trn2}}$, which is readily explained by figure \ref{Xtrn2}, in which it can be seen that $X_{\text{trn2}}$ is not linearly but rather non-linearly separable. The reason behind the superior performance of the polynomial support vector machines of various degrees is therefore clear.\\
 	
 	\noindent
 	next, we evaluate a few classifiers to find out which separates the two sub-problems best. The result is summarized in table \ref{tab:separator}.
@@ -197,7 +197,7 @@
 	\end{table}
 	
 	\noindent
-	It is thus expected that using the splitting classifier in combination with LDA as both the activity-type and $X_{\text{trn1}}$ predicting classifier and a SVM with polynomial kernel of degree 5 performs best on the training data. To verify this, a few combinations are evaluated using 10-fold cross-validation. The result is shown in table \ref{tab:Xtrn_final}
+	It is thus expected that using the splitting classifier in combination with LDA as both the activity-type and $X_{\text{trn1}}$ predicting classifier and a SVM with polynomial kernel of degree 5 performs best on the training data. To verify this, a few combinations are evaluated using 10-fold cross-validation. The result is shown in table \ref{tab:Xtrn_final}, which is as expected.
 	
 	\begin{table}[H]
 		\centering
@@ -205,19 +205,37 @@
 		\label{tab:Xtrn_final}
 		\begin{tabular}{l|l|l|l}
 			Pre-classifier 					& Classifier1 					&  Classsifier2								& Accuracy  \\ \hline
-			LDA 							& LDA							& SVC(kernel='rbf')) 						& $1 \pm 0 $\\
-			LDA 							& LDA							& SVC(kernel='poly', degree=3)) 			& $1 \pm 0 $\\
-			LDA 							& LDA							& SVC(kernel='poly', degree=5)) 			& $1 \pm 0 $\\
-			LDA 							& SVC(kernel='poly', degree=3)	& SVC(kernel='poly', degree=5)) 			& $1 \pm 0 $\\
-			SVC(kernel='poly', degree=2) 	& LDA							& SVC(kernel='poly', degree=2)) 			& $1 \pm 0 $\\
+			LDA 							& LDA							& SVC(kernel='rbf')) 						& $0.962 \pm 0.03 $\\
+			LDA 							& LDA							& SVC(kernel='poly', degree=3)) 			& $0.962 \pm 0.03 $\\
+			LDA 							& LDA							& SVC(kernel='poly', degree=5)) 			& $0.964 \pm 0.03 $\\
+			LDA 							& SVC(kernel='poly', degree=3)	& SVC(kernel='poly', degree=5)) 			& $0.958 \pm 0.03 $\\
+			SVC(kernel='poly', degree=2) 	& LDA							& SVC(kernel='poly', degree=5)) 			& $0.964 \pm 0.03 $\\
 		\end{tabular}		
 	\end{table}
 	
 	
 	\subsection*{On the test data}
-	After having evaluated some classifiers on the training data, we continue to optimize the classifier on the test data. Since the problem is of transductive/semi-supervised nature, the test data can be used in the training process to increase the performance. Naturally, there are multiple ways of doing this. We consider self-training and label-propagation approaches.
+	After having evaluated some classifiers on the training data, we continue to optimize the classifier on the test data. \\
+	From now on, let:
+	\begin{align*}
+		\text{CL A} &:= \text{SP(LDA, LDA, SVC(kernel='poly', degree=3))}\\
+		\text{CL B} &:= \text{SP(LDA, LDA, SVC(kernel='poly', degree=5))}\\
+		\text{CL C} &:= \text{SP(SVC(kernel='poly', degree=2), LDA, SVC(kernel='poly', degree=3))}\\
+		\text{CL D} &:= \text{SP(SVC(kernel='poly', degree=2), LDA, SVC(kernel='poly', degree=5))}
+	\end{align*}
+	A basic SVM with polynomial kernel of degree 3 yields a score of 0.94588 and and $\text{CL C}$ scores 0.96774. It is thus verified that the classifiers generalize well on the test-data and achieve quite a high accuracy. \\
+	
+	\noindent
+	As the problem is of transductive/semi-supervised nature, the test data can be used in the training process to increase the performance. Naturally, there are multiple ways of doing this. As many of the test instances were be predicted with high confidence, self-learning  seems very promising. A label-propagation approach was also considered, but after training on the full dataset, this yielded a poor score on the training data and was thus discarded. The self-learning is implemented in a manner in which test instances are added to the labelled data if they are predicted with a confidence higher than a certain threshold, which decreases per iteration, from 0.99 to 0.6 in 200 iterations. Furthermore, test instances that are added to the labelled data during the $i^{th}$ iteration are given a weight of $\gamma^{i}$ for some $\gamma \in (0,1)$, which takes into account that labels that are predicted during a later stage have a higher uncertainty, both due to the instable nature of self-learning (an error early may grow in further iterations), and the lower threshold in a later iteration.\\
+	
+	\noindent
+	Lastly, the identifiers can potentially be used to boost the performance of the classifier. This is attempted by varying the weight of the samples based on the variance of the data $X_{s,l}$ with some label $l$ belonging to a certain subject $s$. The idea is that a larger variance in this data corresponds to more uncertainty, so that these instances are given a lower weight. The weight is determined by first fitting a Gaussian distribution on $X_{s,l}$ for each subject and each label, yielding a covariance matrix $\Sigma$. We next define $\sigma_{s,l} = tr(\Sigma)$, where $tr(.)$ stands for the trace of a matrix. Thus, $\sigma_{s,l}$ represents the total variance of $X_{s,l}$.
 	
 	
+	
+	
+	\noindent
+	BAGGING / ENSEMBLES / COMBINING
 	
 	\section*{Final thoughts}
 	Wat er nog beter kon: misschien Strn beter gebruiken, transductive SVM zou goed kunnen werken.

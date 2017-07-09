@@ -73,12 +73,16 @@ def test(Xtrn, Ytrn, sample_weight=None, Strn=None):
 	CL01 = lambda : SVC(C=10, kernel='poly', degree=3, class_weight='balanced')
 	CL02 = lambda : SVC(C=10, kernel='poly', degree=3)
 	CL1 = lambda C, deg: SVC(C=C, kernel='poly', degree=deg, class_weight='balanced')
-	CL2 = lambda : LinearDiscriminantAnalysis(solver='svd', n_components=20)
+	LDA = lambda : LinearDiscriminantAnalysis(solver='svd', n_components=20)
 	CL3 = lambda C,deg: SVC(C=C, kernel='poly', degree=deg, class_weight='balanced', decision_function_shape='ovr', probability=True)
 	RFC = lambda n_estimators: RandomForestClassifier(n_estimators=n_estimators, criterion='entropy', n_jobs=3, class_weight='balanced')
-	best = lambda: CC1(CL2(), CL2(), CL3(10,5))
+	best = lambda: CC1(LDA(), LDA(), CL3(10,5))
 	classifiers = [
-		CC1()
+		CC1(LDA(), LDA(), SVC(C=10, kernel='rbf', class_weight='balanced', probability=True)),
+		CC1(LDA(), LDA(), CL3(10,3)),
+		CC1(LDA(), LDA(), CL3(10,5)),
+		CC1(LDA(), CL3(10,3), CL3(10,5)),
+		CC1(CL3(10,2), LDA(), CL3(10,5)),
 		#RandomForestClassifier(n_estimators=100, n_jobs=3, class_weight='balanced'),
 		#RandomForestClassifier(n_estimators=100, criterion='entropy', n_jobs=3, class_weight='balanced')
 	]
@@ -186,6 +190,7 @@ def main():
 	# Make submission File
 
 	name = 'selfTrainer_18'
+	best = 'selfTrainer_18'
 	#u.makeSubmissionFile(Xall, Yall, Xtst, getSelfTrainer, name=name, override=False, sample_weight=Wall, repeats=2)
 	
 
@@ -199,7 +204,7 @@ def main():
 	#test(Xtrn, Ytrn, sample_weight=W)
 	#RFC.fit(Xtrn, Ytrn)
 	#print(RFC.score(Xtrn, Ytrn))
-	"""
+	
 	
 	#plt.hist(W)
 	"""
@@ -215,7 +220,6 @@ def main():
 	y = u.combineSubmissions(*zip(*classifiers))
 	u.savePrediction(y, name=name, override=False)
 	"""
-	best = 'selfTrainer_14'
 	y0 = u.loadSubmission(best)
 	y1 = u.loadSubmission(name)
 	print(u.getNumberOfDifferences(y0,y1))
