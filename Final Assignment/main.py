@@ -76,15 +76,20 @@ def test(Xtrn, Ytrn, sample_weight=None, Strn=None):
 	CL2 = lambda : LinearDiscriminantAnalysis(solver='svd', n_components=20)
 	CL3 = lambda C,deg: SVC(C=C, kernel='poly', degree=deg, class_weight='balanced', decision_function_shape='ovr', probability=True)
 	RFC = lambda n_estimators: RandomForestClassifier(n_estimators=n_estimators, criterion='entropy', n_jobs=3, class_weight='balanced')
-	best = lambda: CC1(CL1(10, 2), CL2(), CL3(10,5))
+	best = lambda: CC1(CL2(), CL2(), CL3(10,5))
 	classifiers = [
-		CL01(),
+		CC1()
+		#RandomForestClassifier(n_estimators=100, n_jobs=3, class_weight='balanced'),
+		#RandomForestClassifier(n_estimators=100, criterion='entropy', n_jobs=3, class_weight='balanced')
 	]
 	for classifier in classifiers:
-		if Strn is not None:
-			scores = cross_val_score(classifier,Xtrn,Ytrn, fit_params={'S': Strn, 'sample_weight':sample_weight}, cv=10)
-		else:
-			scores = cross_val_score(classifier,Xtrn,Ytrn, fit_params={'sample_weight':sample_weight}, cv=10)
+		try:
+			if Strn is not None:
+				scores = cross_val_score(classifier,Xtrn,Ytrn, fit_params={'S': Strn, 'sample_weight':sample_weight}, cv=10)
+			else:
+				scores = cross_val_score(classifier,Xtrn,Ytrn, fit_params={'sample_weight':sample_weight}, cv=10)
+		except(TypeError):
+			scores = cross_val_score(classifier,Xtrn,Ytrn, cv=10)
 		print('\nScore = {} +/- {}'.format(scores.mean(), scores.std()))
 
 
@@ -161,13 +166,14 @@ def main():
 
 	# Define classifiers	
 
-	CL1 = SVC(C=10, kernel='poly', degree=2, class_weight='balanced')
+	#CL1 = SVC(C=10, kernel='poly', degree=2, class_weight='balanced')
 	#CL2 = SVC(C=10, kernel='poly', degree=3, class_weight='balanced', decision_function_shape='ovr', probability=True)
+	CL1 = LinearDiscriminantAnalysis(solver='svd')
 	CL2 = LinearDiscriminantAnalysis(solver='svd')
 	CL3 = SVC(C=10, kernel='poly', degree=3, class_weight='balanced', decision_function_shape='ovr', probability=True)
 	CL5 = SVC(C=10, kernel='poly', degree=5, class_weight='balanced', decision_function_shape='ovr', probability=True)
 	RFC = RandomForestClassifier(n_estimators=500, criterion='entropy', n_jobs=1, class_weight='balanced')
-	classifier = CC1(CL1, CL2, CL3)
+	classifier = CC1(CL1, CL2, CL5)
 	#classifier = SVC(C=10, kernel='poly', degree=3, probability=True, decision_function_shape='ovr', class_weight='balanced')
 	#classifier = KNeighborsClassifier()
 	labelProp = LabelPropagationClassifier(
@@ -175,25 +181,28 @@ def main():
 		Propagator = LabelSpreading(kernel='knn',n_neighbors=5, alpha=0.9)
 	)
 	customSelfTrainer = CustomSelfTrainer(classifier=classifier, treshold=0.95)
-	getSelfTrainer = lambda: SelfTrainer(classifier=classifier, discount=0.99, tresholds=np.linspace(.99,.60, 200))
+	getSelfTrainer = lambda: SelfTrainer(classifier=classifier, discount=0.998, tresholds=np.linspace(.99,.60, 200))
 	
 	# Make submission File
 
-	"""
-
-	name = 'selfTrainer_17'
-	u.makeSubmissionFile(Xall, Yall, Xtst, getSelfTrainer, name=name, override=False, sample_weight=Wall, repeats=2)
-	"""
+	name = 'selfTrainer_18'
+	#u.makeSubmissionFile(Xall, Yall, Xtst, getSelfTrainer, name=name, override=False, sample_weight=Wall, repeats=2)
+	
 
 
-	"""
-	print('\nScores without weights:')
+	
+	#print('\nScores without weights:')
 	test(Xtrn, Ytrn)
-	print('\nScore with weights')
-	test(Xtrn, Ytrn, sample_weight=W)
+	#test(Xtrn1, Ytrn1)
+	#test(Xtrn2, Ytrn2)
+	#print('\nScore with weights')
+	#test(Xtrn, Ytrn, sample_weight=W)
+	#RFC.fit(Xtrn, Ytrn)
+	#print(RFC.score(Xtrn, Ytrn))
 	"""
 	
 	#plt.hist(W)
+	"""
 
 	name = 'combined2'
 	classifiers = [
@@ -205,11 +214,12 @@ def main():
 	]
 	y = u.combineSubmissions(*zip(*classifiers))
 	u.savePrediction(y, name=name, override=False)
-	best = 'selfTrainer_15'
+	"""
+	best = 'selfTrainer_14'
 	y0 = u.loadSubmission(best)
 	y1 = u.loadSubmission(name)
 	print(u.getNumberOfDifferences(y0,y1))
-
+	 
 	plt.show()
 
 if __name__ == "__main__":

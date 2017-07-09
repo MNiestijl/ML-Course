@@ -53,8 +53,7 @@ def plotPrincipalComponents(fig,X,y=None, components=[0,1,2], title=''):
 		cmap = get_cmap(len(labels))
 		for i,lab in enumerate(labels):
 			xs = [ Xtrans[np.where(y==lab),c] for c in components ]
-			ax.scatter(*xs,'o',c=cmap(i), alpha=alpha,label=str(lab))
-	
+			ax.scatter(xs,'o',c=cmap(i), alpha=alpha,label=str(lab))
 	ax.legend()
 	ax.set_xlabel('Principal component {}'.format(components[0]+1), fontsize=15)
 	ax.set_ylabel('Principal component {}'.format(components[1]+1), fontsize=15)
