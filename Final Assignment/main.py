@@ -73,16 +73,12 @@ def test(Xtrn, Ytrn, sample_weight=None, Strn=None):
 	CL01 = lambda : SVC(C=10, kernel='poly', degree=3, class_weight='balanced')
 	CL02 = lambda : SVC(C=10, kernel='poly', degree=3)
 	CL1 = lambda C, deg: SVC(C=C, kernel='poly', degree=deg, class_weight='balanced')
-	LDA = lambda : LinearDiscriminantAnalysis(solver='svd', n_components=20)
+	LDA = lambda : LinearDiscriminantAnalysis(solver='svd')
 	CL3 = lambda C,deg: SVC(C=C, kernel='poly', degree=deg, class_weight='balanced', decision_function_shape='ovr', probability=True)
 	RFC = lambda n_estimators: RandomForestClassifier(n_estimators=n_estimators, criterion='entropy', n_jobs=3, class_weight='balanced')
 	best = lambda: CC1(LDA(), LDA(), CL3(10,5))
 	classifiers = [
-		CC1(LDA(), LDA(), SVC(C=10, kernel='rbf', class_weight='balanced', probability=True)),
-		CC1(LDA(), LDA(), CL3(10,3)),
-		CC1(LDA(), LDA(), CL3(10,5)),
-		CC1(LDA(), CL3(10,3), CL3(10,5)),
-		CC1(CL3(10,2), LDA(), CL3(10,5)),
+		best()
 		#RandomForestClassifier(n_estimators=100, n_jobs=3, class_weight='balanced'),
 		#RandomForestClassifier(n_estimators=100, criterion='entropy', n_jobs=3, class_weight='balanced')
 	]
@@ -185,28 +181,28 @@ def main():
 		Propagator = LabelSpreading(kernel='knn',n_neighbors=5, alpha=0.9)
 	)
 	customSelfTrainer = CustomSelfTrainer(classifier=classifier, treshold=0.95)
-	getSelfTrainer = lambda: SelfTrainer(classifier=classifier, discount=0.998, tresholds=np.linspace(.99,.60, 200))
+	getSelfTrainer = lambda: SelfTrainer(classifier=classifier, discount=1, tresholds=np.linspace(.99,.60, 200))
 	
 	# Make submission File
 
-	name = 'selfTrainer_18'
+	name = 'selfTrainer_19'
 	best = 'selfTrainer_18'
-	#u.makeSubmissionFile(Xall, Yall, Xtst, getSelfTrainer, name=name, override=False, sample_weight=Wall, repeats=2)
+	u.makeSubmissionFile(Xall, Yall, Xtst, getSelfTrainer, name=name, override=False, sample_weight=Wall, repeats=2)
 	
 
 
 	
-	#print('\nScores without weights:')
+	print('\nScores without weights:')
 	test(Xtrn, Ytrn)
 	#test(Xtrn1, Ytrn1)
 	#test(Xtrn2, Ytrn2)
-	#print('\nScore with weights')
-	#test(Xtrn, Ytrn, sample_weight=W)
+	print('\nScore with weights')
+	test(Xtrn, Ytrn, sample_weight=W)
 	#RFC.fit(Xtrn, Ytrn)
 	#print(RFC.score(Xtrn, Ytrn))
 	
 	
-	#plt.hist(W)
+	plt.hist(W)
 	"""
 
 	name = 'combined2'

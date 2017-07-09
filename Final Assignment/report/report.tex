@@ -33,7 +33,7 @@
 	\end{titlepage}
 	
 	\section*{Introduction}
-	In this assignment, the task is to build a classifier that optimally predicts the test set of the "Human Activity Recognition" dataset. The goal is thus not to obtain a classifier that generalizes well to other problems, but one that is specifically designed for this six-class problem. Three of the classes correspond to highly active movements, whereas the other three correspond to relatively low activity. The available training ($X_{trn}$) and test ($X_{tst}$) set contain 5580 and 4719 instances, respectively, both having a 554-dimensional feature space. Lastly, it is known what subject the different training instances stem from, which may be used to improve the performance of the classifier somehow. In this report, it is discussed how the resulting classifier was obtained. Both the reasoning and the considerations that led to the final classifier are discussed. A final score on the test set of \textbf{TODO} was achieved.\\
+	In this assignment the task is to build a classifier that optimally predicts the test set of the "Human Activity Recognition" dataset, which is a six-class problem. Three of the classes correspond to highly active movements, whereas the other three correspond to relatively low activity. The available training ($X_{trn}$) and test ($X_{tst}$) set contain 5580 and 4719 instances, respectively, both having a 554-dimensional feature space. Lastly, it is known what subject the different training instances stem from, which may be used to improve the performance of the classifier somehow. In this report, it is discussed how the resulting classifier was obtained. Both the reasoning and the considerations that led to the final classifier are discussed. A final score on the test set of $0.97814$ was achieved. The estimated number of words in this document is 2430.\\
 	
 
 	\section*{Data analysis}
@@ -147,7 +147,7 @@
 	\end{table}
 	
 	\noindent
-	Furthermore, on the full training set, the SVM with a polynomial kernel of degree 3 was able to score an accuracy of 1 on the training set. It therefore immediately becomes clear that the training data is separable, contrary to what might be expected from figure \ref{Xtrn}. This is not necessarily unexpected since the plots only show the data in reduced dimensions. Secondly, it appears that both LDA and support vector machines suit the problem very well.\\
+	On the full training set, the SVM with a polynomial kernel of degree 3 was able to score an accuracy of 1 on the training set. It therefore immediately becomes clear that the training data is separable, contrary to what might be expected from figure \ref{Xtrn}. This is not necessarily unexpected since the plots only show the data in reduced dimensions. Secondly, it appears that both LDA and support vector machines suit the problem very well.\\
 	
 	\noindent
 	As the low and high activity instances appear to be separable, an idea is to first train a classifier to predict the activity type, i.e., type 1 or 2, in order to reduce the problem to two separate ones and then train different classifiers on the two sub-problems. Especially since the distributions of data from the two activity types seem to be different, one might also expect different classifiers to perform better on the two sub-problems. The obtained classifier thus uses three different classifiers. It will be denoted by $\text{SP(preClassifier, classifier1, classifier2})$ (for 'splitting classifier').
@@ -179,7 +179,7 @@
 	However, both LDA and a linear SVM do not perform well on $X_{\text{trn2}}$, which is readily explained by figure \ref{Xtrn2}, in which it can be seen that $X_{\text{trn2}}$ is not linearly but rather non-linearly separable. The reason behind the superior performance of the polynomial support vector machines of various degrees is therefore clear.\\
 	
 	\noindent
-	next, we evaluate a few classifiers to find out which separates the two sub-problems best. The result is summarized in table \ref{tab:separator}.
+	Next, we evaluate a few classifiers to find out which separates the two sub-problems best. The result is summarized in table \ref{tab:separator}.
 	
 	\begin{table}[H]
 		\centering
@@ -197,7 +197,7 @@
 	\end{table}
 	
 	\noindent
-	It is thus expected that using the splitting classifier in combination with LDA as both the activity-type and $X_{\text{trn1}}$ predicting classifier and a SVM with polynomial kernel of degree 5 performs best on the training data. To verify this, a few combinations are evaluated using 10-fold cross-validation. The result is shown in table \ref{tab:Xtrn_final}, which is as expected.
+	It is thus expected that using the splitting classifier in combination with LDA as both the activity-type and $X_{\text{trn1}}$ predicting classifier and a SVM with polynomial kernel of degree 5 performs best on the training data. To verify this, a few combinations are evaluated using 10-fold cross-validation. The result is shown in table \ref{tab:Xtrn_final}, which is as expected. 
 	
 	\begin{table}[H]
 		\centering
@@ -218,28 +218,47 @@
 	After having evaluated some classifiers on the training data, we continue to optimize the classifier on the test data. \\
 	From now on, let:
 	\begin{align*}
-		\text{CL A} &:= \text{SP(LDA, LDA, SVC(kernel='poly', degree=3))}\\
-		\text{CL B} &:= \text{SP(LDA, LDA, SVC(kernel='poly', degree=5))}\\
-		\text{CL C} &:= \text{SP(SVC(kernel='poly', degree=2), LDA, SVC(kernel='poly', degree=3))}\\
-		\text{CL D} &:= \text{SP(SVC(kernel='poly', degree=2), LDA, SVC(kernel='poly', degree=5))}
+		\text{CL A} &:= \text{SP(SVC(kernel='poly', degree=2), LDA, SVC(kernel='poly', degree=3))}\\
+		\text{CL B} &:= \text{SP(SVC(kernel='poly', degree=2), LDA, SVC(kernel='poly', degree=5))}\\
+		\text{CL C} &:= \text{SP(LDA, LDA, SVC(kernel='poly', degree=5))}\\
 	\end{align*}
-	A basic SVM with polynomial kernel of degree 3 yields a score of 0.94588 and and $\text{CL C}$ scores 0.96774. It is thus verified that the classifiers generalize well on the test-data and achieve quite a high accuracy. \\
+	A basic SVM with polynomial kernel of degree 3 yields a score of 0.94588 and and $\text{CL A}$ scores 0.96774. It is thus verified that the classifiers generalize well on the test-data and achieve quite a high accuracy. \\
 	
 	\noindent
-	As the problem is of transductive/semi-supervised nature, the test data can be used in the training process to increase the performance. Naturally, there are multiple ways of doing this. As many of the test instances were be predicted with high confidence, self-learning  seems very promising. A label-propagation approach was also considered, but after training on the full dataset, this yielded a poor score on the training data and was thus discarded. The self-learning is implemented in a manner in which test instances are added to the labelled data if they are predicted with a confidence higher than a certain threshold, which decreases per iteration, from 0.99 to 0.6 in 200 iterations. Furthermore, test instances that are added to the labelled data during the $i^{th}$ iteration are given a weight of $\gamma^{i}$ for some $\gamma \in (0,1)$, which takes into account that labels that are predicted during a later stage have a higher uncertainty, both due to the unstable nature of self-learning (an error early may grow in further iterations), and the lower threshold in a later iteration.\\
+	The identifiers can potentially be used to boost the performance of the classifier. This is attempted by varying the weight of the instances based on the variance of the data $X_{s,l}$ with some label $l$ belonging to a certain subject $s$. The idea is that a larger variance corresponds to more uncertainty, so that these instances are given a lower weight. The weight is determined by first fitting a Gaussian distribution on $X_{s,l}$ for each subject and each label, yielding a covariance matrix $\Sigma$. We next define $\sigma_{s,l} = tr(\Sigma)$, where $tr(.)$ stands for the trace of a matrix. Thus, $\sigma_{s,l}$ represents the total variance of $X_{s,l}$. Finally, we define the weights of the instances in $X_{s,l}$ to be:
+	$$ w_{s,l} = { \sum_{s\in\mathcal{S}}\sigma_{s,l} \over \sigma_{s,l} } $$
+	Where $\mathcal{S}$ is the set of all subjects. Using these weights barely improves the performance on the training set of a SVM with polynomial kernel of degree 2 from $0.947 \pm 0.032$ to $0.0948 \pm 0.033$. On each of the classifiers $\text{CL A/B/C}$, it has no effect.\\
 	
 	\noindent
-	Lastly, the identifiers can potentially be used to boost the performance of the classifier. This is attempted by varying the weight of the samples based on the variance of the data $X_{s,l}$ with some label $l$ belonging to a certain subject $s$. The idea is that a larger variance in this data corresponds to more uncertainty, so that these instances are given a lower weight. The weight is determined by first fitting a Gaussian distribution on $X_{s,l}$ for each subject and each label, yielding a covariance matrix $\Sigma$. We next define $\sigma_{s,l} = tr(\Sigma)$, where $tr(.)$ stands for the trace of a matrix. Thus, $\sigma_{s,l}$ represents the total variance of $X_{s,l}$.
+	As the problem is of transductive/semi-supervised nature, the test data can be used in the training process to increase the performance, to which there are multiple approaches. As many of the test instances were be predicted with high confidence, self-learning  seems very promising. A label-propagation approach was also considered, but after training on the full dataset, this yielded a poor score on the training data and was thus discarded. The self-learning is implemented in a manner in which test instances are added to the labelled data if they are predicted with a confidence higher than a certain threshold. This threshold decreases per iteration, from 0.99 to 0.6 in 200 iterations. Furthermore, test instances that are added to the labelled data during the $i^{th}$ iteration are given a weight of $\gamma^{i}$ for some $\gamma \in (0,1]$, taking into account that labels that are predicted during a later stage have a higher uncertainty, both due to the unstable nature of self-learning (an error early may grow in further iterations), and the lower threshold in a later iteration, and should thus receive a lower weight. This is a parameter that can be tuned based on the desired behaviour of the self-learner.\\
+		
+	\noindent
+	The performance on $X_{\text{trn}}$ of various of the best performing self-learning classifiers is summarized in table \ref{tab:Xst_selfLearning}.
 	
-	
-	
+	\begin{table}[H]
+		\centering
+		\caption{Score of self-learning classifiers on the test set $X_{\text{trn}}$. The self-learner is combined with various classifiers.}
+		\label{tab:Xst_selfLearning}
+		\begin{tabular}{ll|l}
+			Classifier 		& $\gamma$ 	& Score  		\\ \hline
+			$\text{CL A}$ 	& 1			& $0.97724$		\\
+			$\text{CL A}$ 	& 0.99		& $0.97545$		\\
+			$\text{CL B}$ 	& 1			& $0.97760$		\\
+			$\text{CL B}$ 	& 0.995		& $0.97724$		\\
+			$\text{CL B}$ 	& 0.99		& $0.97742$		\\
+			$\text{CL C}$ 	& 0.998		& $0.97814$		\\
+		\end{tabular}		
+	\end{table}
 	
 	\noindent
-	BAGGING / ENSEMBLES / COMBINING
+	We thus conclude that the self-learning algorithm did indeed improve the performance considerably. Furthermore, we find that the self-learner combined with $\text{CL C}$ has the best score, as expected.  
 	
 	\section*{Final thoughts}
-	Wat er nog beter kon: misschien Strn beter gebruiken, transductive SVM zou goed kunnen werken.
-	Vergeet niet code toe te voegen waar nodig!!
+	It was concluded that the self-learning algorithm combined with $\text{CL C}$ has the best performance with a score of $0.97814$. \\\\
+	By somehow making use of the identifiers, it may be possible to achieve an even higher score. Usually in machine learning problems, the instances are assumed to be independent and identically distributed. However, this is not the case as instances stemming from the same subject are clearly not independent, which may lower performance of certain classifiers. It might be possible to use the identifiers to deal with this problem, thus potentially increasing the score. \\\\
+	Secondly, multiple well-performing algorithms can be combined in either some majority voting or confidence based scheme, potentially improving the final score. However, in this case the various well-performing predictions are very similar so that a large boost can not be expected. In fact, this was attempted by combining all but the self-learning algorithm combined with the $\text{CL C}$ classifier, which had not been submitted yet, but it resulted in the same score as the best of the classifiers in the ensemble.\\\\
+	One more suggestion might be to use a transductive algorithm such as a the transductive support vector machine(T-SVM) and possibly to combine such algorithms somehow with the self-learning $\text{CL C}$ classifier obtained in this report. Since the problem is in a transductive setting, such an algorithm may be beneficial. However, as no easily accessible implementation was found and it was assumed that the self-learning algorithm in this case is superior, it was decided not to try and implement the T-SVM.\\\\
+	Lastly, one could continue fine-tuning parameters or improving certain parts of the final classifier, which may improve the score.
 	
 	
 \end{document}
